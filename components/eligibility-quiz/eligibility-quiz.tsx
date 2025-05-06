@@ -93,10 +93,12 @@ export default function EligibilityQuiz({ open, onClose }: { open: boolean; onCl
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <div className="relative py-2">
-          <Button variant="ghost" size="icon" className="absolute right-0 top-0" onClick={onClose}>
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </Button>
+          <div className="flex justify-end mb-2">
+            <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 p-0">
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </div>
 
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
