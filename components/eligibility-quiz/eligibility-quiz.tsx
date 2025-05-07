@@ -8,7 +8,7 @@ import ResumeUploadStep from "./steps/resume-upload-step"
 import CategoryStep from "./steps/category-step"
 import QuestionsStep from "./steps/questions-step"
 import ResultsStep from "./steps/results-step"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription } from "@/components/ui/dialog"
 import { X } from "lucide-react"
 
 export type FormData = {
@@ -97,7 +97,7 @@ export default function EligibilityQuiz({ open, onClose }: { open: boolean; onCl
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto" aria-describedby="quiz-description">
         <div className="relative py-2">
           <div className="flex justify-end mb-2">
             <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 p-0">
@@ -105,6 +105,9 @@ export default function EligibilityQuiz({ open, onClose }: { open: boolean; onCl
               <span className="sr-only">Close</span>
             </Button>
           </div>
+          <DialogDescription id="quiz-description" className="sr-only">
+            EB-1 Visa eligibility assessment quiz. Complete the steps to evaluate your qualification for an EB-1 visa.
+          </DialogDescription>
 
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
