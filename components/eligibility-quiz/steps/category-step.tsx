@@ -22,26 +22,6 @@ export default function CategoryStep({
     updateFormData({ category })
   }
 
-  // Helper to suggest a category based on resume data
-  const suggestedCategory = () => {
-    if (!formData.parsedResumeData) return null
-
-    const { publications, awards, leadership, patents, experience } = formData.parsedResumeData
-
-    // Simple logic to suggest a category
-    if (publications > 5 || awards > 2 || patents > 0) {
-      return "EB-1A" // Extraordinary Ability
-    } else if (publications > 2) {
-      return "EB-1B" // Outstanding Professor/Researcher
-    } else if (leadership && experience > 7) {
-      return "EB-1C" // Multinational Manager/Executive
-    }
-
-    return null
-  }
-
-  const suggested = suggestedCategory()
-
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
@@ -49,14 +29,15 @@ export default function CategoryStep({
         <p className="text-gray-600">Choose the EB-1 visa category that best matches your qualifications</p>
       </div>
 
-      {suggested && (
+      {formData.suggestedCategory && (
         <div className="bg-indigo-50 p-4 rounded-lg mb-6">
           <p className="text-sm text-indigo-800">
             <span className="font-medium">Based on your resume, we suggest exploring: </span>
-            {suggested === "EB-1A" && "EB-1A (Extraordinary Ability)"}
-            {suggested === "EB-1B" && "EB-1B (Outstanding Professor/Researcher)"}
-            {suggested === "EB-1C" && "EB-1C (Multinational Manager/Executive)"}
+            {formData.suggestedCategory === "EB-1A" && "EB-1A (Extraordinary Ability)"}
+            {formData.suggestedCategory === "EB-1B" && "EB-1B (Outstanding Professor/Researcher)"}
+            {formData.suggestedCategory === "EB-1C" && "EB-1C (Multinational Manager/Executive)"}
           </p>
+          {formData.categoryRationale && <p className="text-sm text-indigo-700 mt-2">{formData.categoryRationale}</p>}
         </div>
       )}
 

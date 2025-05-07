@@ -38,9 +38,6 @@ export default function Home() {
               FAQ
             </SmoothScrollLink>
           </div>
-          <Button variant="outline" className="hidden md:flex border-purple-700 text-purple-700 hover:bg-purple-50">
-            Log In
-          </Button>
         </div>
       </nav>
       {/* Hero Section */}
@@ -55,13 +52,27 @@ export default function Home() {
               Complete your petition in 2–3 weeks using AI-powered guidance, expert feedback, and attorney-grade
               formatting. No law firm required.
             </p>
-            <Button
-              size="lg"
-              className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-lg px-8 py-6 rounded-lg"
-            >
-              Start Building My Petition
-              <ChevronRight className="ml-2 h-5 w-5" />
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <EligibilityQuizController>
+                <Button
+                  size="lg"
+                  className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-lg px-8 py-6 rounded-lg"
+                >
+                  Take Eligibility Quiz
+                  <ChevronRight className="ml-2 h-5 w-5" />
+                </Button>
+              </EligibilityQuizController>
+
+              <Button
+                size="lg"
+                className="bg-purple-700 hover:bg-purple-800 text-white font-semibold text-lg px-8 py-6 rounded-lg"
+                asChild
+              >
+                <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
+                  Join Our Beta
+                </a>
+              </Button>
+            </div>
           </div>
           <div className="md:w-1/2 relative">
             <div className="relative rounded-xl overflow-hidden shadow-2xl">
@@ -541,7 +552,11 @@ export default function Home() {
                 </li>
               </ul>
 
-              <Button className="w-full bg-gray-900 hover:bg-gray-800">Get Started</Button>
+              <Button className="w-full bg-gray-900 hover:bg-gray-800" asChild>
+                <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
+                  Get Started
+                </a>
+              </Button>
             </div>
 
             {/* Pro Plan */}
@@ -599,7 +614,11 @@ export default function Home() {
                 </li>
               </ul>
 
-              <Button className="w-full bg-purple-700 hover:bg-purple-800">Get Started</Button>
+              <Button className="w-full bg-purple-700 hover:bg-purple-800" asChild>
+                <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
+                  Get Started
+                </a>
+              </Button>
             </div>
 
             {/* Pro Max Plan */}
@@ -647,7 +666,11 @@ export default function Home() {
                 </li>
               </ul>
 
-              <Button className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold">Get Started</Button>
+              <Button className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold" asChild>
+                <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
+                  Get Started
+                </a>
+              </Button>
             </div>
           </div>
         </div>
@@ -831,9 +854,11 @@ export default function Home() {
             <Button
               size="lg"
               className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-lg px-8 py-6 rounded-lg"
+              asChild
             >
-              Start for $299
-              <ChevronRight className="ml-2 h-5 w-5" />
+              <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
+                Join Our Beta
+              </a>
             </Button>
 
             <EligibilityQuizController>

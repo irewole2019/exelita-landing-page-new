@@ -20,6 +20,8 @@ export type FormData = {
     patents: number
     experience: number
   } | null
+  suggestedCategory: "EB-1A" | "EB-1B" | "EB-1C" | null
+  categoryRationale: string | null
   category: "EB-1A" | "EB-1B" | "EB-1C" | null
   responses: {
     [key: string]: any
@@ -31,6 +33,8 @@ export default function EligibilityQuiz({ open, onClose }: { open: boolean; onCl
   const [formData, setFormData] = useState<FormData>({
     resume: null,
     parsedResumeData: null,
+    suggestedCategory: null,
+    categoryRationale: null,
     category: null,
     responses: {},
   })
@@ -61,6 +65,8 @@ export default function EligibilityQuiz({ open, onClose }: { open: boolean; onCl
     setFormData({
       resume: null,
       parsedResumeData: null,
+      suggestedCategory: null,
+      categoryRationale: null,
       category: null,
       responses: {},
     })
