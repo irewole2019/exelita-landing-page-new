@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   description:
     "Build a winning EB-1 petition with AI. Complete your petition in 2-3 weeks using AI-powered guidance, expert feedback, and attorney-grade formatting.",
   generator: "v0.dev",
+  icons: {
+    icon: "/images/exelita-logo.png",
+  },
 }
 
 export default function RootLayout({
