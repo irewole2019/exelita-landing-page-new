@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import type { FormData } from "../eligibility-quiz"
-import { CheckCircle2, XCircle, AlertCircle, FileText, Users } from "lucide-react"
+import { CheckCircle2, XCircle, AlertCircle, FileText } from "lucide-react"
 
 // Update the EligibilityResult type to match the new response format
 type EligibilityResult = {
@@ -113,6 +113,14 @@ export default function ResultsStep({
     }
   }
 
+  // Handle closing the quiz and clearing the session
+  const handleClose = () => {
+    // Reset the form data
+    onReset()
+    // Close the quiz
+    onClose()
+  }
+
   if (isCalculating) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -149,7 +157,7 @@ export default function ResultsStep({
           <Button variant="outline" onClick={onReset}>
             Try Again
           </Button>
-          <Button onClick={onClose} className="bg-purple-700 hover:bg-purple-800">
+          <Button onClick={handleClose} className="bg-purple-700 hover:bg-purple-800">
             Close
           </Button>
         </div>
@@ -169,7 +177,7 @@ export default function ResultsStep({
           <Button variant="outline" onClick={onReset}>
             Restart Assessment
           </Button>
-          <Button onClick={onClose} className="bg-purple-700 hover:bg-purple-800">
+          <Button onClick={handleClose} className="bg-purple-700 hover:bg-purple-800">
             Close
           </Button>
         </div>
@@ -298,33 +306,20 @@ export default function ResultsStep({
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Recommended Next Steps</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <Card className="p-5 hover:shadow-md transition-shadow">
             <div className="flex flex-col h-full">
               <div className="flex items-center mb-3">
                 <FileText className="h-5 w-5 text-purple-600 mr-2" />
-                <h4 className="font-medium">Start Your Petition</h4>
+                <h4 className="font-medium">Join Our Beta</h4>
               </div>
               <p className="text-sm text-gray-600 mb-4 flex-grow">
-                Begin drafting your EB-1 petition with AI-powered guidance and templates.
+                Get early access to our AI-powered EB-1 petition builder and be among the first to try our platform.
               </p>
-              <Button className="w-full bg-purple-700 hover:bg-purple-800" onClick={onClose}>
-                Start for $299
-              </Button>
-            </div>
-          </Card>
-
-          <Card className="p-5 hover:shadow-md transition-shadow">
-            <div className="flex flex-col h-full">
-              <div className="flex items-center mb-3">
-                <Users className="h-5 w-5 text-purple-600 mr-2" />
-                <h4 className="font-medium">Expert Review</h4>
-              </div>
-              <p className="text-sm text-gray-600 mb-4 flex-grow">
-                Schedule a consultation with an immigration specialist to review your case.
-              </p>
-              <Button variant="outline" className="w-full border-purple-700 text-purple-700 hover:bg-purple-50">
-                Schedule Call
+              <Button className="w-full bg-purple-700 hover:bg-purple-800" asChild>
+                <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
+                  Join Our Beta
+                </a>
               </Button>
             </div>
           </Card>
@@ -336,7 +331,7 @@ export default function ResultsStep({
           Restart Assessment
         </Button>
 
-        <Button onClick={onClose} className="bg-purple-700 hover:bg-purple-800">
+        <Button onClick={handleClose} className="bg-purple-700 hover:bg-purple-800">
           Close and Return to Site
         </Button>
       </div>

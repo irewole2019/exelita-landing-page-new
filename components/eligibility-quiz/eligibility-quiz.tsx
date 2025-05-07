@@ -72,6 +72,12 @@ export default function EligibilityQuiz({ open, onClose }: { open: boolean; onCl
     })
   }
 
+  // Handle dialog close - reset the quiz state
+  const handleClose = () => {
+    resetQuiz()
+    onClose()
+  }
+
   const steps = [
     { name: "Introduction", component: <IntroStep onNext={nextStep} /> },
     {
@@ -92,15 +98,15 @@ export default function EligibilityQuiz({ open, onClose }: { open: boolean; onCl
         <QuestionsStep formData={formData} updateFormData={updateFormData} onNext={nextStep} onPrev={prevStep} />
       ),
     },
-    { name: "Results", component: <ResultsStep formData={formData} onReset={resetQuiz} onClose={onClose} /> },
+    { name: "Results", component: <ResultsStep formData={formData} onReset={resetQuiz} onClose={handleClose} /> },
   ]
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto" aria-describedby="quiz-description">
         <div className="relative py-2">
           <div className="flex justify-end mb-2">
-            <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 p-0">
+            <Button variant="ghost" size="icon" onClick={handleClose} className="h-8 w-8 p-0">
               <X className="h-4 w-4" />
               <span className="sr-only">Close</span>
             </Button>
