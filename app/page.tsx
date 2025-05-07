@@ -19,13 +19,15 @@ import SmoothScrollLink from "@/components/smooth-scroll-link"
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center">
+    <main id="top" className="flex min-h-screen flex-col items-center">
       {/* Navigation */}
       <nav className="w-full py-4 bg-white/90 backdrop-blur-sm fixed top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center">
-            <Image src="/images/exelita-logo.png" alt="Exelita" width={40} height={40} className="mr-2" />
-            <span className="font-bold text-xl text-indigo-950">Exelita</span>
+            <SmoothScrollLink href="#top" className="flex items-center">
+              <Image src="/images/exelita-logo.png" alt="Exelita" width={40} height={40} className="mr-2" />
+              <span className="font-bold text-xl text-indigo-950">Exelita</span>
+            </SmoothScrollLink>
           </div>
           <div className="hidden md:flex space-x-8">
             <SmoothScrollLink href="#features" className="text-gray-700 hover:text-purple-700">
