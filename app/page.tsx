@@ -1,19 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import {
-  CheckCircle,
-  CheckCircle2,
-  ChevronRight,
-  Clock,
-  FileCheck,
-  MessageSquare,
-  Shield,
-  Star,
-  Users,
-  Menu,
-  X,
-} from "lucide-react"
+import { CheckCircle2, ChevronRight, Clock, FileCheck, MessageSquare, Shield, Users, Menu, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import EligibilityQuizController from "@/components/eligibility-quiz-controller"
@@ -139,28 +127,6 @@ export default function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-indigo-950/60 to-transparent"></div>
             </div>
-            <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 bg-white text-black p-3 md:p-4 rounded-lg shadow-xl">
-              <div className="flex items-center">
-                <div className="bg-green-500 rounded-full p-1 mr-2">
-                  <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                </div>
-                <span className="font-semibold text-sm md:text-base">97% Success Rate</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trusted By Section - Improved Mobile */}
-      <section className="w-full bg-gray-50 py-6 md:py-8">
-        <div className="container mx-auto px-4">
-          <p className="text-center text-gray-500 mb-4 md:mb-6 text-sm md:text-base">Trusted by professionals from</p>
-          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 lg:gap-16">
-            {["Google", "Microsoft", "Stanford", "MIT", "Harvard"].map((company) => (
-              <div key={company} className="text-gray-400 font-semibold text-sm md:text-lg">
-                {company}
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -421,7 +387,8 @@ export default function Home() {
               {
                 icon: "M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z",
                 title: "Expert Feedback",
-                description: "Get professional review of your petition from successful self-petitioners and immigration specialists.",
+                description:
+                  "Get professional review of your petition from successful self-petitioners and immigration specialists.",
               },
               {
                 icon: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3",
@@ -611,63 +578,6 @@ export default function Home() {
                 </a>
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section - Improved Mobile */}
-      <section className="w-full py-16 md:py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-12 md:mb-16">Success Stories</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {[
-              {
-                name: "Dr. Sarah Chen",
-                role: "Research Scientist",
-                image: "/images/testimonial-1.jpeg",
-                text: "Approved in just 22 days! Exelita made the process so straightforward. The AI guidance helped me highlight achievements I wouldn't have thought to include.",
-              },
-              {
-                name: "Michael Rodriguez",
-                role: "Tech Founder",
-                image: "/images/testimonial-2.jpeg",
-                text: "Saved me over $10,000 in legal fees. The recommender letter generator was a game-changer—my references loved how easy it was to review and sign.",
-              },
-              {
-                name: "Dr. Priya Sharma",
-                role: "Professor",
-                image: "/images/testimonial-3.jpeg",
-                text: "I was skeptical about using AI for something so important, but the expert review gave me confidence. Completed my petition in just 18 days and got approved!",
-              },
-            ].map((testimonial, index) => (
-              <div key={index} className="bg-white p-6 md:p-8 rounded-xl shadow-md">
-                <div className="flex items-center mb-4 md:mb-6">
-                  <div className="mr-3 md:mr-4">
-                    <Image
-                      src={testimonial.image || "/placeholder.svg"}
-                      alt={testimonial.name}
-                      width={60}
-                      height={60}
-                      className="rounded-full object-cover h-15 w-15 md:h-20 md:w-20"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-sm md:text-base">{testimonial.name}</h3>
-                    <p className="text-gray-500 text-xs md:text-sm">{testimonial.role}</p>
-                  </div>
-                </div>
-                <div className="flex mb-3 md:mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-amber-500" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-3 md:mb-4 text-sm md:text-base">{testimonial.text}</p>
-                <div className="bg-green-100 text-green-800 px-2 md:px-3 py-1 rounded-full inline-block text-xs md:text-sm font-medium">
-                  Approved ✓
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
