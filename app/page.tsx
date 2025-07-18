@@ -301,10 +301,10 @@ export default function Home() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg md:text-xl font-semibold mb-2">Recommender Letter Generation</h3>
+                    <h3 className="text-lg md:text-xl font-semibold mb-2">Recommender Portal</h3>
                     <p className="text-gray-600 text-sm md:text-base">
-                      AI-powered tools help create compelling recommendation letters that your references can easily
-                      review and sign.
+                      Your recommenders can input their information directly through our portal, and we'll help them
+                      craft compelling recommendation letters optimized for your petition.
                     </p>
                   </div>
                 </div>
@@ -316,10 +316,10 @@ export default function Home() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg md:text-xl font-semibold mb-2">Real-Time AI Feedback</h3>
+                    <h3 className="text-lg md:text-xl font-semibold mb-2">Structured Guidance</h3>
                     <p className="text-gray-600 text-sm md:text-base">
-                      Get instant suggestions to strengthen your petition as you write, highlighting areas that need
-                      improvement.
+                      Step-by-step guidance through each section of your petition, ensuring you address all USCIS
+                      requirements comprehensively.
                     </p>
                   </div>
                 </div>
@@ -370,9 +370,10 @@ export default function Home() {
                 description: "Step-by-step prompts tailored to your specific achievements and USCIS criteria.",
               },
               {
-                icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
-                title: "Recommender Letter Generator",
-                description: "Create compelling letters that your references can easily review, edit, and sign.",
+                icon: "M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z",
+                title: "Recommender Portal",
+                description:
+                  "Your recommenders input their information directly, and we help them create compelling letters.",
               },
               {
                 icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
@@ -442,7 +443,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm md:text-base">Recommender letter generator</span>
+                  <span className="text-sm md:text-base">Recommender portal</span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -492,7 +493,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm md:text-base">Recommender letter generator</span>
+                  <span className="text-sm md:text-base">Recommender portal</span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -511,7 +512,7 @@ export default function Home() {
                 <li className="flex items-start">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                   <span className="text-sm md:text-base">
-                    <strong>3 signed recommendation letters</strong>
+                    <strong>3 recommendation letters</strong>
                   </span>
                 </li>
                 <li className="flex items-start text-gray-400">
@@ -542,7 +543,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm md:text-base">Recommender letter generator</span>
+                  <span className="text-sm md:text-base">Recommender portal</span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -561,7 +562,7 @@ export default function Home() {
                 <li className="flex items-start">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                   <span className="text-sm md:text-base">
-                    <strong>5 signed recommendation letters</strong>
+                    <strong>5 recommendation letters</strong>
                   </span>
                 </li>
                 <li className="flex items-start">
@@ -597,9 +598,9 @@ export default function Home() {
                   "No, Exelita is not a substitute for legal advice. We provide tools and guidance to help you prepare your own EB-1 petition. For those who want legal oversight, our Pro Max plan includes attorney review to ensure your petition is legally sound.",
               },
               {
-                question: "Can my recommenders write letters on the platform?",
+                question: "How does the recommender portal work?",
                 answer:
-                  "Yes! You can invite your recommenders to the platform where they can review AI-generated drafts based on your achievements, make edits, and digitally sign their letters. This makes the process much easier for busy professionals.",
+                  "You'll invite your recommenders to our secure portal where they can input their information and qualifications. Our AI helps them structure their input into compelling recommendation letters that highlight your achievements effectively. They can review, edit, and digitally sign their letters.",
               },
               {
                 question: "What if I don't qualify for EB-1?",
@@ -655,7 +656,7 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-amber-500 text-amber-500 hover:bg-amber-500/10 text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto"
+                className="border-2 border-amber-500 text-amber-500 hover:bg-amber-500/10 text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto bg-transparent"
               >
                 Take Eligibility Quiz
               </Button>
