@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import type { FormData } from "../eligibility-quiz"
 import { extractTextFromDocument } from "@/utils/document-extractor"
+import { trackResumeUpload } from "@/lib/analytics"
 
 // Define the resume analysis result type
 type ResumeAnalysisResult = {
@@ -104,7 +105,7 @@ International Association for Quantum Information (IAQI)
   }
 
   return (
-    <Button variant="outline" size="sm" onClick={downloadSampleResume} className="flex items-center">
+    <Button variant="outline" size="sm" onClick={downloadSampleResume} className="flex items-center bg-transparent">
       <FileDown className="h-4 w-4 mr-1" />
       Download Sample Resume
     </Button>
@@ -380,6 +381,9 @@ export default function ResumeUploadStep({
       setResumeText(result.text)
       setDebugInfo(result.debugInfo || "")
       setIsPlaceholderText(result.isPlaceholder)
+
+      // Track successful resume upload
+      trackResumeUpload()
     } catch (err) {
       console.error("Failed to process file:", err)
       setError(err instanceof Error ? err.message : "Failed to process file")

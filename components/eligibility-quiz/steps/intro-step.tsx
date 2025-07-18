@@ -2,8 +2,14 @@
 
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
+import { trackQuizStart } from "@/lib/analytics"
 
 export default function IntroStep({ onNext }: { onNext: () => void }) {
+  const handleStartQuiz = () => {
+    trackQuizStart()
+    onNext()
+  }
+
   return (
     <div className="text-center space-y-6">
       <h1 className="text-3xl font-bold text-gray-900">Find Out If You Qualify for an EB-1 Visa</h1>
@@ -43,7 +49,7 @@ export default function IntroStep({ onNext }: { onNext: () => void }) {
       </div>
 
       <div className="pt-4">
-        <Button onClick={onNext} size="lg" className="bg-purple-700 hover:bg-purple-800 text-white px-8">
+        <Button onClick={handleStartQuiz} size="lg" className="bg-purple-700 hover:bg-purple-800 text-white px-8">
           Start My Assessment
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import type { FormData } from "../eligibility-quiz"
 import { CheckCircle2, XCircle, AlertCircle, FileText } from "lucide-react"
+import { trackQuizComplete } from "@/lib/analytics"
 
 // Update the EligibilityResult type to match the new response format
 type EligibilityResult = {
@@ -69,6 +70,11 @@ export default function ResultsStep({
 
         const data = await response.json()
         setResult(data)
+
+        // Track quiz completion
+        if (data.score && data.category) {
+          trackQuizComplete(data.score, data.category)
+        }
       } catch (err) {
         console.error("Error evaluating eligibility:", err)
         setError("Failed to evaluate eligibility. Please try again later.")

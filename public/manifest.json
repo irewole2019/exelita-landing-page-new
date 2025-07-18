@@ -1,0 +1,21 @@
+{
+  "name": "Exelita - AI-Powered EB-1 Visa Petition Builder",
+  "short_name": "Exelita",
+  "description": "Build winning EB-1 visa petitions with AI guidance. Complete your extraordinary ability, outstanding researcher, or multinational executive petition in 2-3 weeks.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "/images/exelita-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/exelita-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
