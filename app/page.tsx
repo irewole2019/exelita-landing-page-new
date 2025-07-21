@@ -92,6 +92,16 @@ export default function Home() {
         )}
       </nav>
 
+      {/* Sticky Mobile CTA */}
+      <div className="md:hidden fixed bottom-4 left-4 right-4 z-40">
+        <EligibilityQuizController>
+          <Button className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-4 rounded-lg shadow-lg">
+            Take Free Eligibility Quiz
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        </EligibilityQuizController>
+      </div>
+
       {/* Hero Section - SEO Optimized */}
       <section className="w-full bg-gradient-to-r from-indigo-950 to-purple-900 text-white">
         <div className="container mx-auto px-4 pt-20 pb-16 md:pt-28 md:pb-20 lg:pt-40 lg:pb-32 flex flex-col md:flex-row items-center">
@@ -171,7 +181,33 @@ export default function Home() {
                 <div>
                   <h3 className="text-lg md:text-xl font-semibold mb-2">Complex USCIS Criteria</h3>
                   <p className="text-gray-600 text-sm md:text-base">
-                    Understanding "extraordinary ability," "outstanding researcher," and "multinational executive"
+                    Understanding{" "}
+                    <a
+                      href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-2"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-700 hover:underline"
+                    >
+                      "extraordinary ability"
+                    </a>
+                    ,{" "}
+                    <a
+                      href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-3"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-700 hover:underline"
+                    >
+                      "outstanding researcher"
+                    </a>
+                    , and{" "}
+                    <a
+                      href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-4"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-700 hover:underline"
+                    >
+                      "multinational executive"
+                    </a>{" "}
                     requirements is confusing and subjective.
                   </p>
                 </div>
@@ -540,44 +576,34 @@ export default function Home() {
           <div className="max-w-3xl mx-auto space-y-6 md:space-y-8">
             {[
               {
-                question: "Is Exelita a replacement for an immigration lawyer?",
+                question: "Is this a lawyer replacement?",
                 answer:
-                  "No, Exelita is not a substitute for legal advice. We provide AI-powered tools and guidance to help you prepare your own EB-1 petition. For those who want legal oversight, our Pro Max plan includes licensed attorney review to ensure your petition meets all legal requirements and USCIS standards.",
+                  "No, Exelita is not a substitute for legal advice. We provide tools and guidance to help you prepare your own EB-1 petition. For those who want legal oversight, our Pro Max plan includes attorney review to ensure your petition is legally sound.",
               },
               {
-                question: "How does the AI-powered recommender portal work?",
+                question: "How does the recommender portal work?",
                 answer:
-                  "You'll invite your recommenders (colleagues, supervisors, clients) to our secure portal where they input their credentials, relationship details, and knowledge of your work. Our AI helps structure their input into compelling recommendation letters that effectively highlight your achievements and meet USCIS requirements. They can review, edit, and digitally sign their letters.",
+                  "You'll invite your recommenders to our secure portal where they can input their information and qualifications. Our AI helps them structure their input into compelling recommendation letters that highlight your achievements effectively.",
               },
               {
-                question: "What if I don't qualify for any EB-1 category?",
+                question: "How long does the process take?",
                 answer:
-                  "We offer a free eligibility assessment before you purchase any plan. If our AI analysis indicates you may not qualify for EB-1A (extraordinary ability), EB-1B (outstanding researcher), or EB-1C (multinational executive), we'll suggest alternative visa categories like EB-2 NIW that might be more suitable for your background.",
+                  "Most users complete their petitions in 2-3 weeks using our platform. This is significantly faster than the typical 3-6 months it takes when working with traditional law firms.",
               },
               {
-                question: "How long does it take to complete an EB-1 petition with Exelita?",
+                question: "What EB-1 categories do you support?",
                 answer:
-                  "Most users complete their petitions in 2-3 weeks using our platform. This is significantly faster than the typical 3-6 months it takes when working with traditional immigration law firms or attempting to self-petition without guidance. Our AI streamlines the process while ensuring thoroughness.",
+                  "We support all three EB-1 categories: EB-1A (Extraordinary Ability), EB-1B (Outstanding Professor/Researcher), and EB-1C (Multinational Manager/Executive). Our AI tailors the petition to your specific category and qualifications.",
               },
               {
-                question: "What's included in the expert review service?",
+                question: "How does the AI analysis work?",
                 answer:
-                  "Our expert reviewers are successful EB-1 self-petitioners and immigration specialists who will analyze your petition for completeness, persuasiveness, and alignment with current USCIS expectations. They provide detailed feedback on strengthening your evidence, improving your narrative, and addressing potential weaknesses before submission.",
+                  "Our AI uses OpenAI's GPT-4 model to analyze your resume and qualifications against USCIS criteria. It identifies your strengths, suggests the best EB-1 category, and provides personalized guidance for building your petition.",
               },
               {
-                question: "Do you offer refunds if I'm not satisfied?",
+                question: "Do you offer refunds?",
                 answer:
                   "Yes, we offer a 7-day satisfaction guarantee. If you're not happy with our platform within the first week of purchase, we'll provide a full refund, no questions asked.",
-              },
-              {
-                question: "Can Exelita help with all three EB-1 categories?",
-                answer:
-                  "Yes, our platform supports EB-1A (extraordinary ability in sciences, arts, education, business, or athletics), EB-1B (outstanding professors and researchers), and EB-1C (multinational managers and executives). Our AI tailors the petition structure and requirements to your specific category.",
-              },
-              {
-                question: "What makes Exelita different from generic petition templates?",
-                answer:
-                  "Unlike static templates, Exelita uses AI to personalize every aspect of your petition based on your specific achievements, field, and EB-1 category. Our platform adapts the language, evidence presentation, and legal arguments to maximize your chances of approval while ensuring USCIS compliance.",
               },
             ].map((faq, index) => (
               <div key={index} className="bg-white rounded-lg p-6 shadow-sm">
@@ -681,19 +707,34 @@ export default function Home() {
               <h3 className="text-white font-semibold mb-3 md:mb-4 text-sm md:text-base">EB-1 Categories</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="#" className="hover:text-white transition-colors text-sm md:text-base">
+                  <a
+                    href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors text-sm md:text-base"
+                  >
                     EB-1A Extraordinary Ability
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-white transition-colors text-sm md:text-base">
+                  <a
+                    href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-3"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors text-sm md:text-base"
+                  >
                     EB-1B Outstanding Researcher
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-white transition-colors text-sm md:text-base">
+                  <a
+                    href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-4"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors text-sm md:text-base"
+                  >
                     EB-1C Multinational Executive
-                  </Link>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -724,10 +765,10 @@ export default function Home() {
               <ul className="space-y-2">
                 <li>
                   <a
-                    href="mailto:exelitaai@gmail.com"
+                    href="mailto:irewole@exelita.com"
                     className="hover:text-white transition-colors text-sm md:text-base"
                   >
-                    exelitaai@gmail.com
+                    irewole@exelita.com
                   </a>
                 </li>
                 <li>

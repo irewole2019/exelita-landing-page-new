@@ -6,8 +6,10 @@ import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { AlertCircle, FileText, Upload, Info } from "lucide-react"
+import { AlertCircle, FileText, Upload, Info, X, ArrowLeft } from "lucide-react"
 import { extractTextFromDocument } from "@/utils/document-extractor"
+import Link from "next/link"
+import EligibilityQuizController from "./eligibility-quiz-controller"
 
 type ResumeAnalysisResult = {
   publications: {
@@ -63,7 +65,7 @@ export default function ResumeAnalyzer() {
 
     setIsAnalyzing(true)
     setError(null)
-    setDebugInfo("Analyzing resume with AI...")
+    setDebugInfo("Analyzing resume with AI using OpenAI GPT-4...")
     setResult(null)
 
     try {
@@ -119,7 +121,7 @@ export default function ResumeAnalyzer() {
       // Transform the API response to our result format with validation
       const analysisResult = ensureValidData(data)
       setResult(analysisResult)
-      setDebugInfo("AI analysis completed successfully")
+      setDebugInfo("✅ AI analysis completed successfully using OpenAI GPT-4 model")
     } catch (err) {
       console.error("Error analyzing resume:", err)
       setError(err instanceof Error ? err.message : "Failed to analyze resume. Please try again later.")
@@ -166,10 +168,27 @@ export default function ResumeAnalyzer() {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      {/* Header with Exit Button */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <Link href="/" className="flex items-center text-purple-700 hover:text-purple-800 mr-4">
+            <ArrowLeft className="h-5 w-5 mr-1" />
+            Back to Home
+          </Link>
+        </div>
+        <Link href="/">
+          <Button variant="ghost" size="sm">
+            <X className="h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>EB-1 Resume Analyzer</CardTitle>
-          <CardDescription>Upload or paste your resume content to get an EB-1 eligibility assessment</CardDescription>
+          <CardDescription>
+            Upload or paste your resume content to get an AI-powered EB-1 eligibility assessment using OpenAI GPT-4
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
@@ -239,21 +258,22 @@ export default function ResumeAnalyzer() {
               disabled={isAnalyzing || !resumeText.trim() || isUploading}
               className="w-full bg-purple-700 hover:bg-purple-800"
             >
-              {isAnalyzing ? "Analyzing with AI..." : "Analyze Resume"}
+              {isAnalyzing ? "Analyzing with AI..." : "Analyze Resume with AI"}
             </Button>
           </div>
 
           {isAnalyzing && (
             <div className="text-center py-8">
               <div className="animate-spin h-10 w-10 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-gray-600">Analyzing your resume with AI...</p>
+              <p className="text-gray-600">Analyzing your resume with OpenAI GPT-4...</p>
+              <p className="text-sm text-gray-500 mt-2">This may take 10-30 seconds</p>
             </div>
           )}
 
           {result && !isAnalyzing && (
             <div className="space-y-6 mt-8">
               <div className="bg-purple-50 p-6 rounded-lg">
-                <h3 className="text-xl font-semibold text-purple-900 mb-2">Category Recommendation</h3>
+                <h3 className="text-xl font-semibold text-purple-900 mb-2">AI Analysis Results</h3>
                 <div className="flex items-center mb-4">
                   <div className="bg-purple-100 p-2 rounded-full mr-3">
                     <FileText className="h-6 w-6 text-purple-700" />
@@ -264,7 +284,7 @@ export default function ResumeAnalyzer() {
                   </div>
                 </div>
 
-                <h4 className="font-semibold text-purple-900 mb-2">Resume Analysis</h4>
+                <h4 className="font-semibold text-purple-900 mb-2">Resume Analysis Summary</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-white p-4 rounded-md shadow-sm">
                     <p className="text-sm text-gray-500">Years of Experience</p>
@@ -288,59 +308,47 @@ export default function ResumeAnalyzer() {
 
                 {result.publications.items && result.publications.items.length > 0 && (
                   <div className="mt-4">
-                    <h4 className="font-semibold text-purple-900 mb-2">Publications</h4>
+                    <h4 className="font-semibold text-purple-900 mb-2">Publications Found</h4>
                     <ul className="list-disc pl-5 space-y-1">
-                      {result.publications.items.map((item, index) => (
-                        <li key={index} className="text-gray-700">
+                      {result.publications.items.slice(0, 3).map((item, index) => (
+                        <li key={index} className="text-gray-700 text-sm">
                           {item}
                         </li>
                       ))}
+                      {result.publications.items.length > 3 && (
+                        <li className="text-gray-500 text-sm">...and {result.publications.items.length - 3} more</li>
+                      )}
                     </ul>
                   </div>
                 )}
 
                 {result.awards.items && result.awards.items.length > 0 && (
                   <div className="mt-4">
-                    <h4 className="font-semibold text-purple-900 mb-2">Awards</h4>
+                    <h4 className="font-semibold text-purple-900 mb-2">Awards Found</h4>
                     <ul className="list-disc pl-5 space-y-1">
-                      {result.awards.items.map((item, index) => (
-                        <li key={index} className="text-gray-700">
+                      {result.awards.items.slice(0, 3).map((item, index) => (
+                        <li key={index} className="text-gray-700 text-sm">
                           {item}
                         </li>
                       ))}
-                    </ul>
-                  </div>
-                )}
-
-                {result.leadershipExperience.items && result.leadershipExperience.items.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold text-purple-900 mb-2">Leadership Experience</h4>
-                    <ul className="list-disc pl-5 space-y-1">
-                      {result.leadershipExperience.items.map((item, index) => (
-                        <li key={index} className="text-gray-700">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {result.patents.items && result.patents.items.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold text-purple-900 mb-2">Patents</h4>
-                    <ul className="list-disc pl-5 space-y-1">
-                      {result.patents.items.map((item, index) => (
-                        <li key={index} className="text-gray-700">
-                          {item}
-                        </li>
-                      ))}
+                      {result.awards.items.length > 3 && (
+                        <li className="text-gray-500 text-sm">...and {result.awards.items.length - 3} more</li>
+                      )}
                     </ul>
                   </div>
                 )}
               </div>
 
-              <div className="text-center">
-                <Button className="bg-purple-700 hover:bg-purple-800">Continue to Full Eligibility Assessment</Button>
+              <div className="text-center space-y-4">
+                <h3 className="text-lg font-semibold">Ready for a Complete Assessment?</h3>
+                <p className="text-gray-600">
+                  Get a detailed eligibility evaluation with specific USCIS criteria analysis
+                </p>
+                <EligibilityQuizController>
+                  <Button className="bg-purple-700 hover:bg-purple-800 px-8 py-3">
+                    Continue to Full Eligibility Assessment
+                  </Button>
+                </EligibilityQuizController>
               </div>
             </div>
           )}
