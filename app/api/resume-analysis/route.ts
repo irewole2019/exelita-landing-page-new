@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
 import { openai } from "@ai-sdk/openai"
-import { extractTextFromPdf } from "pdf-text-extractor" // Hypothetical import for PDF text extraction
 
 export const runtime = "nodejs"
 
@@ -17,13 +16,14 @@ export async function POST(request: NextRequest) {
     // Extract text from the PDF/DOCX file
     let resumeText = ""
     if (file.type === "application/pdf") {
-      resumeText = await extractTextFromPdf(file)
+      // For now, return a placeholder since pdf-text-extractor doesn't exist
+      resumeText = `Resume file: ${file.name}\nThis is placeholder text for PDF content extraction.`
     } else if (
       file.type === "application/msword" ||
       file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
-      // Implement DOCX text extraction here if needed
-      resumeText = "Placeholder for DOCX text extraction"
+      // Placeholder for DOCX text extraction
+      resumeText = `Resume file: ${file.name}\nThis is placeholder text for DOCX content extraction.`
     } else {
       return NextResponse.json({ error: "Unsupported file type" }, { status: 400 })
     }
