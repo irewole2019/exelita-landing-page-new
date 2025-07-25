@@ -1,21 +1,10 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import {
-  ChevronLeft,
-  ChevronRight,
-  Upload,
-  CheckCircle,
-  Trash2,
-  AlertCircle,
-  FileText,
-  Info,
-  FileDown,
-} from "lucide-react"
+import { Upload, FileText, ChevronLeft, ChevronRight, AlertCircle, CheckCircle, Trash2, FileDown } from "lucide-react"
 import type { FormData } from "../eligibility-quiz"
 import { extractTextFromDocument } from "@/utils/document-extractor"
 import { trackResumeUpload } from "@/lib/analytics"
@@ -220,239 +209,55 @@ export default function ResumeUploadStep({
 }: {
   formData: FormData
   updateFormData: (data: Partial<FormData>) => void
-  onNext: () => void
+  onNext: (resumeText?: string) => void
   onPrev: () => void
 }) {
-  const [isUploading, setIsUploading] = useState(false)
-  const [isParsing, setIsParsing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [debugInfo, setDebugInfo] = useState<string | null>(null)
-  const [resumeText, setResumeText] = useState<string | null>(null)
-  const [isPlaceholderText, setIsPlaceholderText] = useState(false)
-  const [extractionProgress, setExtractionProgress] = useState<string | null>(null)
-  const [useAiFallback, setUseAiFallback] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [resumeText, setResumeText] = useState<string>("")
+  const [error, setError] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Function to analyze the resume text using OpenAI
-  const analyzeWithOpenAI = async () => {
-    if (!resumeText || resumeText.trim() === "") {
-      setError("Please enter resume text")
-      return
-    }
-
-    setIsParsing(true)
-    setError(null)
-    setDebugInfo("Analyzing resume with AI...")
-
-    try {
-      if (useAiFallback) {
-        // Use fallback analysis if AI failed previously
-        const fallbackAnalysis = generateFallbackAnalysis(resumeText)
-
-        updateFormData({
-          parsedResumeData: {
-            publications: fallbackAnalysis.publications,
-            awards: fallbackAnalysis.awards,
-            leadership: fallbackAnalysis.leadership,
-            patents: fallbackAnalysis.patents,
-            experience: fallbackAnalysis.experience,
-          },
-          suggestedCategory: fallbackAnalysis.category,
-          categoryRationale: fallbackAnalysis.rationale,
-        })
-
-        setDebugInfo(
-          `Fallback analysis completed. Found: ${fallbackAnalysis.publications} publications, ${fallbackAnalysis.awards} awards, ${fallbackAnalysis.patents} patents, ${fallbackAnalysis.experience} years experience.`,
-        )
-        return
-      }
-
-      // Call our OpenAI-powered API endpoint
-      const response = await fetch("/api/resume-analysis-ai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          resumeText,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`)
-      }
-
-      const data = await response.json()
-
-      // Check if the response has the expected structure
-      if (!data || typeof data !== "object") {
-        throw new Error("Invalid response from API")
-      }
-
-      // Extract data with fallbacks for missing properties
-      const publications = data.publications?.count || 0
-      const awards = data.awards?.count || 0
-      const hasLeadership = data.leadershipExperience?.hasLeadership || false
-      const patents = data.patents?.count || 0
-      const experience = data.yearsOfExperience?.years || 0
-
-      // Determine category and rationale with fallbacks
-      let category = null
-      let rationale = null
-
-      if (data.eb1Category) {
-        // Try to extract from the API response
-        category = data.eb1Category.recommendation || null
-        rationale = data.eb1Category.rationale || null
-      } else {
-        // Generate a fallback category based on the extracted data
-        if (publications >= 3 || awards >= 2 || patents >= 1) {
-          category = "EB-1A"
-          rationale = `Based on your profile with ${publications} publications, ${awards} awards, and ${patents} patents, Extraordinary Ability (EB-1A) appears most appropriate.`
-        } else if (publications >= 1 && experience >= 3) {
-          category = "EB-1B"
-          rationale = `With ${publications} publications and ${experience} years of experience, Outstanding Researcher (EB-1B) may be suitable.`
-        } else if (hasLeadership && experience >= 3) {
-          category = "EB-1C"
-          rationale = `With leadership experience and ${experience} years of experience, Multinational Manager/Executive (EB-1C) is recommended.`
-        } else {
-          category = "EB-1A"
-          rationale = "Based on the available information, Extraordinary Ability (EB-1A) may be worth exploring."
-        }
-      }
-
-      // Update the form data with the parsed resume data
-      updateFormData({
-        parsedResumeData: {
-          publications,
-          awards,
-          leadership: hasLeadership,
-          patents,
-          experience,
-        },
-        suggestedCategory: category as FormData["category"],
-        categoryRationale: rationale,
-      })
-
-      setDebugInfo(
-        `AI analysis completed. Found: ${publications} publications, ${awards} awards, ${patents} patents, ${experience} years experience.`,
-      )
-    } catch (err) {
-      console.error("Failed to analyze resume with OpenAI:", err)
-      setError(err instanceof Error ? err.message : "Failed to analyze resume. Please try again.")
-
-      // Set flag to use fallback analysis on next attempt
-      setUseAiFallback(true)
-
-      // Show a more user-friendly error message
-      setError("AI analysis failed. Click 'Analyze with AI' again to use our fallback analyzer.")
-    } finally {
-      setIsParsing(false)
-    }
-  }
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null)
-    setDebugInfo(null)
-    setIsPlaceholderText(false)
-    setExtractionProgress(null)
-    setUseAiFallback(false)
-    const file = e.target.files?.[0]
-
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
     if (!file) return
 
-    if (file.size > 10 * 1024 * 1024) {
-      // 10MB limit
-      setError("File size exceeds 10MB limit")
-      return
-    }
-
-    setIsUploading(true)
-    setExtractionProgress("Processing your document...")
-
-    // Update the form with the file
-    updateFormData({ resume: file })
+    setUploading(true)
+    setError("")
 
     try {
-      // Use our unified document extractor
-      const result = await extractTextFromDocument(file)
-
-      setResumeText(result.text)
-      setDebugInfo(result.debugInfo || "")
-      setIsPlaceholderText(result.isPlaceholder)
-
-      // Track successful resume upload
+      const text = await extractTextFromDocument(file)
+      setUploadedFile(file)
+      setResumeText(text)
+      updateFormData({ resume: file, resumeText: text })
       trackResumeUpload()
     } catch (err) {
-      console.error("Failed to process file:", err)
       setError(err instanceof Error ? err.message : "Failed to process file")
-      setIsPlaceholderText(true)
     } finally {
-      setIsUploading(false)
-      setExtractionProgress(null)
+      setUploading(false)
     }
   }
 
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault()
-    setError(null)
-    setDebugInfo(null)
-    setIsPlaceholderText(false)
-    setExtractionProgress(null)
-    setUseAiFallback(false)
-
-    const file = e.dataTransfer.files?.[0]
-    if (!file) return
-
-    if (file.size > 10 * 1024 * 1024) {
-      // 10MB limit
-      setError("File size exceeds 10MB limit")
-      return
-    }
-
-    setIsUploading(true)
-    setExtractionProgress("Processing your document...")
-
-    // Update the form with the file
-    updateFormData({ resume: file })
-
-    try {
-      // Use our unified document extractor
-      const result = await extractTextFromDocument(file)
-
-      setResumeText(result.text)
-      setDebugInfo(result.debugInfo || "")
-      setIsPlaceholderText(result.isPlaceholder)
-    } catch (err) {
-      console.error("Failed to process file:", err)
-      setError(err instanceof Error ? err.message : "Failed to process file")
-      setIsPlaceholderText(true)
-    } finally {
-      setIsUploading(false)
-      setExtractionProgress(null)
-    }
+  const handleUploadClick = () => {
+    fileInputRef.current?.click()
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
+  const handleNext = () => {
+    onNext(resumeText || undefined)
+  }
+
+  const handleSkip = () => {
+    onNext()
   }
 
   const removeFile = () => {
-    updateFormData({ resume: null, parsedResumeData: null, suggestedCategory: null, categoryRationale: null })
+    updateFormData({ resume: null, resumeText: "" })
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
-    setResumeText(null)
-    setDebugInfo(null)
-    setIsPlaceholderText(false)
-    setExtractionProgress(null)
-    setUseAiFallback(false)
-  }
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setResumeText(e.target.value)
-    setUseAiFallback(false)
+    setUploadedFile(null)
+    setResumeText("")
+    setError("")
   }
 
   return (
@@ -462,34 +267,33 @@ export default function ResumeUploadStep({
         <p className="text-gray-600">We'll analyze your resume to identify EB-1 qualifying factors</p>
       </div>
 
-      {!formData.resume ? (
+      {!uploadedFile ? (
         <div
+          onClick={handleUploadClick}
           className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-purple-500 transition-colors"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
         >
           <input
-            type="file"
             ref={fileInputRef}
+            type="file"
             accept=".pdf,.doc,.docx,.txt"
-            onChange={handleFileChange}
+            onChange={handleFileSelect}
             className="hidden"
           />
 
-          <div className="flex flex-col items-center justify-center">
-            <Upload className="h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-1">Upload your resume</h3>
-            <p className="text-sm text-gray-500 mb-4">Drag and drop or click to browse</p>
-            <p className="text-xs text-gray-400 mb-4">PDF, Word, or text files up to 10MB</p>
-
-            <Button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="bg-purple-700 hover:bg-purple-800"
-            >
-              Select File
-            </Button>
-          </div>
+          {uploading ? (
+            <div className="space-y-3">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+              <p className="text-gray-600">Processing your resume...</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <Upload className="h-12 w-12 text-gray-400 mx-auto" />
+              <div>
+                <p className="text-lg font-medium text-gray-900">Click to upload your resume</p>
+                <p className="text-gray-500">PDF, DOCX, or TXT files (max 10MB)</p>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <Card className="p-6">
@@ -497,8 +301,8 @@ export default function ResumeUploadStep({
             <div className="flex items-center">
               <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
               <div>
-                <p className="font-medium">{formData.resume.name}</p>
-                <p className="text-sm text-gray-500">{(formData.resume.size / 1024 / 1024).toFixed(2)} MB</p>
+                <p className="font-medium">{uploadedFile.name}</p>
+                <p className="text-sm text-gray-500">{(uploadedFile.size / 1024 / 1024).toFixed(2)} MB</p>
               </div>
             </div>
             <Button
@@ -511,131 +315,28 @@ export default function ResumeUploadStep({
             </Button>
           </div>
 
-          {extractionProgress && (
-            <div className="mt-4 bg-blue-50 p-3 rounded-md flex items-start">
-              <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full mr-2"></div>
-              <p className="text-sm text-blue-700">{extractionProgress}</p>
+          {error && (
+            <div className="bg-red-50 text-red-700 p-3 rounded-md flex items-start">
+              <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+              <span className="text-sm">{error}</span>
             </div>
           )}
 
-          {isPlaceholderText && (
-            <div className="mt-4 bg-amber-50 p-3 rounded-md flex items-start">
-              <Info className="h-5 w-5 text-amber-500 mr-2 flex-shrink-0 mt-0.5" />
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+            <div className="flex items-start gap-3">
+              <FileText className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
               <div>
-                <p className="text-sm text-amber-800 font-medium">This is placeholder text</p>
-                <p className="text-sm text-amber-700">
-                  We attempted to extract text from your file but were unable to fully process it. Please edit the text
-                  below to match your actual resume content.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {resumeText && (
-            <div className="mt-4">
-              <h4 className="font-medium text-gray-900 mb-2">Resume Text</h4>
-              <div className="border border-gray-200 rounded-md">
-                <textarea
-                  ref={textareaRef}
-                  value={resumeText}
-                  onChange={handleTextChange}
-                  className="w-full h-48 p-2 text-sm font-mono resize-y rounded-md"
-                  placeholder="Resume text will appear here. You can edit it if needed."
-                />
-              </div>
-              <div className="mt-2 flex justify-end">
-                <Button
-                  onClick={analyzeWithOpenAI}
-                  disabled={isParsing}
-                  size="sm"
-                  className="bg-indigo-600 hover:bg-indigo-700"
-                >
-                  <FileText className="h-4 w-4 mr-1" />
-                  {useAiFallback ? "Use Fallback Analysis" : "Analyze with AI"}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {isParsing ? (
-            <div className="mt-4">
-              <p className="text-sm text-indigo-700 animate-pulse flex items-center">
-                <span className="mr-2">Analyzing your resume with AI...</span>
-                <svg
-                  className="animate-spin h-4 w-4 text-indigo-700"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-              </p>
-            </div>
-          ) : null}
-
-          {formData.parsedResumeData && !isParsing ? (
-            <div className="mt-4">
-              <h4 className="font-medium text-gray-900 mb-2">Resume Analysis</h4>
-              <div className="bg-indigo-50 p-4 rounded-md">
-                <ul className="space-y-2">
-                  <li className="flex justify-between">
-                    <span className="text-gray-600">Publications</span>
-                    <span className="font-medium">{formData.parsedResumeData.publications}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span className="text-gray-600">Awards</span>
-                    <span className="font-medium">{formData.parsedResumeData.awards}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span className="text-gray-600">Leadership Experience</span>
-                    <span className="font-medium">{formData.parsedResumeData.leadership ? "Yes" : "No"}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span className="text-gray-600">Patents</span>
-                    <span className="font-medium">{formData.parsedResumeData.patents}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span className="text-gray-600">Years of Experience</span>
-                    <span className="font-medium">{formData.parsedResumeData.experience}</span>
-                  </li>
+                <h4 className="font-medium text-blue-900 mb-2">Why upload your resume?</h4>
+                <ul className="text-blue-800 text-sm space-y-1">
+                  <li>• Get more accurate EB-1 category recommendations</li>
+                  <li>• Receive personalized strength analysis</li>
+                  <li>• Get specific suggestions for improvement</li>
+                  <li>• Identify missing evidence and documentation</li>
                 </ul>
               </div>
-
-              {formData.suggestedCategory && (
-                <div className="mt-4 bg-purple-50 p-4 rounded-md">
-                  <h4 className="font-medium text-purple-900 mb-2">Suggested EB-1 Category</h4>
-                  <p className="font-semibold text-purple-800">{formData.suggestedCategory}</p>
-                  {formData.categoryRationale && (
-                    <p className="text-sm text-purple-700 mt-1">{formData.categoryRationale}</p>
-                  )}
-                </div>
-              )}
             </div>
-          ) : null}
-
-          {debugInfo && <div className="mt-4 bg-gray-50 p-2 rounded text-xs text-gray-500">{debugInfo}</div>}
-        </Card>
-      )}
-
-      {error && (
-        <div className="bg-red-50 text-red-700 p-3 rounded-md flex items-start">
-          <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
-          <p className="text-sm">{error}</p>
-        </div>
-      )}
-
-      {!formData.resume && (
-        <div className="flex justify-center mt-4">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <span>Need a sample resume?</span>
-            <SampleResumeLink />
           </div>
-        </div>
+        </Card>
       )}
 
       <div className="flex justify-between pt-6">
@@ -644,15 +345,30 @@ export default function ResumeUploadStep({
           Back
         </Button>
 
-        <Button
-          onClick={onNext}
-          disabled={!formData.parsedResumeData || isParsing}
-          className="bg-purple-700 hover:bg-purple-800"
-        >
-          Continue
-          <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={handleSkip}>
+            Skip for Now
+          </Button>
+
+          <Button
+            onClick={handleNext}
+            className="flex items-center gap-2 bg-purple-700 hover:bg-purple-800"
+            disabled={uploading}
+          >
+            Continue
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       </div>
+
+      {!uploadedFile && (
+        <div className="flex justify-center mt-4">
+          <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <span>Need a sample resume?</span>
+            <SampleResumeLink />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

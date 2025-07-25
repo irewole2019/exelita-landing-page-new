@@ -149,120 +149,45 @@ function calculateEnhancedScore(category: string, responses: any, resumeData: an
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { parsedResume, category, answers, resumeAnalysis } = body
+    const { answers, resumeText } = body
 
-    if (!parsedResume || !category) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    if (!answers || typeof answers !== "object") {
+      return NextResponse.json({ error: "Invalid request data" }, { status: 400 })
     }
 
-    // Enhanced scoring calculation
-    const enhancedScore = calculateEnhancedScore(category, answers, resumeAnalysis)
+    const prompt = `
+You are an expert immigration attorney specializing in EB-1 visa petitions. Provide a comprehensive assessment based on the following information:
 
-    // Enhanced AI prompt with more specific instructions
-    const enhancedPrompt = `You are a senior immigration attorney specializing in EB-1 petitions with 15+ years of experience. You have reviewed over 1,000 successful EB-1 cases and understand USCIS adjudication patterns.
+Questionnaire Responses:
+${Object.entries(answers)
+  .map(([key, value]) => `${key}: ${value}`)
+  .join("\n")}
 
-CASE INFORMATION:
-Resume/CV: ${parsedResume}
-Category: ${category}
-Questionnaire Responses: ${JSON.stringify(answers)}
-Preliminary Score: ${enhancedScore.score}/100
+${resumeText ? `Resume Content:\n${resumeText}` : ""}
 
-INSTRUCTIONS:
-Provide a comprehensive EB-1 eligibility assessment that would be suitable for a potential petitioner to understand their chances and next steps.
+Provide a detailed analysis including:
 
-Your analysis should be:
-1. Specific to ${category} requirements and recent USCIS trends
-2. Evidence-based, citing specific achievements from the resume
-3. Realistic about approval chances based on current standards
-4. Actionable, suggesting concrete improvements where needed
+1. **Eligibility Assessment**: Strong/Moderate/Weak/Insufficient with percentage score
+2. **Recommended EB-1 Category**: EB-1A, EB-1B, or EB-1C with detailed reasoning
+3. **Strengths Analysis**: Top 5 strongest qualifications with specific examples
+4. **Improvement Areas**: 5 key areas needing development with actionable steps
+5. **Evidence Strategy**: Specific documents and proof needed
+6. **Timeline**: Realistic timeline for petition preparation and filing
+7. **Success Probability**: Estimated approval chances with current profile
+8. **Next Steps**: Immediate action items prioritized by impact
 
-REQUIRED OUTPUT FORMAT (JSON):
-{
-  "category": "${category}",
-  "categoryRationale": "One sentence explaining why this category fits best",
-  "score": 75,
-  "scoreJustification": "Detailed explanation of the score based on USCIS standards",
-  "totalCriteria": ${enhancedScore.totalCriteria},
-  "criteriaMet": ${enhancedScore.criteriaMet},
-  "criteriaBreakdown": [
-    {
-      "name": "Criterion name",
-      "status": "Met|Likely Met|Not Met",
-      "justification": "Specific evidence from resume and analysis",
-      "strengthLevel": "Strong|Moderate|Weak|None",
-      "improvementSuggestions": "Specific actionable advice"
-    }
-  ],
-  "summary": "3-4 sentence professional assessment",
-  "strengthAreas": ["List of 2-3 strongest areas"],
-  "improvementAreas": ["List of 2-3 areas needing work"],
-  "recommendedActions": ["List of 3-5 specific next steps"],
-  "timelineEstimate": "Realistic timeline for petition readiness",
-  "approvalProbability": "High|Medium|Low with explanation"
-}
+Be specific, actionable, and encouraging while maintaining professional accuracy.
+`
 
-Focus on providing value through specific, actionable insights rather than generic advice.`
-
-    // Call OpenAI with enhanced prompt
     const { text } = await generateText({
       model: openai("gpt-4o"),
-      prompt: enhancedPrompt,
-      temperature: 0.1, // Lower temperature for more consistent analysis
+      prompt,
       maxTokens: 2000,
     })
 
-    // Enhanced JSON parsing with better error handling
-    let result
-    try {
-      result = JSON.parse(text)
-    } catch (parseError) {
-      // Try to extract JSON from markdown code blocks
-      const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/) || text.match(/\{[\s\S]*\}/)
-      if (jsonMatch) {
-        try {
-          result = JSON.parse(jsonMatch[1] || jsonMatch[0])
-        } catch (extractError) {
-          // Fallback to enhanced score if AI parsing fails
-          result = {
-            category,
-            categoryRationale: `${category} appears most suitable based on the provided information.`,
-            score: enhancedScore.score,
-            scoreJustification: `Score calculated based on ${enhancedScore.criteriaMet} of ${enhancedScore.totalCriteria} criteria met.`,
-            totalCriteria: enhancedScore.totalCriteria,
-            criteriaMet: enhancedScore.criteriaMet,
-            criteriaBreakdown: enhancedScore.breakdown,
-            summary: `Based on the analysis, you ${enhancedScore.meetsMinimum ? "meet" : "do not meet"} the minimum requirements for ${category}.`,
-            strengthAreas: ["Resume analysis completed"],
-            improvementAreas: ["Detailed evaluation needed"],
-            recommendedActions: ["Consider professional consultation"],
-            timelineEstimate: "2-6 months",
-            approvalProbability: enhancedScore.score > 70 ? "Medium" : "Low",
-          }
-        }
-      } else {
-        throw new Error("Could not parse AI response")
-      }
-    }
-
-    // Validate and enhance the result
-    const validatedResult = {
-      ...result,
-      score: Math.max(0, Math.min(100, result.score || enhancedScore.score)),
-      criteriaMet: result.criteriaMet || enhancedScore.criteriaMet,
-      totalCriteria: result.totalCriteria || enhancedScore.totalCriteria,
-      enhancedAnalysis: true,
-      confidence: enhancedScore.score > 70 ? "High" : enhancedScore.score > 50 ? "Medium" : "Low",
-    }
-
-    return NextResponse.json(validatedResult)
+    return NextResponse.json({ assessment: text })
   } catch (error) {
-    console.error("Enhanced eligibility evaluation error:", error)
-    return NextResponse.json(
-      {
-        error: "Evaluation failed",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    )
+    console.error("Error in enhanced eligibility evaluation:", error)
+    return NextResponse.json({ error: "Failed to process enhanced eligibility evaluation" }, { status: 500 })
   }
 }

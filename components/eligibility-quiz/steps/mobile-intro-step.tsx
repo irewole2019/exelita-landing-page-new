@@ -1,64 +1,50 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ChevronRight } from "lucide-react"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { Smartphone, Clock, CheckCircle } from "lucide-react"
 
-export default function MobileIntroStep({ onNext }: { onNext: () => void }) {
-  const isMobile = useIsMobile()
+interface MobileIntroStepProps {
+  onStart: () => void
+}
 
+export default function MobileIntroStep({ onStart }: MobileIntroStepProps) {
   return (
-    <div className="text-center space-y-6">
-      <h1 className={`font-bold text-gray-900 ${isMobile ? "text-2xl" : "text-3xl"}`}>
-        Find Out If You Qualify for an EB-1 Visa
-      </h1>
+    <div className="space-y-6 text-center">
+      <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-lg">
+        <Smartphone className="h-12 w-12 text-purple-600 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">Quick EB-1 Assessment</h3>
+        <p className="text-gray-600 text-sm">
+          Get instant AI-powered insights about your EB-1 visa eligibility in just 2 minutes
+        </p>
+      </div>
 
-      <p className={`text-gray-600 max-w-2xl mx-auto ${isMobile ? "text-base" : "text-lg"}`}>
-        Upload your resume and answer a few questions to get a personalized eligibility report powered by AI.
-      </p>
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 text-left">
+          <div className="bg-purple-100 p-2 rounded-full flex-shrink-0">
+            <Clock className="h-4 w-4 text-purple-600" />
+          </div>
+          <div>
+            <div className="font-medium text-gray-900 text-sm">2-Minute Assessment</div>
+            <div className="text-gray-600 text-xs">Quick category selection and optional resume upload</div>
+          </div>
+        </div>
 
-      <div className={`bg-indigo-50 rounded-lg max-w-2xl mx-auto ${isMobile ? "p-4" : "p-6"}`}>
-        <h3 className={`font-semibold text-indigo-900 mb-3 ${isMobile ? "text-base" : "text-lg"}`}>
-          How this assessment works:
-        </h3>
-        <div className={`text-left text-indigo-800 space-y-3 ${isMobile ? "text-sm" : "text-base"}`}>
-          <div className="flex items-start">
-            <span className="bg-indigo-200 rounded-full w-6 h-6 flex items-center justify-center text-indigo-800 mr-3 mt-0.5 flex-shrink-0 text-sm font-medium">
-              1
-            </span>
-            <span>Upload your resume or CV (we'll analyze it for EB-1 qualifying factors)</span>
+        <div className="flex items-center gap-3 text-left">
+          <div className="bg-purple-100 p-2 rounded-full flex-shrink-0">
+            <CheckCircle className="h-4 w-4 text-purple-600" />
           </div>
-          <div className="flex items-start">
-            <span className="bg-indigo-200 rounded-full w-6 h-6 flex items-center justify-center text-indigo-800 mr-3 mt-0.5 flex-shrink-0 text-sm font-medium">
-              2
-            </span>
-            <span>Select the EB-1 category that best fits your background</span>
-          </div>
-          <div className="flex items-start">
-            <span className="bg-indigo-200 rounded-full w-6 h-6 flex items-center justify-center text-indigo-800 mr-3 mt-0.5 flex-shrink-0 text-sm font-medium">
-              3
-            </span>
-            <span>Answer specific questions about your qualifications</span>
-          </div>
-          <div className="flex items-start">
-            <span className="bg-indigo-200 rounded-full w-6 h-6 flex items-center justify-center text-indigo-800 mr-3 mt-0.5 flex-shrink-0 text-sm font-medium">
-              4
-            </span>
-            <span>Get your personalized eligibility score and feedback</span>
+          <div>
+            <div className="font-medium text-gray-900 text-sm">Instant Results</div>
+            <div className="text-gray-600 text-xs">AI-powered analysis with personalized recommendations</div>
           </div>
         </div>
       </div>
 
-      <div className="pt-4">
-        <Button
-          onClick={onNext}
-          size={isMobile ? "default" : "lg"}
-          className={`bg-purple-700 hover:bg-purple-800 text-white w-full ${isMobile ? "py-3 text-base" : "px-8"}`}
-        >
-          Start My Assessment
-          <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+      <Button onClick={onStart} className="w-full bg-purple-600 hover:bg-purple-700 py-3">
+        Start Quick Assessment
+      </Button>
+
+      <p className="text-xs text-gray-500">No signup required • Results in 2 minutes • Completely free</p>
     </div>
   )
 }

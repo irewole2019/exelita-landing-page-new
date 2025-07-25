@@ -1,17 +1,31 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { extractTextFromPdf } from "pdf-text-extractor" // Hypothetical import for PDF text extraction
 
 export const runtime = "nodejs"
 
 export async function POST(request: NextRequest) {
   try {
-    // Get the request body
-    const body = await request.json()
-    const { resumeText } = body
+    const formData = await request.formData()
+    const file = formData.get("file") as File
 
-    if (!resumeText) {
-      return NextResponse.json({ error: "Missing required field: resumeText" }, { status: 400 })
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 })
+    }
+
+    // Extract text from the PDF/DOCX file
+    let resumeText = ""
+    if (file.type === "application/pdf") {
+      resumeText = await extractTextFromPdf(file)
+    } else if (
+      file.type === "application/msword" ||
+      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      // Implement DOCX text extraction here if needed
+      resumeText = "Placeholder for DOCX text extraction"
+    } else {
+      return NextResponse.json({ error: "Unsupported file type" }, { status: 400 })
     }
 
     console.log("Resume text received, length:", resumeText.length)
@@ -75,7 +89,7 @@ If no information is found for a category, use empty arrays and zeros as appropr
 
       // Call OpenAI API using AI SDK
       const { text } = await generateText({
-        model: openai("gpt-4o"),
+        model: openai("gpt-4"),
         prompt,
         temperature: 0.2, // Lower temperature for more consistent, factual responses
         maxTokens: 2000,

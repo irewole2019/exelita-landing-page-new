@@ -5,6 +5,14 @@ import GoogleAnalytics from "@/components/analytics/google-analytics"
 import StructuredData from "@/components/seo/structured-data"
 import "./globals.css"
 import { Suspense } from "react"
+import { Inter } from "next/font/google"
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  variable: "--font-inter",
+})
 
 export const metadata: Metadata = generateMetadata()
 
@@ -14,11 +22,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <head>
         <StructuredData />
 
         {/* Preconnect to external domains */}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
 
@@ -55,7 +64,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>
+      <body className={inter.className}>
         <Suspense fallback={null}>
           {children}
 

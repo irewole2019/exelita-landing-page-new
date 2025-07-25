@@ -8,30 +8,14 @@ export const runtime = "nodejs"
 function ensureValidResponse(data: any) {
   // Create a base structure with default values
   const validResponse = {
-    publications: {
-      count: 0,
-      items: [],
-    },
-    awards: {
-      count: 0,
-      items: [],
-    },
-    leadershipExperience: {
-      hasLeadership: false,
-      items: [],
-    },
-    patents: {
-      count: 0,
-      items: [],
-    },
-    yearsOfExperience: {
-      years: 0,
-      range: "N/A",
-    },
-    eb1Category: {
-      recommendation: "EB-1A",
-      rationale: "Based on the limited information available, Extraordinary Ability (EB-1A) may be worth exploring.",
-    },
+    score: 0,
+    category: "N/A",
+    strengths: [],
+    improvements: [],
+    recommendations: [],
+    evidenceGaps: [],
+    timelineAssessment: "N/A",
+    rawAnalysis: "N/A",
   }
 
   // If data is not an object, return the default structure
@@ -42,32 +26,14 @@ function ensureValidResponse(data: any) {
 
   // Merge the received data with the default structure
   return {
-    publications: {
-      count: data.publications?.count || 0,
-      items: Array.isArray(data.publications?.items) ? data.publications.items : [],
-    },
-    awards: {
-      count: data.awards?.count || 0,
-      items: Array.isArray(data.awards?.items) ? data.awards.items : [],
-    },
-    leadershipExperience: {
-      hasLeadership: Boolean(data.leadershipExperience?.hasLeadership),
-      items: Array.isArray(data.leadershipExperience?.items) ? data.leadershipExperience.items : [],
-    },
-    patents: {
-      count: data.patents?.count || 0,
-      items: Array.isArray(data.patents?.items) ? data.patents.items : [],
-    },
-    yearsOfExperience: {
-      years: data.yearsOfExperience?.years || 0,
-      range: data.yearsOfExperience?.range || "N/A",
-    },
-    eb1Category: {
-      recommendation: data.eb1Category?.recommendation || "EB-1A",
-      rationale:
-        data.eb1Category?.rationale ||
-        "Based on the limited information available, Extraordinary Ability (EB-1A) may be worth exploring.",
-    },
+    score: data.score || 0,
+    category: data.category || "N/A",
+    strengths: Array.isArray(data.strengths) ? data.strengths : [],
+    improvements: Array.isArray(data.improvements) ? data.improvements : [],
+    recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
+    evidenceGaps: Array.isArray(data.evidenceGaps) ? data.evidenceGaps : [],
+    timelineAssessment: data.timelineAssessment || "N/A",
+    rawAnalysis: data.rawAnalysis || "N/A",
   }
 }
 
@@ -83,7 +49,7 @@ function extractJsonFromText(text: string): any {
   }
 
   // Try to extract JSON from markdown code blocks
-  // Match ```json ... ``` or just ``` ... ``` patterns
+  // Match \`\`\`json ... \`\`\` or just \`\`\` ... \`\`\` patterns
   const codeBlockRegex = /```(?:json)?\s*([\s\S]*?)```/
   const match = text.match(codeBlockRegex)
 
@@ -122,8 +88,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { resumeText } = body
 
-    if (!resumeText) {
-      return NextResponse.json({ error: "Missing required field: resumeText" }, { status: 400 })
+    if (!resumeText || typeof resumeText !== "string") {
+      return NextResponse.json({ error: "Resume text is required" }, { status: 400 })
     }
 
     console.log("Resume text received, length:", resumeText.length)
@@ -133,60 +99,23 @@ export async function POST(request: NextRequest) {
     const truncatedResume = resumeText.length > 15000 ? resumeText.substring(0, 15000) + "..." : resumeText
 
     // Construct the prompt
-    const prompt = `You are an expert resume analyst. Given the text of a resume or CV, scan and extract the following five data points. Your output should be well-structured, concise, and comprehensive, using only information found in the provided text.
+    const prompt = `
+You are an expert immigration attorney specializing in EB-1 visa petitions. Analyze the following resume and provide a detailed assessment for EB-1 eligibility.
 
-Publications:
-Count the number of journal articles, conference papers, books, whitepapers, or notable published works or presentations, including title and publication/presentation venue when possible.
-
-Awards:
-Extract all professional, academic, or industry awards, scholarships, grants, or special honors. Include name of the award, issuing organization, and date/period if available.
-
-Leadership Experience:
-List roles (job titles, or volunteer/organizational positions) which demonstrate leadership or supervisory responsibility. For each, include position title, organization, dates, and a brief description emphasizing leadership scope (teams, budgets, projects, etc.).
-
-Patents:
-List any patents described. For each, include patent name/number (if stated), a brief description, and role (e.g., inventor, co-inventor).
-
-Years of Experience:
-Calculate the total number of distinct years of professional (post-education) experience documented in the resume. Summarize the range (e.g., "2012–2024, 12 years").
-
-Format your answer under each heading. If a section is empty or the information is not found, simply state: "Not found in resume." Ensure all findings are precise and cite only details present in the provided text.
-
-Resume:
+Resume Content:
 ${truncatedResume}
 
-IMPORTANT: You MUST respond with ONLY a valid JSON object in the following format. Do not include any explanatory text, markdown formatting, or code blocks outside the JSON:
+Please provide a comprehensive analysis including:
 
-{
-  "publications": {
-    "count": 5,
-    "items": ["Publication 1", "Publication 2", "Publication 3"]
-  },
-  "awards": {
-    "count": 3,
-    "items": ["Award 1", "Award 2", "Award 3"]
-  },
-  "leadershipExperience": {
-    "hasLeadership": true,
-    "items": ["Leadership role 1", "Leadership role 2"]
-  },
-  "patents": {
-    "count": 2,
-    "items": ["Patent 1", "Patent 2"]
-  },
-  "yearsOfExperience": {
-    "years": 10,
-    "range": "2014-2024"
-  },
-  "eb1Category": {
-    "recommendation": "EB-1A",
-    "rationale": "Based on the analysis of the resume, EB-1A (Extraordinary Ability) appears to be the most appropriate category due to the significant number of publications, patents, and awards which demonstrate sustained national or international acclaim in the field."
-  }
-}
+1. **Overall EB-1 Eligibility Score** (0-100): Rate the overall strength
+2. **Best EB-1 Category**: Recommend EB-1A, EB-1B, or EB-1C with reasoning
+3. **Key Strengths**: Identify 3-5 strongest qualifications
+4. **Areas for Improvement**: Identify 3-5 areas that need strengthening
+5. **Specific Recommendations**: Actionable steps to improve the petition
+6. **Evidence Gaps**: What documentation or achievements are missing
+7. **Timeline Assessment**: Estimated time to strengthen the profile
 
-If no information is found for a category, use empty arrays and zeros as appropriate. For example, if no publications are found, use "count": 0 and "items": [].
-
-DO NOT wrap your response in markdown code blocks or any other formatting. Just provide the raw JSON object.
+Format your response as a structured JSON object with these sections. Be specific and actionable in your recommendations.
 `
 
     try {
@@ -197,7 +126,7 @@ DO NOT wrap your response in markdown code blocks or any other formatting. Just 
         model: openai("gpt-4o"),
         prompt,
         temperature: 0.2, // Lower temperature for more consistent, factual responses
-        maxTokens: 2000,
+        maxTokens: 1500,
       })
 
       console.log("OpenAI API response received")
@@ -223,6 +152,6 @@ DO NOT wrap your response in markdown code blocks or any other formatting. Just 
     }
   } catch (error) {
     console.error("Error processing resume analysis:", error)
-    return NextResponse.json(ensureValidResponse({}), { status: 200 })
+    return NextResponse.json({ error: "Failed to analyze resume with AI" }, { status: 500 })
   }
 }

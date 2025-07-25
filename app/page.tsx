@@ -44,6 +44,9 @@ export default function Home() {
             <SmoothScrollLink href="#features" className="text-gray-700 hover:text-purple-700 transition-colors">
               Features
             </SmoothScrollLink>
+            <SmoothScrollLink href="#team" className="text-gray-700 hover:text-purple-700 transition-colors">
+              Team
+            </SmoothScrollLink>
             <SmoothScrollLink href="#pricing" className="text-gray-700 hover:text-purple-700 transition-colors">
               Pricing
             </SmoothScrollLink>
@@ -72,6 +75,13 @@ export default function Home() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Features
+              </SmoothScrollLink>
+              <SmoothScrollLink
+                href="#team"
+                className="block py-2 text-gray-700 hover:text-purple-700 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Team
               </SmoothScrollLink>
               <SmoothScrollLink
                 href="#pricing"
@@ -394,6 +404,78 @@ export default function Home() {
                   <span className="font-semibold text-sm md:text-base">Complete in 2-3 Weeks</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Meet the Founders Section */}
+      <section id="team" className="w-full py-16 md:py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Meet the Founders</h2>
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+              Both EB-1A recipients who understand the challenges firsthand and built Exelita to democratize access to
+              successful EB-1 petitions.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 max-w-6xl mx-auto">
+            {/* Wole Akande */}
+            <div className="bg-gray-50 rounded-xl p-6 md:p-8 text-center">
+              <div className="mb-6">
+                <Image
+                  src="/images/wole-new-headshot.png"
+                  alt="Irewole 'Wole' Akande, CEO and EB-1A recipient"
+                  width={200}
+                  height={200}
+                  className="rounded-full mx-auto object-cover w-32 h-32 md:w-40 md:h-40"
+                />
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Irewole "Wole" Akande</h3>
+                <div className="text-purple-700 font-semibold mb-1">CEO — EB-1A recipient</div>
+                <div className="text-sm text-gray-500 mb-4">Microsoft PM • Inventor • Future Legend</div>
+                <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+                  Microsoft PM shaping Viva Engage's expert-verification engine that will vet Copilot's AI output for
+                  1M+ organizations. Invented Opal, an IoT hygiene device cited by the CDC during COVID-19. Texas
+                  Business Hall of Fame "Future Legend," Poets & Quants distinguished MBA.
+                </p>
+              </div>
+            </div>
+
+            {/* Richard Igbiriki */}
+            <div className="bg-gray-50 rounded-xl p-6 md:p-8 text-center">
+              <div className="mb-6">
+                <Image
+                  src="/images/richard-new-headshot.png"
+                  alt="Richard Igbiriki, CTO and EB-1A recipient"
+                  width={200}
+                  height={200}
+                  className="rounded-full mx-auto object-cover w-32 h-32 md:w-40 md:h-40"
+                />
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Richard Igbiriki</h3>
+                <div className="text-purple-700 font-semibold mb-1">CTO — EB-1A recipient</div>
+                <div className="text-sm text-gray-500 mb-4">Microsoft Architect • AI Founder • Scholar</div>
+                <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+                  Architects OneDrive & SharePoint services safeguarding data for 100M+ users. Former founder of akaani,
+                  an AI platform that personalized meal planning with adaptive ML. Special Congressional Recognition,
+                  Apple HBCU Scholar, peer-reviewed author with IEEE and ProQuest.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 max-w-4xl mx-auto">
+              <h4 className="font-semibold text-purple-900 mb-3">🎯 Why We Built Exelita</h4>
+              <p className="text-purple-800 text-sm md:text-base">
+                "After successfully navigating our own EB-1A petitions, we realized that with the right guidance and
+                tools, exceptional professionals shouldn't need to spend $10,000+ on lawyers. Exelita democratizes
+                access to the same strategies and expertise that helped us achieve our American dream."
+              </p>
             </div>
           </div>
         </div>

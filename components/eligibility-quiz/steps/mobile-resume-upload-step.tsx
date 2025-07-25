@@ -19,17 +19,21 @@ import type { FormData } from "../mobile-optimized-quiz"
 import { extractTextFromDocument } from "@/utils/document-extractor"
 import { useIsMobile } from "@/hooks/use-mobile"
 
+interface MobileResumeUploadStepProps {
+  formData: FormData
+  updateFormData: (data: Partial<FormData>) => void
+  onNext: () => void
+  onPrev: () => void
+  onSkip: () => void
+}
+
 export default function MobileResumeUploadStep({
   formData,
   updateFormData,
   onNext,
   onPrev,
-}: {
-  formData: FormData
-  updateFormData: (data: Partial<FormData>) => void
-  onNext: () => void
-  onPrev: () => void
-}) {
+  onSkip,
+}: MobileResumeUploadStepProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [isParsing, setIsParsing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -489,7 +493,7 @@ export default function MobileResumeUploadStep({
       {error && (
         <div className="bg-red-50 text-red-700 p-3 rounded-md flex items-start">
           <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
-          <p className={`${isMobile ? "text-sm" : "text-base"}`}>{error}</p>
+          <span>{error}</span>
         </div>
       )}
 
@@ -509,6 +513,17 @@ export default function MobileResumeUploadStep({
         >
           Continue
           <ChevronRight className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <Button onClick={onSkip} variant="outline" className="w-full bg-transparent" disabled={isUploading}>
+          Skip & Continue
+        </Button>
+
+        <Button onClick={onPrev} variant="ghost" className="flex items-center justify-center gap-2">
+          <ChevronLeft className="h-4 w-4" />
+          Back
         </Button>
       </div>
     </div>

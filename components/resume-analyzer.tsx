@@ -4,356 +4,266 @@ import type React from "react"
 
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
-import { AlertCircle, FileText, Upload, Info, X, ArrowLeft } from "lucide-react"
+import { Upload, FileText, Download, AlertCircle, CheckCircle, Loader2 } from "lucide-react"
 import { extractTextFromDocument } from "@/utils/document-extractor"
-import Link from "next/link"
-import EligibilityQuizController from "./eligibility-quiz-controller"
+import SampleResumeLink from "./sample-resume-link"
 
-type ResumeAnalysisResult = {
-  publications: {
-    count: number
-    items: string[]
-  }
-  awards: {
-    count: number
-    items: string[]
-  }
-  leadershipExperience: {
-    hasLeadership: boolean
-    items: string[]
-  }
-  patents: {
-    count: number
-    items: string[]
-  }
-  yearsOfExperience: {
-    years: number
-    range: string
-  }
-  eb1Category: {
-    recommendation: string
-    rationale: string
-  }
+interface AnalysisResult {
+  category: string
+  score: number
+  strengths: string[]
+  improvements: string[]
+  recommendations: string[]
 }
 
 export default function ResumeAnalyzer() {
-  const [resumeText, setResumeText] = useState("")
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [result, setResult] = useState<ResumeAnalysisResult | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [debugInfo, setDebugInfo] = useState<string | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  const [extractionProgress, setExtractionProgress] = useState<string | null>(null)
-  const [isPlaceholderText, setIsPlaceholderText] = useState(false)
+  const [file, setFile] = useState<File | null>(null)
+  const [analyzing, setAnalyzing] = useState(false)
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null)
+  const [error, setError] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setResumeText(e.target.value)
-    // Clear previous results when text changes
-    setResult(null)
-    setError(null)
-    setDebugInfo(null)
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0]
+    if (!selectedFile) return
+
+    setFile(selectedFile)
+    setError("")
+    setAnalysis(null)
   }
 
-  const handleAnalyzeResume = async () => {
-    if (!resumeText.trim()) {
-      setError("Please enter resume text")
-      return
-    }
+  const handleAnalyze = async () => {
+    if (!file) return
 
-    setIsAnalyzing(true)
-    setError(null)
-    setDebugInfo("Analyzing resume with AI using OpenAI GPT-4...")
-    setResult(null)
+    setAnalyzing(true)
+    setError("")
 
     try {
-      // Call our OpenAI-powered API endpoint
+      // Extract text from document
+      const resumeText = await extractTextFromDocument(file)
+
+      // Send to AI analysis endpoint
       const response = await fetch("/api/resume-analysis-ai", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          resumeText,
-        }),
+        body: JSON.stringify({ resumeText }),
       })
 
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`)
+        throw new Error("Failed to analyze resume")
       }
 
-      const data = await response.json()
-
-      // Ensure the data has the expected structure
-      const ensureValidData = (data: any) => {
-        return {
-          publications: {
-            count: data.publications?.count || 0,
-            items: Array.isArray(data.publications?.items) ? data.publications.items : [],
-          },
-          awards: {
-            count: data.awards?.count || 0,
-            items: Array.isArray(data.awards?.items) ? data.awards.items : [],
-          },
-          leadershipExperience: {
-            hasLeadership: Boolean(data.leadershipExperience?.hasLeadership),
-            items: Array.isArray(data.leadershipExperience?.items) ? data.leadershipExperience.items : [],
-          },
-          patents: {
-            count: data.patents?.count || 0,
-            items: Array.isArray(data.patents?.items) ? data.patents.items : [],
-          },
-          yearsOfExperience: {
-            years: data.yearsOfExperience?.years || 0,
-            range: data.yearsOfExperience?.range || "N/A",
-          },
-          eb1Category: {
-            recommendation: data.eb1Category?.recommendation || "EB-1A",
-            rationale:
-              data.eb1Category?.rationale ||
-              "Based on the limited information available, Extraordinary Ability (EB-1A) may be worth exploring.",
-          },
-        }
-      }
-
-      // Transform the API response to our result format with validation
-      const analysisResult = ensureValidData(data)
-      setResult(analysisResult)
-      setDebugInfo("✅ AI analysis completed successfully using OpenAI GPT-4 model")
+      const result = await response.json()
+      setAnalysis(result.analysis)
     } catch (err) {
-      console.error("Error analyzing resume:", err)
-      setError(err instanceof Error ? err.message : "Failed to analyze resume. Please try again later.")
+      setError(err instanceof Error ? err.message : "Failed to analyze resume")
     } finally {
-      setIsAnalyzing(false)
+      setAnalyzing(false)
     }
   }
 
-  // Function to handle file upload
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null)
-    setDebugInfo(null)
-    setIsPlaceholderText(false)
-    setExtractionProgress(null)
-    const file = e.target.files?.[0]
+  const handleUploadClick = () => {
+    fileInputRef.current?.click()
+  }
 
-    if (!file) return
+  const handleDownloadReport = () => {
+    if (!analysis) return
 
-    if (file.size > 10 * 1024 * 1024) {
-      // 10MB limit
-      setError("File size exceeds 10MB limit")
-      return
-    }
+    const reportContent = `
+EB-1 Resume Analysis Report
+Generated by Exelita AI
 
-    setIsUploading(true)
-    setExtractionProgress("Processing your document...")
+Overall Score: ${analysis.score}/100
+Recommended Category: ${analysis.category}
 
-    try {
-      // Use our unified document extractor
-      const result = await extractTextFromDocument(file)
+STRENGTHS:
+${analysis.strengths.map((s) => `• ${s}`).join("\n")}
 
-      setResumeText(result.text)
-      setDebugInfo(result.debugInfo || "")
-      setIsPlaceholderText(result.isPlaceholder)
-    } catch (err) {
-      console.error("Failed to process file:", err)
-      setError(err instanceof Error ? err.message : "Failed to process file")
-      setIsPlaceholderText(true)
-    } finally {
-      setIsUploading(false)
-      setExtractionProgress(null)
-    }
+AREAS FOR IMPROVEMENT:
+${analysis.improvements.map((i) => `• ${i}`).join("\n")}
+
+RECOMMENDATIONS:
+${analysis.recommendations.map((r) => `• ${r}`).join("\n")}
+
+Generated on: ${new Date().toLocaleDateString()}
+    `.trim()
+
+    const blob = new Blob([reportContent], { type: "text/plain" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "eb1-resume-analysis.txt"
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      {/* Header with Exit Button */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center text-purple-700 hover:text-purple-800 mr-4">
-            <ArrowLeft className="h-5 w-5 mr-1" />
-            Back to Home
-          </Link>
-        </div>
-        <Link href="/">
-          <Button variant="ghost" size="sm">
-            <X className="h-4 w-4" />
-          </Button>
-        </Link>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>EB-1 Resume Analyzer</CardTitle>
-          <CardDescription>
-            Upload or paste your resume content to get an AI-powered EB-1 eligibility assessment using OpenAI GPT-4
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            {/* File upload section */}
-            <div
-              className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-500 transition-colors cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept=".pdf,.doc,.docx,.txt"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <div className="flex flex-col items-center justify-center">
-                <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                <h3 className="text-sm font-medium text-gray-900 mb-1">Upload your resume</h3>
-                <p className="text-xs text-gray-500">PDF, Word, or text files up to 10MB</p>
-              </div>
-            </div>
-
-            {extractionProgress && (
-              <div className="bg-blue-50 p-3 rounded-md flex items-start">
-                <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full mr-2"></div>
-                <p className="text-sm text-blue-700">{extractionProgress}</p>
-              </div>
-            )}
-
-            {isPlaceholderText && (
-              <div className="bg-amber-50 p-3 rounded-md flex items-start">
-                <Info className="h-5 w-5 text-amber-500 mr-2 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm text-amber-800 font-medium">This is placeholder text</p>
-                  <p className="text-sm text-amber-700">
-                    We attempted to extract text from your file but were unable to fully process it. Please edit the
-                    text below to match your actual resume content.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <Textarea
-              id="resume"
-              placeholder="Paste your resume text here or upload a file above..."
-              value={resumeText}
-              onChange={handleTextChange}
-              rows={10}
-              className="w-full"
-            />
-
-            {error && (
-              <div className="bg-red-50 text-red-700 p-3 rounded-md flex items-start">
-                <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
-                <p className="text-sm">{error}</p>
-              </div>
-            )}
-
-            {debugInfo && (
-              <div className="bg-gray-100 p-3 rounded-md">
-                <p className="text-xs text-gray-600">{debugInfo}</p>
-              </div>
-            )}
-
-            <Button
-              onClick={handleAnalyzeResume}
-              disabled={isAnalyzing || !resumeText.trim() || isUploading}
-              className="w-full bg-purple-700 hover:bg-purple-800"
-            >
-              {isAnalyzing ? "Analyzing with AI..." : "Analyze Resume with AI"}
-            </Button>
+    <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+      {!analysis ? (
+        <div className="space-y-6">
+          {/* Upload Section */}
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Upload Your Resume</h2>
+            <p className="text-gray-600 mb-6">Get an AI-powered analysis of your EB-1 visa eligibility</p>
           </div>
 
-          {isAnalyzing && (
-            <div className="text-center py-8">
-              <div className="animate-spin h-10 w-10 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-gray-600">Analyzing your resume with OpenAI GPT-4...</p>
-              <p className="text-sm text-gray-500 mt-2">This may take 10-30 seconds</p>
+          {!file ? (
+            <div
+              onClick={handleUploadClick}
+              className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer hover:border-purple-400 transition-colors"
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.docx,.txt"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+
+              <Upload className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Click to upload your resume</h3>
+              <p className="text-gray-500">PDF, DOCX, or TXT files (max 10MB)</p>
+            </div>
+          ) : (
+            <div className="bg-gray-50 border rounded-lg p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <FileText className="h-8 w-8 text-purple-600" />
+                <div>
+                  <h3 className="font-semibold text-gray-900">{file.name}</h3>
+                  <p className="text-gray-500 text-sm">{Math.round(file.size / 1024)} KB</p>
+                </div>
+              </div>
+
+              <Button onClick={handleAnalyze} disabled={analyzing} className="w-full bg-purple-600 hover:bg-purple-700">
+                {analyzing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Analyzing Resume...
+                  </>
+                ) : (
+                  "Analyze Resume"
+                )}
+              </Button>
             </div>
           )}
 
-          {result && !isAnalyzing && (
-            <div className="space-y-6 mt-8">
-              <div className="bg-purple-50 p-6 rounded-lg">
-                <h3 className="text-xl font-semibold text-purple-900 mb-2">AI Analysis Results</h3>
-                <div className="flex items-center mb-4">
-                  <div className="bg-purple-100 p-2 rounded-full mr-3">
-                    <FileText className="h-6 w-6 text-purple-700" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-lg">{result.eb1Category.recommendation}</p>
-                    <p className="text-gray-700">{result.eb1Category.rationale}</p>
-                  </div>
-                </div>
-
-                <h4 className="font-semibold text-purple-900 mb-2">Resume Analysis Summary</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white p-4 rounded-md shadow-sm">
-                    <p className="text-sm text-gray-500">Years of Experience</p>
-                    <p className="font-semibold">
-                      {result.yearsOfExperience.range} ({result.yearsOfExperience.years} years)
-                    </p>
-                  </div>
-                  <div className="bg-white p-4 rounded-md shadow-sm">
-                    <p className="text-sm text-gray-500">Publications</p>
-                    <p className="font-semibold">{result.publications.count}</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-md shadow-sm">
-                    <p className="text-sm text-gray-500">Patents</p>
-                    <p className="font-semibold">{result.patents.count}</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-md shadow-sm">
-                    <p className="text-sm text-gray-500">Leadership Roles</p>
-                    <p className="font-semibold">{result.leadershipExperience.hasLeadership ? "Yes" : "No"}</p>
-                  </div>
-                </div>
-
-                {result.publications.items && result.publications.items.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold text-purple-900 mb-2">Publications Found</h4>
-                    <ul className="list-disc pl-5 space-y-1">
-                      {result.publications.items.slice(0, 3).map((item, index) => (
-                        <li key={index} className="text-gray-700 text-sm">
-                          {item}
-                        </li>
-                      ))}
-                      {result.publications.items.length > 3 && (
-                        <li className="text-gray-500 text-sm">...and {result.publications.items.length - 3} more</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-
-                {result.awards.items && result.awards.items.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold text-purple-900 mb-2">Awards Found</h4>
-                    <ul className="list-disc pl-5 space-y-1">
-                      {result.awards.items.slice(0, 3).map((item, index) => (
-                        <li key={index} className="text-gray-700 text-sm">
-                          {item}
-                        </li>
-                      ))}
-                      {result.awards.items.length > 3 && (
-                        <li className="text-gray-500 text-sm">...and {result.awards.items.length - 3} more</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
-
-              <div className="text-center space-y-4">
-                <h3 className="text-lg font-semibold">Ready for a Complete Assessment?</h3>
-                <p className="text-gray-600">
-                  Get a detailed eligibility evaluation with specific USCIS criteria analysis
-                </p>
-                <EligibilityQuizController>
-                  <Button className="bg-purple-700 hover:bg-purple-800 px-8 py-3">
-                    Continue to Full Eligibility Assessment
-                  </Button>
-                </EligibilityQuizController>
-              </div>
+          {error && (
+            <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-lg">
+              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
-        </CardContent>
-      </Card>
+
+          {/* Sample Resumes */}
+          <div className="border-t pt-6">
+            <h3 className="font-semibold text-gray-900 mb-4">Don't have a resume ready? Download sample templates:</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <SampleResumeLink category="EB-1A" />
+              <SampleResumeLink category="EB-1B" />
+              <SampleResumeLink category="EB-1C" />
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Analysis Results */
+        <div className="space-y-6">
+          <div className="text-center bg-green-50 p-6 rounded-lg">
+            <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Analysis Complete!</h2>
+            <p className="text-gray-600">Here's your EB-1 eligibility assessment</p>
+          </div>
+
+          {/* Score and Category */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-purple-50 p-6 rounded-lg text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Overall Score</h3>
+              <div className="text-4xl font-bold text-purple-600">{analysis.score}/100</div>
+            </div>
+
+            <div className="bg-blue-50 p-6 rounded-lg text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Recommended Category</h3>
+              <div className="text-2xl font-bold text-blue-600">{analysis.category}</div>
+            </div>
+          </div>
+
+          {/* Detailed Analysis */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-green-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-green-900 mb-4 flex items-center">
+                <CheckCircle className="h-5 w-5 mr-2" />
+                Key Strengths
+              </h3>
+              <ul className="space-y-2">
+                {analysis.strengths.map((strength, index) => (
+                  <li key={index} className="text-green-800 text-sm">
+                    • {strength}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-amber-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-amber-900 mb-4 flex items-center">
+                <AlertCircle className="h-5 w-5 mr-2" />
+                Areas for Improvement
+              </h3>
+              <ul className="space-y-2">
+                {analysis.improvements.map((improvement, index) => (
+                  <li key={index} className="text-amber-800 text-sm">
+                    • {improvement}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Recommendations */}
+          <div className="bg-blue-50 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Specific Recommendations</h3>
+            <ul className="space-y-2">
+              {analysis.recommendations.map((recommendation, index) => (
+                <li key={index} className="text-blue-800 text-sm">
+                  • {recommendation}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button
+              onClick={handleDownloadReport}
+              className="flex items-center justify-center gap-2 bg-transparent"
+              variant="outline"
+            >
+              <Download className="h-4 w-4" />
+              Download Report
+            </Button>
+
+            <Button
+              onClick={() => window.open("https://forms.office.com/r/KNDUcFg5Vw", "_blank")}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              Get Started with Exelita
+            </Button>
+
+            <Button
+              onClick={() => {
+                setFile(null)
+                setAnalysis(null)
+                setError("")
+              }}
+              variant="outline"
+            >
+              Analyze Another Resume
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

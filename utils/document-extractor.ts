@@ -1,5 +1,5 @@
-import { extractTextFromPdf } from "./pdf-extractor"
-import { extractTextFromDocx } from "./docx-extractor"
+import { extractTextFromPDF } from "./pdf-extractor"
+import { extractTextFromDOCX } from "./docx-extractor"
 
 export async function extractTextFromDocument(file: File): Promise<{
   text: string
@@ -11,8 +11,8 @@ export async function extractTextFromDocument(file: File): Promise<{
     const fileName = file.name.toLowerCase()
 
     // Handle text files
-    if (fileType === "text/plain") {
-      const text = await readTextFile(file)
+    if (fileType === "text/plain" || fileName.endsWith(".txt")) {
+      const text = await file.text()
       return {
         text,
         isPlaceholder: false,
@@ -21,8 +21,8 @@ export async function extractTextFromDocument(file: File): Promise<{
     }
 
     // Handle PDF files
-    else if (fileType === "application/pdf") {
-      const text = await extractTextFromPdf(file)
+    else if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
+      const text = await extractTextFromPDF(file)
       return {
         text,
         isPlaceholder: false,
@@ -35,7 +35,7 @@ export async function extractTextFromDocument(file: File): Promise<{
       fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
       fileName.endsWith(".docx")
     ) {
-      const text = await extractTextFromDocx(file)
+      const text = await extractTextFromDOCX(file)
       return {
         text,
         isPlaceholder: false,
@@ -74,22 +74,6 @@ export async function extractTextFromDocument(file: File): Promise<{
       debugInfo: `Error extracting text: ${error instanceof Error ? error.message : "Unknown error"}`,
     }
   }
-}
-
-// Helper function to read text files
-async function readTextFile(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        resolve(event.target.result as string)
-      } else {
-        reject(new Error("Failed to read text file"))
-      }
-    }
-    reader.onerror = () => reject(new Error("Failed to read text file"))
-    reader.readAsText(file)
-  })
 }
 
 // Helper function to create placeholder text
