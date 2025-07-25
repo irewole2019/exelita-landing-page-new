@@ -1,5 +1,4 @@
 import { extractTextFromPDF } from "./pdf-extractor"
-import { extractTextFromDOCX } from "./docx-extractor"
 
 export async function extractTextFromDocument(file: File): Promise<{
   text: string
@@ -30,31 +29,30 @@ export async function extractTextFromDocument(file: File): Promise<{
       }
     }
 
-    // Handle DOCX files
+    // Handle DOCX files - provide placeholder since we don't have mammoth
     else if (
       fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
       fileName.endsWith(".docx")
     ) {
-      const text = await extractTextFromDOCX(file)
-      return {
-        text,
-        isPlaceholder: false,
-        debugInfo: `Successfully extracted ${text.length} characters from DOCX`,
-      }
-    }
-
-    // Handle DOC files - attempt to extract but may not work well in browser
-    else if (fileType === "application/msword" || fileName.endsWith(".doc")) {
-      // For DOC files, we'll provide a more informative placeholder
-      // as browser-based extraction is limited
       return {
         text: createPlaceholderText(
           file.name,
-          "DOC files cannot be fully processed in the browser. For best results, please convert to DOCX or PDF.",
+          "DOCX files require additional processing. Please convert to PDF or TXT for best results.",
         ),
         isPlaceholder: true,
-        debugInfo:
-          "DOC files cannot be fully processed in the browser. For best results, please convert to DOCX or PDF.",
+        debugInfo: "DOCX files require additional processing. Please convert to PDF or TXT for best results.",
+      }
+    }
+
+    // Handle DOC files - provide placeholder
+    else if (fileType === "application/msword" || fileName.endsWith(".doc")) {
+      return {
+        text: createPlaceholderText(
+          file.name,
+          "DOC files cannot be processed in the browser. Please convert to DOCX, PDF, or TXT.",
+        ),
+        isPlaceholder: true,
+        debugInfo: "DOC files cannot be processed in the browser. Please convert to DOCX, PDF, or TXT.",
       }
     }
 

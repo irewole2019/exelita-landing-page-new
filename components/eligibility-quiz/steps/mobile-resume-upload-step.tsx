@@ -4,36 +4,18 @@ import type React from "react"
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import {
-  ChevronLeft,
-  ChevronRight,
-  Upload,
-  CheckCircle,
-  Trash2,
-  AlertCircle,
-  FileText,
-  Info,
-  Camera,
-} from "lucide-react"
-import type { FormData } from "../mobile-optimized-quiz"
+import { ChevronLeft, ChevronRight, Upload, CheckCircle, Trash2, AlertCircle, Info, Camera } from "lucide-react"
 import { extractTextFromDocument } from "@/utils/document-extractor"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 interface MobileResumeUploadStepProps {
-  formData: FormData
-  updateFormData: (data: Partial<FormData>) => void
-  onNext: () => void
-  onPrev: () => void
+  onNext: (file: File, text: string) => void
   onSkip: () => void
+  onBack: () => void
 }
 
-export default function MobileResumeUploadStep({
-  formData,
-  updateFormData,
-  onNext,
-  onPrev,
-  onSkip,
-}: MobileResumeUploadStepProps) {
+export default function MobileResumeUploadStep({ onNext, onSkip, onBack }: MobileResumeUploadStepProps) {
+  const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [isParsing, setIsParsing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -41,115 +23,10 @@ export default function MobileResumeUploadStep({
   const [resumeText, setResumeText] = useState<string | null>(null)
   const [isPlaceholderText, setIsPlaceholderText] = useState(false)
   const [extractionProgress, setExtractionProgress] = useState<string | null>(null)
-  const [useAiFallback, setUseAiFallback] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const isMobile = useIsMobile()
-
-  // Mobile-optimized file analysis
-  const analyzeWithOpenAI = async () => {
-    if (!resumeText || resumeText.trim() === "") {
-      setError("Please enter resume text")
-      return
-    }
-
-    setIsParsing(true)
-    setError(null)
-    setDebugInfo("Analyzing resume with AI...")
-
-    try {
-      if (useAiFallback) {
-        const fallbackAnalysis = generateFallbackAnalysis(resumeText)
-        updateFormData({
-          parsedResumeData: {
-            publications: fallbackAnalysis.publications,
-            awards: fallbackAnalysis.awards,
-            leadership: fallbackAnalysis.leadership,
-            patents: fallbackAnalysis.patents,
-            experience: fallbackAnalysis.experience,
-          },
-          suggestedCategory: fallbackAnalysis.category,
-          categoryRationale: fallbackAnalysis.rationale,
-        })
-        setDebugInfo(
-          `Analysis completed. Found: ${fallbackAnalysis.publications} publications, ${fallbackAnalysis.awards} awards, ${fallbackAnalysis.patents} patents, ${fallbackAnalysis.experience} years experience.`,
-        )
-        return
-      }
-
-      const response = await fetch("/api/resume-analysis-ai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          resumeText,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`)
-      }
-
-      const data = await response.json()
-
-      if (!data || typeof data !== "object") {
-        throw new Error("Invalid response from API")
-      }
-
-      const publications = data.publications?.count || 0
-      const awards = data.awards?.count || 0
-      const hasLeadership = data.leadershipExperience?.hasLeadership || false
-      const patents = data.patents?.count || 0
-      const experience = data.yearsOfExperience?.years || 0
-
-      let category = null
-      let rationale = null
-
-      if (data.eb1Category) {
-        category = data.eb1Category.recommendation || null
-        rationale = data.eb1Category.rationale || null
-      } else {
-        if (publications >= 3 || awards >= 2 || patents >= 1) {
-          category = "EB-1A"
-          rationale = `Based on your profile with ${publications} publications, ${awards} awards, and ${patents} patents, Extraordinary Ability (EB-1A) appears most appropriate.`
-        } else if (publications >= 1 && experience >= 3) {
-          category = "EB-1B"
-          rationale = `With ${publications} publications and ${experience} years of experience, Outstanding Researcher (EB-1B) may be suitable.`
-        } else if (hasLeadership && experience >= 3) {
-          category = "EB-1C"
-          rationale = `With leadership experience and ${experience} years of experience, Multinational Manager/Executive (EB-1C) is recommended.`
-        } else {
-          category = "EB-1A"
-          rationale = "Based on the available information, Extraordinary Ability (EB-1A) may be worth exploring."
-        }
-      }
-
-      updateFormData({
-        parsedResumeData: {
-          publications,
-          awards,
-          leadership: hasLeadership,
-          patents,
-          experience,
-        },
-        suggestedCategory: category as FormData["category"],
-        categoryRationale: rationale,
-      })
-
-      setDebugInfo(
-        `AI analysis completed. Found: ${publications} publications, ${awards} awards, ${patents} patents, ${experience} years experience.`,
-      )
-    } catch (err) {
-      console.error("Failed to analyze resume with OpenAI:", err)
-      setError(err instanceof Error ? err.message : "Failed to analyze resume. Please try again.")
-      setUseAiFallback(true)
-      setError("AI analysis failed. Click 'Analyze with AI' again to use our fallback analyzer.")
-    } finally {
-      setIsParsing(false)
-    }
-  }
 
   // Mobile-optimized file handling
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,23 +34,21 @@ export default function MobileResumeUploadStep({
     setDebugInfo(null)
     setIsPlaceholderText(false)
     setExtractionProgress(null)
-    setUseAiFallback(false)
-    const file = e.target.files?.[0]
+    const selectedFile = e.target.files?.[0]
 
-    if (!file) return
+    if (!selectedFile) return
 
-    if (file.size > 10 * 1024 * 1024) {
+    if (selectedFile.size > 10 * 1024 * 1024) {
       setError("File size exceeds 10MB limit")
       return
     }
 
     setIsUploading(true)
     setExtractionProgress("Processing your document...")
-
-    updateFormData({ resume: file })
+    setFile(selectedFile)
 
     try {
-      const result = await extractTextFromDocument(file)
+      const result = await extractTextFromDocument(selectedFile)
       setResumeText(result.text)
       setDebugInfo(result.debugInfo || "")
       setIsPlaceholderText(result.isPlaceholder)
@@ -188,7 +63,7 @@ export default function MobileResumeUploadStep({
   }
 
   const removeFile = () => {
-    updateFormData({ resume: null, parsedResumeData: null, suggestedCategory: null, categoryRationale: null })
+    setFile(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
@@ -196,99 +71,16 @@ export default function MobileResumeUploadStep({
     setDebugInfo(null)
     setIsPlaceholderText(false)
     setExtractionProgress(null)
-    setUseAiFallback(false)
   }
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setResumeText(e.target.value)
-    setUseAiFallback(false)
   }
 
-  // Fallback analysis function
-  const generateFallbackAnalysis = (text: string) => {
-    const publicationKeywords = ["publication", "journal", "conference", "paper", "article", "published"]
-    const publicationCount = countKeywordMatches(text, publicationKeywords)
-
-    const awardKeywords = ["award", "honor", "prize", "recognition", "scholarship", "grant"]
-    const awardCount = countKeywordMatches(text, awardKeywords)
-
-    const leadershipKeywords = ["lead", "manage", "director", "supervisor", "head", "chief", "executive"]
-    const hasLeadership = hasKeywordMatches(text, leadershipKeywords)
-
-    const patentKeywords = ["patent", "invention", "intellectual property"]
-    const patentCount = countKeywordMatches(text, patentKeywords)
-
-    const yearPattern = /\b(19|20)\d{2}\b/g
-    const years = text.match(yearPattern)
-    let yearsOfExperience = 5
-    let yearRange = "N/A"
-
-    if (years && years.length >= 2) {
-      const sortedYears = years.map(Number).sort()
-      const earliestYear = sortedYears[0]
-      const latestYear = sortedYears[sortedYears.length - 1]
-      yearsOfExperience = Math.min(latestYear - earliestYear, 20)
-      yearRange = `${earliestYear}-${latestYear}`
+  const handleNext = () => {
+    if (file && resumeText) {
+      onNext(file, resumeText)
     }
-
-    let category: "EB-1A" | "EB-1B" | "EB-1C" = "EB-1A"
-    let rationale = ""
-
-    if (publicationCount >= 3 || (publicationCount >= 1 && awardCount >= 1) || patentCount >= 1) {
-      category = "EB-1A"
-      rationale = `With ${publicationCount} publications, ${awardCount} awards, and ${patentCount} patents, Extraordinary Ability (EB-1A) appears most appropriate.`
-    } else if (publicationCount >= 1 && yearsOfExperience >= 3 && text.toLowerCase().includes("research")) {
-      category = "EB-1B"
-      rationale = `With ${publicationCount} publications and ${yearsOfExperience} years of research experience, Outstanding Researcher (EB-1B) may be suitable.`
-    } else if (
-      hasLeadership &&
-      yearsOfExperience >= 3 &&
-      (text.toLowerCase().includes("international") || text.toLowerCase().includes("global"))
-    ) {
-      category = "EB-1C"
-      rationale = `With leadership experience and ${yearsOfExperience} years in an international context, Multinational Manager/Executive (EB-1C) is recommended.`
-    } else {
-      if (publicationCount > 0 || awardCount > 0) {
-        category = "EB-1A"
-        rationale = `Based on your overall profile with ${publicationCount} publications and ${awardCount} awards, Extraordinary Ability (EB-1A) may be worth exploring.`
-      } else if (text.toLowerCase().includes("research") || text.toLowerCase().includes("professor")) {
-        category = "EB-1B"
-        rationale = `Your background in research suggests Outstanding Researcher (EB-1B) may be appropriate.`
-      } else if (hasLeadership) {
-        category = "EB-1C"
-        rationale = `Your leadership experience suggests Multinational Manager/Executive (EB-1C) could be suitable.`
-      } else {
-        category = "EB-1A"
-        rationale = `Based on the limited information available, Extraordinary Ability (EB-1A) may be the most flexible option to explore.`
-      }
-    }
-
-    return {
-      publications: publicationCount,
-      awards: awardCount,
-      leadership: hasLeadership,
-      patents: patentCount,
-      experience: yearsOfExperience,
-      category,
-      rationale,
-    }
-  }
-
-  const countKeywordMatches = (text: string, keywords: string[]): number => {
-    const lowerText = text.toLowerCase()
-    let count = 0
-    const sentences = text.split(/[.!?]+/)
-    for (const sentence of sentences) {
-      if (keywords.some((keyword) => sentence.toLowerCase().includes(keyword))) {
-        count++
-      }
-    }
-    return Math.min(count, 10)
-  }
-
-  const hasKeywordMatches = (text: string, keywords: string[]): boolean => {
-    const lowerText = text.toLowerCase()
-    return keywords.some((keyword) => lowerText.includes(keyword))
   }
 
   return (
@@ -300,12 +92,13 @@ export default function MobileResumeUploadStep({
         </p>
       </div>
 
-      {!formData.resume ? (
+      {!file ? (
         <div
           className={`
-            border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-purple-500 transition-colors
+            border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-purple-500 transition-colors cursor-pointer
             ${isMobile ? "p-8" : "p-12"}
           `}
+          onClick={() => fileInputRef.current?.click()}
         >
           <input
             type="file"
@@ -327,11 +120,7 @@ export default function MobileResumeUploadStep({
               PDF, Word, or text files up to 10MB
             </p>
 
-            <Button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className={`bg-purple-700 hover:bg-purple-800 ${isMobile ? "w-full py-3" : ""}`}
-            >
+            <Button type="button" className={`bg-purple-700 hover:bg-purple-800 ${isMobile ? "w-full py-3" : ""}`}>
               {isMobile && <Camera className="h-4 w-4 mr-2" />}
               Select File
             </Button>
@@ -343,9 +132,9 @@ export default function MobileResumeUploadStep({
             <div className="flex items-center flex-1 min-w-0">
               <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className={`font-medium truncate ${isMobile ? "text-sm" : "text-base"}`}>{formData.resume.name}</p>
+                <p className={`font-medium truncate ${isMobile ? "text-sm" : "text-base"}`}>{file.name}</p>
                 <p className={`text-gray-500 ${isMobile ? "text-xs" : "text-sm"}`}>
-                  {(formData.resume.size / 1024 / 1024).toFixed(2)} MB
+                  {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
             </div>
@@ -393,96 +182,6 @@ export default function MobileResumeUploadStep({
                   placeholder="Resume text will appear here. You can edit it if needed."
                 />
               </div>
-              <div className="mt-3 flex justify-end">
-                <Button
-                  onClick={analyzeWithOpenAI}
-                  disabled={isParsing}
-                  size="sm"
-                  className={`bg-indigo-600 hover:bg-indigo-700 ${isMobile ? "w-full" : ""}`}
-                >
-                  <FileText className="h-4 w-4 mr-1" />
-                  {useAiFallback ? "Use Fallback Analysis" : "Analyze with AI"}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {isParsing && (
-            <div className="mt-4">
-              <p className={`text-indigo-700 animate-pulse flex items-center ${isMobile ? "text-sm" : "text-base"}`}>
-                <span className="mr-2">Analyzing your resume with AI...</span>
-                <svg
-                  className="animate-spin h-4 w-4 text-indigo-700"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-              </p>
-            </div>
-          )}
-
-          {formData.parsedResumeData && !isParsing && (
-            <div className="mt-4">
-              <h4 className={`font-medium text-gray-900 mb-3 ${isMobile ? "text-sm" : "text-base"}`}>
-                Resume Analysis
-              </h4>
-              <div className="bg-indigo-50 p-4 rounded-md">
-                <div className={`grid gap-3 ${isMobile ? "grid-cols-1" : "grid-cols-2"}`}>
-                  <div className="flex justify-between">
-                    <span className={`text-gray-600 ${isMobile ? "text-sm" : "text-base"}`}>Publications</span>
-                    <span className={`font-medium ${isMobile ? "text-sm" : "text-base"}`}>
-                      {formData.parsedResumeData.publications}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className={`text-gray-600 ${isMobile ? "text-sm" : "text-base"}`}>Awards</span>
-                    <span className={`font-medium ${isMobile ? "text-sm" : "text-base"}`}>
-                      {formData.parsedResumeData.awards}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className={`text-gray-600 ${isMobile ? "text-sm" : "text-base"}`}>Leadership</span>
-                    <span className={`font-medium ${isMobile ? "text-sm" : "text-base"}`}>
-                      {formData.parsedResumeData.leadership ? "Yes" : "No"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className={`text-gray-600 ${isMobile ? "text-sm" : "text-base"}`}>Patents</span>
-                    <span className={`font-medium ${isMobile ? "text-sm" : "text-base"}`}>
-                      {formData.parsedResumeData.patents}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className={`text-gray-600 ${isMobile ? "text-sm" : "text-base"}`}>Experience</span>
-                    <span className={`font-medium ${isMobile ? "text-sm" : "text-base"}`}>
-                      {formData.parsedResumeData.experience} years
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {formData.suggestedCategory && (
-                <div className="mt-4 bg-purple-50 p-4 rounded-md">
-                  <h4 className={`font-medium text-purple-900 mb-2 ${isMobile ? "text-sm" : "text-base"}`}>
-                    Suggested EB-1 Category
-                  </h4>
-                  <p className={`font-semibold text-purple-800 ${isMobile ? "text-sm" : "text-base"}`}>
-                    {formData.suggestedCategory}
-                  </p>
-                  {formData.categoryRationale && (
-                    <p className={`text-purple-700 mt-1 ${isMobile ? "text-xs" : "text-sm"}`}>
-                      {formData.categoryRationale}
-                    </p>
-                  )}
-                </div>
-              )}
             </div>
           )}
 
@@ -499,29 +198,20 @@ export default function MobileResumeUploadStep({
 
       {/* Mobile Navigation */}
       <div className={`flex gap-3 pt-6 ${isMobile ? "flex-col" : "flex-row justify-between"}`}>
-        {!isMobile && (
-          <Button variant="outline" onClick={onPrev}>
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-        )}
-
         <Button
-          onClick={onNext}
-          disabled={!formData.parsedResumeData || isParsing}
+          onClick={handleNext}
+          disabled={!file || !resumeText || isUploading}
           className={`bg-purple-700 hover:bg-purple-800 ${isMobile ? "w-full py-3" : ""}`}
         >
           Continue
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
-      </div>
 
-      <div className="flex flex-col gap-3">
         <Button onClick={onSkip} variant="outline" className="w-full bg-transparent" disabled={isUploading}>
           Skip & Continue
         </Button>
 
-        <Button onClick={onPrev} variant="ghost" className="flex items-center justify-center gap-2">
+        <Button onClick={onBack} variant="ghost" className="flex items-center justify-center gap-2">
           <ChevronLeft className="h-4 w-4" />
           Back
         </Button>
