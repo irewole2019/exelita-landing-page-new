@@ -7,7 +7,6 @@ const config: Config = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "./*.{js,ts,jsx,tsx,mdx}",
     "*.{js,ts,jsx,tsx,mdx}",
   ],
   prefix: "",
@@ -20,9 +19,6 @@ const config: Config = {
       },
     },
     extend: {
-      fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
