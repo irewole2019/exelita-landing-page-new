@@ -64,7 +64,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} font-sans`}>
+      <body className={`${inter.className} font-sans antialiased`}>
         <Suspense fallback={null}>
           {children}
 
