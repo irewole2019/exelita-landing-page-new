@@ -125,25 +125,21 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center md:justify-start">
               <EligibilityQuizController>
-                <Button
-                  size="lg"
-                  className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto"
-                >
+                <button className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto transition-colors duration-200 flex items-center justify-center whitespace-nowrap">
                   Take Free Eligibility Quiz
                   <ChevronRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
-                </Button>
+                </button>
               </EligibilityQuizController>
 
-              <Button
-                size="lg"
-                className="bg-purple-700 hover:bg-purple-800 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto"
-                asChild
+              <a
+                href="https://forms.office.com/r/KNDUcFg5Vw"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => handleBetaSignup("hero")}
+                className="bg-purple-700 hover:bg-purple-800 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto transition-colors duration-200 flex items-center justify-center whitespace-nowrap"
               >
-                <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
-                  Join Our Beta Program
-                </a>
-              </Button>
+                Join Our Beta Program
+              </a>
             </div>
           </div>
           <div className="w-full md:w-1/2 relative">
@@ -238,7 +234,7 @@ export default function Home() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
                 </div>
@@ -521,18 +517,19 @@ export default function Home() {
                 </li>
               </ul>
 
-              <Button
-                className="w-full bg-gray-900 hover:bg-gray-800"
-                asChild
+              {/* Essential Plan Button */}
+              <a
+                href="https://forms.office.com/r/KNDUcFg5Vw"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => {
                   handlePricingClick("Essential")
                   handleBetaSignup("pricing-essential")
                 }}
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 px-4 rounded-md font-medium transition-colors duration-200 flex items-center justify-center"
               >
-                <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
-                  Start Essential Plan
-                </a>
-              </Button>
+                Start Essential Plan
+              </a>
             </div>
 
             {/* Pro Plan - Most Popular */}
@@ -571,18 +568,19 @@ export default function Home() {
                 </li>
               </ul>
 
-              <Button
-                className="w-full bg-purple-700 hover:bg-purple-800"
-                asChild
+              {/* Pro Plan Button */}
+              <a
+                href="https://forms.office.com/r/KNDUcFg5Vw"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => {
                   handlePricingClick("Pro")
                   handleBetaSignup("pricing-pro")
                 }}
+                className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 px-4 rounded-md font-medium transition-colors duration-200 flex items-center justify-center"
               >
-                <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
-                  Start Pro Plan
-                </a>
-              </Button>
+                Start Pro Plan
+              </a>
             </div>
 
             {/* Pro Max Plan */}
@@ -619,18 +617,19 @@ export default function Home() {
                 </li>
               </ul>
 
-              <Button
-                className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold"
-                asChild
+              {/* Pro Max Plan Button */}
+              <a
+                href="https://forms.office.com/r/KNDUcFg5Vw"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => {
                   handlePricingClick("Pro Max")
                   handleBetaSignup("pricing-promax")
                 }}
+                className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold py-3 px-4 rounded-md transition-colors duration-200 flex items-center justify-center"
               >
-                <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
-                  Start Pro Max Plan
-                </a>
-              </Button>
+                Start Pro Max Plan
+              </a>
             </div>
           </div>
 
@@ -709,25 +708,20 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
-            <Button
-              size="lg"
-              className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto"
-              asChild
+            <a
+              href="https://forms.office.com/r/KNDUcFg5Vw"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => handleBetaSignup("final-cta")}
+              className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto transition-colors duration-200 flex items-center justify-center whitespace-nowrap"
             >
-              <a href="https://forms.office.com/r/KNDUcFg5Vw" target="_blank" rel="noopener noreferrer">
-                Start Your EB-1 Petition Today
-              </a>
-            </Button>
+              Start Your EB-1 Petition Today
+            </a>
 
             <EligibilityQuizController>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-amber-500 text-amber-500 hover:bg-amber-500/10 text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto bg-transparent"
-              >
+              <button className="border-2 border-amber-500 text-amber-500 hover:bg-amber-500/10 text-base md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-lg w-full sm:w-auto bg-transparent transition-colors duration-200 flex items-center justify-center whitespace-nowrap">
                 Take Free Eligibility Quiz
-              </Button>
+              </button>
             </EligibilityQuizController>
           </div>
 
