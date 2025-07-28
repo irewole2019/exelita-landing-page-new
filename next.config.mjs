@@ -39,6 +39,15 @@ const nextConfig = {
       },
     ]
   },
+  async redirects() {
+    return [
+      {
+        source: '/quiz',
+        destination: '/?quiz=true',
+        permanent: false,
+      },
+    ]
+  },
 }
 
 export default nextConfig
