@@ -187,3 +187,6 @@ export default function OpenAITestPanel() {
     </div>
   )
 }
+
+// Add named export
+export { OpenAITestPanel }

@@ -1,4 +1,4 @@
-import { OpenAITestPanel } from "@/components/openai-test-panel"
+import OpenAITestPanel from "@/components/openai-test-panel"
 
 export default function TestOpenAIPage() {
   return (
