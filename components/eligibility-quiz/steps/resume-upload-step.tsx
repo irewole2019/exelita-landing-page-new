@@ -5,36 +5,13 @@ import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Upload, FileText, ChevronLeft, ChevronRight, AlertCircle, CheckCircle, Trash2, FileDown } from "lucide-react"
-import type { FormData } from "../eligibility-quiz"
 import { extractTextFromDocument } from "@/utils/document-extractor"
 import { trackResumeUpload } from "@/lib/analytics"
 
-// Define the resume analysis result type
-type ResumeAnalysisResult = {
-  publications: {
-    count: number
-    items: string[]
-  }
-  awards: {
-    count: number
-    items: string[]
-  }
-  leadershipExperience: {
-    hasLeadership: boolean
-    items: string[]
-  }
-  patents: {
-    count: number
-    items: string[]
-  }
-  yearsOfExperience: {
-    years: number
-    range: string
-  }
-  eb1Category: {
-    recommendation: string
-    rationale: string
-  }
+// Define the form data type
+interface FormData {
+  resume?: File | null
+  resumeText?: string
 }
 
 // Sample resume component
@@ -101,106 +78,6 @@ International Association for Quantum Information (IAQI)
   )
 }
 
-// Function to generate a fallback analysis based on text content
-const generateFallbackAnalysis = (text: string) => {
-  // Count publications
-  const publicationKeywords = ["publication", "journal", "conference", "paper", "article", "published"]
-  const publicationCount = countKeywordMatches(text, publicationKeywords)
-
-  // Count awards
-  const awardKeywords = ["award", "honor", "prize", "recognition", "scholarship", "grant"]
-  const awardCount = countKeywordMatches(text, awardKeywords)
-
-  // Check for leadership experience
-  const leadershipKeywords = ["lead", "manage", "director", "supervisor", "head", "chief", "executive"]
-  const hasLeadership = hasKeywordMatches(text, leadershipKeywords)
-
-  // Count patents
-  const patentKeywords = ["patent", "invention", "intellectual property"]
-  const patentCount = countKeywordMatches(text, patentKeywords)
-
-  // Estimate years of experience
-  const yearPattern = /\b(19|20)\d{2}\b/g
-  const years = text.match(yearPattern)
-  let yearsOfExperience = 5 // Default
-  let yearRange = "N/A"
-
-  if (years && years.length >= 2) {
-    const sortedYears = years.map(Number).sort()
-    const earliestYear = sortedYears[0]
-    const latestYear = sortedYears[sortedYears.length - 1]
-    yearsOfExperience = Math.min(latestYear - earliestYear, 20) // Cap at 20 years
-    yearRange = `${earliestYear}-${latestYear}`
-  }
-
-  // Determine the most appropriate EB-1 category
-  let category: "EB-1A" | "EB-1B" | "EB-1C" = "EB-1A"
-  let rationale = ""
-
-  if (publicationCount >= 3 || (publicationCount >= 1 && awardCount >= 1) || patentCount >= 1) {
-    category = "EB-1A"
-    rationale = `With ${publicationCount} publications, ${awardCount} awards, and ${patentCount} patents, Extraordinary Ability (EB-1A) appears most appropriate.`
-  } else if (publicationCount >= 1 && yearsOfExperience >= 3 && text.toLowerCase().includes("research")) {
-    category = "EB-1B"
-    rationale = `With ${publicationCount} publications and ${yearsOfExperience} years of research experience, Outstanding Researcher (EB-1B) may be suitable.`
-  } else if (
-    hasLeadership &&
-    yearsOfExperience >= 3 &&
-    (text.toLowerCase().includes("international") || text.toLowerCase().includes("global"))
-  ) {
-    category = "EB-1C"
-    rationale = `With leadership experience and ${yearsOfExperience} years in an international context, Multinational Manager/Executive (EB-1C) is recommended.`
-  } else {
-    // Default fallback
-    if (publicationCount > 0 || awardCount > 0) {
-      category = "EB-1A"
-      rationale = `Based on your overall profile with ${publicationCount} publications and ${awardCount} awards, Extraordinary Ability (EB-1A) may be worth exploring.`
-    } else if (text.toLowerCase().includes("research") || text.toLowerCase().includes("professor")) {
-      category = "EB-1B"
-      rationale = `Your background in research suggests Outstanding Researcher (EB-1B) may be appropriate.`
-    } else if (hasLeadership) {
-      category = "EB-1C"
-      rationale = `Your leadership experience suggests Multinational Manager/Executive (EB-1C) could be suitable.`
-    } else {
-      category = "EB-1A"
-      rationale = `Based on the limited information available, Extraordinary Ability (EB-1A) may be the most flexible option to explore.`
-    }
-  }
-
-  return {
-    publications: publicationCount,
-    awards: awardCount,
-    leadership: hasLeadership,
-    patents: patentCount,
-    experience: yearsOfExperience,
-    category,
-    rationale,
-  }
-}
-
-// Helper function to count keyword matches
-const countKeywordMatches = (text: string, keywords: string[]): number => {
-  const lowerText = text.toLowerCase()
-  let count = 0
-
-  // Count sentences containing keywords
-  const sentences = text.split(/[.!?]+/)
-  for (const sentence of sentences) {
-    if (keywords.some((keyword) => sentence.toLowerCase().includes(keyword))) {
-      count++
-    }
-  }
-
-  // Ensure count is reasonable
-  return Math.min(count, 10) // Cap at 10
-}
-
-// Helper function to check if text contains any keywords
-const hasKeywordMatches = (text: string, keywords: string[]): boolean => {
-  const lowerText = text.toLowerCase()
-  return keywords.some((keyword) => lowerText.includes(keyword))
-}
-
 export default function ResumeUploadStep({
   formData,
   updateFormData,
@@ -226,10 +103,10 @@ export default function ResumeUploadStep({
     setError("")
 
     try {
-      const text = await extractTextFromDocument(file)
+      const result = await extractTextFromDocument(file)
       setUploadedFile(file)
-      setResumeText(text)
-      updateFormData({ resume: file, resumeText: text })
+      setResumeText(result.text)
+      updateFormData({ resume: file, resumeText: result.text })
       trackResumeUpload()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to process file")
@@ -270,7 +147,7 @@ export default function ResumeUploadStep({
       {!uploadedFile ? (
         <div
           onClick={handleUploadClick}
-          className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-purple-500 transition-colors"
+          className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-purple-500 transition-colors cursor-pointer"
         >
           <input
             ref={fileInputRef}
@@ -316,7 +193,7 @@ export default function ResumeUploadStep({
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-700 p-3 rounded-md flex items-start">
+            <div className="bg-red-50 text-red-700 p-3 rounded-md flex items-start mt-4">
               <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
               <span className="text-sm">{error}</span>
             </div>

@@ -9,7 +9,7 @@ const nextConfig = {
   images: {
     domains: ['placeholder.svg'],
     formats: ['image/webp', 'image/avif'],
-    unoptimized: true,
+    unoptimized: false,
   },
   experimental: {
     optimizePackageImports: ['lucide-react'],

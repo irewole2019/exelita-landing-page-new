@@ -1,10 +1,12 @@
 import { extractTextFromPDF } from "./pdf-extractor"
 
-export async function extractTextFromDocument(file: File): Promise<{
+interface ExtractionResult {
   text: string
   isPlaceholder: boolean
   debugInfo?: string
-}> {
+}
+
+export async function extractTextFromDocument(file: File): Promise<ExtractionResult> {
   try {
     const fileType = file.type
     const fileName = file.name.toLowerCase()
