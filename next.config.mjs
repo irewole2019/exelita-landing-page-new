@@ -7,7 +7,37 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    domains: ['placeholder.svg'],
+    formats: ['image/webp', 'image/avif'],
     unoptimized: true,
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
+    ]
   },
 }
 
