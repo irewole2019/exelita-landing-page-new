@@ -535,7 +535,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">Secure recommender portal</span>
+                  <span className="text-xs md:text-sm lg:text-base">2 professional recommendation letters   </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -590,7 +590,7 @@ export default function Home() {
                 <li className="flex items-start">
                   <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                   <span className="text-xs md:text-sm lg:text-base">
-                    <strong>3 professional recommendation letters</strong>
+                    <strong>  5 professional recommendation letters</strong>
                   </span>
                 </li>
                 <li className="flex items-start">
@@ -636,7 +636,7 @@ export default function Home() {
                 <li className="flex items-start">
                   <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                   <span className="text-xs md:text-sm lg:text-base">
-                    <strong>5 recommendation letters</strong>
+                    <strong>10 recommendation letters</strong>
                   </span>
                 </li>
                 <li className="flex items-start">
