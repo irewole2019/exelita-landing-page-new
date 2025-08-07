@@ -521,7 +521,7 @@ export default function Home() {
             <div className="border border-gray-200 rounded-xl p-4 md:p-6 lg:p-8 hover:shadow-lg transition-shadow duration-300">
               <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-2">Essential</h3>
               <div className="flex items-end mb-3 md:mb-4 lg:mb-6">
-                <span className="text-2xl md:text-3xl lg:text-4xl font-bold">$1500</span>
+                <span className="text-2xl md:text-3xl lg:text-4xl font-bold">$1,500</span>
                 <span className="text-gray-500 ml-2 text-sm md:text-base">one-time</span>
               </div>
               <p className="text-xs md:text-sm text-gray-600 mb-3 md:mb-4">
@@ -569,7 +569,7 @@ export default function Home() {
 
               <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-2">Pro</h3>
               <div className="flex items-end mb-3 md:mb-4 lg:mb-6">
-                <span className="text-2xl md:text-3xl lg:text-4xl font-bold">$2000</span>
+                <span className="text-2xl md:text-3xl lg:text-4xl font-bold">$2,000</span>
                 <span className="text-gray-500 ml-2 text-sm md:text-base">one-time</span>
               </div>
               <p className="text-xs md:text-sm text-gray-600 mb-3 md:mb-4">
@@ -615,7 +615,7 @@ export default function Home() {
 
             {/* Pro Max Plan */}
             <div className="border border-gray-200 rounded-xl p-4 md:p-6 lg:p-8 hover:shadow-lg transition-shadow duration-300 bg-gradient-to-b from-gray-50 to-white">
-              <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-2">Pro Max</h3>
+              <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-2">Premium</h3>
               <div className="flex items-end mb-3 md:mb-4 lg:mb-6">
                 <span className="text-2xl md:text-3xl lg:text-4xl font-bold">$2,500</span>
                 <span className="text-gray-500 ml-2 text-sm md:text-base">one-time</span>
