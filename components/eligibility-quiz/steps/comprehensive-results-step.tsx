@@ -4,27 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import {
-  ChevronLeft,
-  Download,
-  Mail,
-  CheckCircle,
-  AlertCircle,
-  TrendingUp,
-  Award,
-  Users,
-  Newspaper,
-  Scale,
-  Lightbulb,
-  BookOpen,
-  Palette,
-  Building,
-  DollarSign,
-  Music,
-  Star,
-  Target,
-  ArrowRight,
-} from "lucide-react"
+import { ChevronLeft, Download, Mail, CheckCircle, AlertCircle, TrendingUp, Award, Users, Newspaper, Scale, Lightbulb, BookOpen, Palette, Building, DollarSign, Music, Star, Target, ArrowRight, FileText, LinkIcon } from 'lucide-react'
 
 interface ComprehensiveResultsStepProps {
   questionnaireData: Record<string, string>
@@ -49,6 +29,18 @@ interface ParsedResults {
   nextSteps: string[]
 }
 
+type ResumeData = {
+  publications?: { count: number; items: string[] }
+  awards?: { count: number; items: string[] }
+  leadershipExperience?: { hasLeadership: boolean; items: string[] }
+  patents?: { count: number; items: string[] }
+  yearsOfExperience?: { years: number; range: string }
+  notableEmployers?: string[]
+  education?: string[]
+  skills?: string[]
+  links?: string[]
+} | null
+
 const criteriaIcons = {
   awards: Award,
   memberships: Users,
@@ -70,6 +62,7 @@ export default function ComprehensiveResultsStep({
 }: ComprehensiveResultsStepProps) {
   const [evaluation, setEvaluation] = useState<string>("")
   const [parsedResults, setParsedResults] = useState<ParsedResults | null>(null)
+  const [resumeDataParsed, setResumeDataParsed] = useState<ResumeData>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>("")
 
@@ -94,6 +87,7 @@ export default function ComprehensiveResultsStep({
 
         const result = await response.json()
         setEvaluation(result.evaluation)
+        setResumeDataParsed(result.resumeData || null)
 
         // Parse the evaluation for better UI display
         const parsed = parseEvaluation(result.evaluation, questionnaireData)
@@ -110,17 +104,14 @@ export default function ComprehensiveResultsStep({
   }, [questionnaireData, cvText])
 
   const parseEvaluation = (evaluation: string, responses: Record<string, string>): ParsedResults => {
-    // Extract overall score (look for patterns like "Score: 75/100" or "75 out of 100")
     const scoreMatch = evaluation.match(/(?:score|total).*?(\d+)(?:\/100|%|\s*out\s*of\s*100)/i)
     const overallScore = scoreMatch ? Number.parseInt(scoreMatch[1]) : 65
 
-    // Determine eligibility level based on score
     let eligibilityLevel = "Moderate"
     if (overallScore >= 80) eligibilityLevel = "Strong"
     else if (overallScore >= 60) eligibilityLevel = "Moderate"
     else eligibilityLevel = "Needs Improvement"
 
-    // Create criteria scores based on responses
     const criteriaScores = [
       {
         name: "Awards & Recognition",
@@ -180,7 +171,6 @@ export default function ComprehensiveResultsStep({
       },
     ]
 
-    // Extract strengths and improvements from evaluation text
     const strengths = criteriaScores
       .filter((c) => c.score >= 6)
       .map((c) => `Strong ${c.name.toLowerCase()} demonstrates your expertise`)
@@ -235,6 +225,9 @@ OVERALL ASSESSMENT
 Overall Score: ${parsedResults?.overallScore}/100
 Eligibility Level: ${parsedResults?.eligibilityLevel}
 
+PARSED RESUME DATA
+${JSON.stringify(resumeDataParsed, null, 2)}
+
 DETAILED ANALYSIS
 ${evaluation}
 
@@ -274,6 +267,9 @@ I just completed the comprehensive EB-1A eligibility evaluation and would like t
 My Results Summary:
 - Overall Score: ${parsedResults?.overallScore}/100
 - Eligibility Level: ${parsedResults?.eligibilityLevel}
+
+Parsed Resume Data:
+${JSON.stringify(resumeDataParsed, null, 2)}
 
 Please contact me to discuss how Exelita can help me build my EB-1A petition.
 
@@ -357,6 +353,122 @@ Best regards
         <Progress value={parsedResults.overallScore} className="w-64 mx-auto h-3" />
       </div>
 
+      {/* Parsed Resume Data */}
+      {resumeDataParsed && (
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <FileText className="h-5 w-5 text-purple-600" />
+            <h3 className="text-xl font-bold text-gray-900">Parsed Resume Data (AI)</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="p-3 rounded-md bg-purple-50">
+              <div className="flex items-center gap-2 font-medium text-purple-900 mb-1">
+                <BookOpen className="h-4 w-4" />
+                Publications
+              </div>
+              <p className="text-purple-800">{resumeDataParsed.publications?.count ?? 0} item(s)</p>
+              <ul className="mt-2 list-disc pl-5 text-purple-900">
+                {(resumeDataParsed.publications?.items || []).slice(0, 5).map((it, i) => (
+                  <li key={i}>{it}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="p-3 rounded-md bg-amber-50">
+              <div className="flex items-center gap-2 font-medium text-amber-900 mb-1">
+                <Award className="h-4 w-4" />
+                Awards
+              </div>
+              <p className="text-amber-800">{resumeDataParsed.awards?.count ?? 0} item(s)</p>
+              <ul className="mt-2 list-disc pl-5 text-amber-900">
+                {(resumeDataParsed.awards?.items || []).slice(0, 5).map((it, i) => (
+                  <li key={i}>{it}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="p-3 rounded-md bg-green-50">
+              <div className="flex items-center gap-2 font-medium text-green-900 mb-1">
+                <Building className="h-4 w-4" />
+                Leadership
+              </div>
+              <p className="text-green-800">
+                {resumeDataParsed.leadershipExperience?.hasLeadership ? "Yes" : "No"}
+              </p>
+              <ul className="mt-2 list-disc pl-5 text-green-900">
+                {(resumeDataParsed.leadershipExperience?.items || []).slice(0, 5).map((it, i) => (
+                  <li key={i}>{it}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="p-3 rounded-md bg-blue-50">
+              <div className="flex items-center gap-2 font-medium text-blue-900 mb-1">
+                <Lightbulb className="h-4 w-4" />
+                Patents
+              </div>
+              <p className="text-blue-800">{resumeDataParsed.patents?.count ?? 0} item(s)</p>
+              <ul className="mt-2 list-disc pl-5 text-blue-900">
+                {(resumeDataParsed.patents?.items || []).slice(0, 5).map((it, i) => (
+                  <li key={i}>{it}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="p-3 rounded-md bg-gray-50">
+              <div className="flex items-center gap-2 font-medium text-gray-900 mb-1">
+                <Users className="h-4 w-4" />
+                Notable Employers
+              </div>
+              <ul className="mt-1 list-disc pl-5 text-gray-700">
+                {(resumeDataParsed.notableEmployers || []).slice(0, 6).map((it, i) => (
+                  <li key={i}>{it}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="p-3 rounded-md bg-gray-50">
+              <div className="flex items-center gap-2 font-medium text-gray-900 mb-1">
+                <DollarSign className="h-4 w-4" />
+                Experience
+              </div>
+              <p className="text-gray-700">
+                {(resumeDataParsed.yearsOfExperience?.years ?? 0)} years
+                {resumeDataParsed.yearsOfExperience?.range ? ` (${resumeDataParsed.yearsOfExperience.range})` : ""}
+              </p>
+            </div>
+
+            <div className="p-3 rounded-md bg-gray-50">
+              <div className="flex items-center gap-2 font-medium text-gray-900 mb-1">
+                <Users className="h-4 w-4" />
+                Education
+              </div>
+              <ul className="mt-1 list-disc pl-5 text-gray-700">
+                {(resumeDataParsed.education || []).slice(0, 6).map((it, i) => (
+                  <li key={i}>{it}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="p-3 rounded-md bg-gray-50">
+              <div className="flex items-center gap-2 font-medium text-gray-900 mb-1">
+                <LinkIcon className="h-4 w-4" />
+                Skills / Links
+              </div>
+              <p className="text-gray-700">
+                {(resumeDataParsed.skills || []).slice(0, 10).join(", ") || "—"}
+              </p>
+              <ul className="mt-1 list-disc pl-5 text-gray-700">
+                {(resumeDataParsed.links || []).slice(0, 6).map((it, i) => (
+                  <li key={i}>{it}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Criteria Breakdown */}
       <Card className="p-8">
         <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
@@ -399,7 +511,6 @@ Best regards
 
       {/* Strengths and Improvements */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Strengths */}
         <Card className="p-6">
           <h3 className="text-xl font-bold text-green-900 mb-4 flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-600" />
@@ -419,7 +530,6 @@ Best regards
           </div>
         </Card>
 
-        {/* Areas for Improvement */}
         <Card className="p-6">
           <h3 className="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-amber-600" />
@@ -475,7 +585,7 @@ Best regards
         </Button>
       </div>
 
-      {/* Next Steps CTA - Removed "Analyze My Resume" button */}
+      {/* Next Steps CTA */}
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl p-8">
         <div className="text-center">
           <h3 className="text-2xl font-bold mb-4">Ready to Build Your Winning EB-1A Petition?</h3>

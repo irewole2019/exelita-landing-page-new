@@ -4,17 +4,15 @@ import type React from "react"
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Upload, FileText, ChevronLeft, ChevronRight, AlertCircle, CheckCircle, Trash2, FileDown } from "lucide-react"
+import { Upload, FileText, ChevronLeft, ChevronRight, AlertCircle, CheckCircle, Trash2, FileDown, Shield } from 'lucide-react'
 import { extractTextFromDocument } from "@/utils/document-extractor"
 import { trackResumeUpload } from "@/lib/analytics"
 
-// Define the form data type
 interface FormData {
   resume?: File | null
   resumeText?: string
 }
 
-// Sample resume component
 const SampleResumeLink = () => {
   const downloadSampleResume = () => {
     const sampleResume = `John Smith
@@ -58,7 +56,6 @@ American Physical Society (APS)
 Institute of Electrical and Electronics Engineers (IEEE)
 International Association for Quantum Information (IAQI)
 `
-
     const blob = new Blob([sampleResume], { type: "text/plain" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
@@ -72,7 +69,7 @@ International Association for Quantum Information (IAQI)
 
   return (
     <Button variant="outline" size="sm" onClick={downloadSampleResume} className="flex items-center bg-transparent">
-      <FileDown className="h-4 w-4 mr-1" />
+      <FileDown className="h-4 w-4 mr-1" aria-hidden="true" />
       Download Sample Resume
     </Button>
   )
@@ -91,7 +88,7 @@ export default function ResumeUploadStep({
 }) {
   const [uploading, setUploading] = useState(false)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-  const [resumeText, setResumeText] = useState<string>("")
+  const [resumeText, setResumeText] = useState<string>(formData.resumeText || "")
   const [error, setError] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -139,47 +136,54 @@ export default function ResumeUploadStep({
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
+      <div className="text-center mb-2">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Upload Your Resume</h2>
         <p className="text-gray-600">We'll analyze your resume to identify EB-1 qualifying factors</p>
       </div>
 
       {!uploadedFile ? (
-        <div
-          onClick={handleUploadClick}
-          className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-purple-500 transition-colors cursor-pointer"
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.doc,.docx,.txt"
-            onChange={handleFileSelect}
-            className="hidden"
-          />
+        <>
+          <div
+            onClick={handleUploadClick}
+            className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-purple-500 transition-colors cursor-pointer"
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.doc,.docx,.txt"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
 
-          {uploading ? (
-            <div className="space-y-3">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-              <p className="text-gray-600">Processing your resume...</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <Upload className="h-12 w-12 text-gray-400 mx-auto" />
-              <div>
-                <p className="text-lg font-medium text-gray-900">Click to upload your resume</p>
-                <p className="text-gray-500">PDF, DOCX, or TXT files (max 10MB)</p>
+            {uploading ? (
+              <div className="space-y-3">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+                <p className="text-gray-600">Processing your resume...</p>
               </div>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="space-y-3">
+                <Upload className="h-12 w-12 text-gray-400 mx-auto" aria-hidden="true" />
+                <div>
+                  <p className="text-lg font-medium text-gray-900">Click to upload your resume</p>
+                  <p className="text-gray-600">PDF, DOCX, or TXT files (max 10MB)</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+            <Shield className="h-4 w-4" aria-hidden="true" />
+            <span>We only use your resume to generate this analysis. Not legal advice.</span>
+          </div>
+        </>
       ) : (
         <Card className="p-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+              <CheckCircle className="h-5 w-5 text-green-500 mr-2" aria-hidden="true" />
               <div>
-                <p className="font-medium">{uploadedFile.name}</p>
-                <p className="text-sm text-gray-500">{(uploadedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                <p className="font-medium text-gray-900">{uploadedFile.name}</p>
+                <p className="text-sm text-gray-600">{(uploadedFile.size / 1024 / 1024).toFixed(2)} MB</p>
               </div>
             </div>
             <Button
@@ -187,21 +191,22 @@ export default function ResumeUploadStep({
               size="sm"
               onClick={removeFile}
               className="text-red-500 hover:text-red-700 hover:bg-red-50"
+              title="Remove file"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-700 p-3 rounded-md flex items-start mt-4">
-              <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+            <div className="bg-red-50 text-red-700 p-3 rounded-md flex items-start mt-4" role="alert" aria-live="polite">
+              <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" aria-hidden="true" />
               <span className="text-sm">{error}</span>
             </div>
           )}
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
             <div className="flex items-start gap-3">
-              <FileText className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
+              <FileText className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" aria-hidden="true" />
               <div>
                 <h4 className="font-medium text-blue-900 mb-2">Why upload your resume?</h4>
                 <ul className="text-blue-800 text-sm space-y-1">
@@ -218,7 +223,7 @@ export default function ResumeUploadStep({
 
       <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={onPrev}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
+          <ChevronLeft className="mr-2 h-4 w-4" aria-hidden="true" />
           Back
         </Button>
 
@@ -233,7 +238,7 @@ export default function ResumeUploadStep({
             disabled={uploading}
           >
             Continue
-            <ChevronRight className="ml-2 h-4 w-4" />
+            <ChevronRight className="ml-2 h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
       </div>

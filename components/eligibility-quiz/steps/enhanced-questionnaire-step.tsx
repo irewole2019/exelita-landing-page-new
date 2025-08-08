@@ -1,25 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import {
-  ChevronLeft,
-  ChevronRight,
-  Info,
-  Award,
-  Users,
-  Newspaper,
-  Scale,
-  Lightbulb,
-  BookOpen,
-  Palette,
-  Building,
-  DollarSign,
-  Music,
-} from "lucide-react"
+import { ChevronLeft, ChevronRight, Info, Award, Users, Newspaper, Scale, Lightbulb, BookOpen, Palette, Building, DollarSign, Music } from 'lucide-react'
 
 interface QuestionnaireData {
   profession: string
@@ -138,7 +124,7 @@ const questions = [
   },
   {
     id: "exhibitions",
-    question: "Have your works been displayed at artistic exhibitions or showcases? (Skip if not applicable)",
+    question: "Have your works been displayed at artistic exhibitions or showcases?",
     type: "radio",
     options: ["Yes", "No", "Not Applicable"],
     required: false,
@@ -165,14 +151,14 @@ const questions = [
   },
   {
     id: "commercialSuccess",
-    question: "Have you achieved commercial success in the performing arts? (Skip if not applicable)",
+    question: "Have you achieved commercial success in the performing arts?",
     type: "radio",
     options: ["Yes", "No", "Not Applicable"],
     required: false,
     icon: Music,
     helpText: "For performers, artists: box office success, record sales, ticket sales, commercial achievements",
   },
-]
+] as const
 
 export default function EnhancedQuestionnaireStep({
   onNext,
@@ -182,9 +168,14 @@ export default function EnhancedQuestionnaireStep({
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [responses, setResponses] = useState<Partial<QuestionnaireData>>(initialData)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const titleRef = useRef<HTMLHeadingElement>(null)
 
   const currentQ = questions[currentQuestion]
   const progress = ((currentQuestion + 1) / questions.length) * 100
+
+  useEffect(() => {
+    titleRef.current?.focus()
+  }, [currentQuestion])
 
   const handleResponse = (questionId: string, value: string) => {
     setResponses((prev) => ({ ...prev, [questionId]: value }))
@@ -202,7 +193,6 @@ export default function EnhancedQuestionnaireStep({
 
   const handleNext = () => {
     if (!validateCurrentQuestion()) return
-
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1)
     } else {
@@ -219,38 +209,49 @@ export default function EnhancedQuestionnaireStep({
   }
 
   const IconComponent = currentQ.icon
+  const titleText = `${currentQ.question}${currentQ.required ? "" : " (Optional)"}`
 
   return (
     <div className="space-y-6">
       {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded-full h-3">
+      <div className="w-full bg-gray-200 rounded-full h-3" aria-label="Progress">
         <div
           className="bg-gradient-to-r from-purple-600 to-indigo-600 h-3 rounded-full transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
+          role="progressbar"
+          aria-valuenow={Math.round(progress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
         />
       </div>
 
       {/* Question Counter */}
       <div className="text-center">
-        <div className="text-sm text-gray-500 mb-1">
+        <div className="text-sm text-gray-600 mb-1">
           Question {currentQuestion + 1} of {questions.length}
         </div>
-        <div className="text-xs text-gray-400">{Math.round(progress)}% Complete</div>
+        <div className="text-xs text-gray-500">{Math.round(progress)}% complete</div>
       </div>
 
       {/* Question Card */}
       <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
         <div className="flex items-start gap-4 mb-6">
           <div className="bg-purple-100 p-3 rounded-full flex-shrink-0">
-            <IconComponent className="h-6 w-6 text-purple-600" />
+            <IconComponent className="h-6 w-6 text-purple-600" aria-hidden="true" />
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">{currentQ.question}</h3>
+            <h3
+              ref={titleRef}
+              tabIndex={-1}
+              className="text-xl font-semibold text-gray-900 mb-2"
+            >
+              {titleText}
+            </h3>
 
             {currentQ.helpText && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                 <div className="flex items-start gap-2">
-                  <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" aria-hidden="true" />
                   <p className="text-blue-800 text-sm">{currentQ.helpText}</p>
                 </div>
               </div>
@@ -258,16 +259,16 @@ export default function EnhancedQuestionnaireStep({
 
             {currentQ.type === "text" && (
               <Input
-                value={responses[currentQ.id as keyof QuestionnaireData] || ""}
+                value={(responses[currentQ.id as keyof QuestionnaireData] as string) || ""}
                 onChange={(e) => handleResponse(currentQ.id, e.target.value)}
                 placeholder={currentQ.placeholder}
-                className="w-full text-lg p-4 h-12"
+                className="w-full text-base p-4 h-12"
               />
             )}
 
             {currentQ.type === "radio" && currentQ.options && (
               <RadioGroup
-                value={responses[currentQ.id as keyof QuestionnaireData] || ""}
+                value={(responses[currentQ.id as keyof QuestionnaireData] as string) || ""}
                 onValueChange={(value) => handleResponse(currentQ.id, value)}
                 className="space-y-4"
               >
@@ -277,7 +278,10 @@ export default function EnhancedQuestionnaireStep({
                     className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
                   >
                     <RadioGroupItem value={option} id={`${currentQ.id}-${index}`} className="text-purple-600" />
-                    <Label htmlFor={`${currentQ.id}-${index}`} className="text-base font-medium cursor-pointer flex-1">
+                    <Label
+                      htmlFor={`${currentQ.id}-${index}`}
+                      className="text-base font-medium cursor-pointer flex-1 text-gray-900"
+                    >
                       {option}
                     </Label>
                   </div>
@@ -286,9 +290,9 @@ export default function EnhancedQuestionnaireStep({
             )}
 
             {errors[currentQ.id] && (
-              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600 flex items-center gap-2">
-                  <Info className="h-4 w-4" />
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg" role="alert" aria-live="polite">
+                <p className="text-sm text-red-700 flex items-center gap-2">
+                  <Info className="h-4 w-4" aria-hidden="true" />
                   {errors[currentQ.id]}
                 </p>
               </div>
@@ -300,13 +304,13 @@ export default function EnhancedQuestionnaireStep({
       {/* Navigation */}
       <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={handlePrevious} className="flex items-center gap-2 bg-transparent px-6 py-3">
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           {currentQuestion === 0 ? "Back" : "Previous"}
         </Button>
 
         <Button onClick={handleNext} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3">
           {currentQuestion === questions.length - 1 ? "Complete Assessment" : "Next"}
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
     </div>

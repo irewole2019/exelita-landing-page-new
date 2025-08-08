@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const mobileCategories = [
   {
@@ -72,9 +72,9 @@ export default function MobileCategoryStep({ onNext, onBack, initialCategory }: 
               <RadioGroupItem value={category.id} id={category.id} className="mt-1" />
               <div className="flex-1">
                 <Label htmlFor={category.id} className="cursor-pointer">
-                  <div className="font-medium text-gray-900 text-sm mb-1">{category.title}</div>
-                  <div className="text-xs text-gray-500 mb-1">{category.subtitle}</div>
-                  <div className="text-xs text-gray-600">{category.description}</div>
+                  <div className="font-medium text-gray-900 text-base mb-1">{category.title}</div>
+                  <div className="text-sm text-gray-600 mb-1">{category.subtitle}</div>
+                  <div className="text-sm text-gray-600">{category.description}</div>
                 </Label>
               </div>
             </div>
@@ -82,17 +82,21 @@ export default function MobileCategoryStep({ onNext, onBack, initialCategory }: 
         ))}
       </RadioGroup>
 
-      {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+      {error && (
+        <p className="text-sm text-red-600 text-center" role="alert" aria-live="polite">
+          {error}
+        </p>
+      )}
 
       <div className="flex justify-between pt-4">
         <Button variant="outline" onClick={onBack} className="flex items-center gap-2 bg-transparent">
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           Back
         </Button>
 
         <Button onClick={handleNext} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700">
           Continue
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
     </div>

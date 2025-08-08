@@ -14,8 +14,19 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
+  trailingSlash: false,
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
   async headers() {
     return [
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [

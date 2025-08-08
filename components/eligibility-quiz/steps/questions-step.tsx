@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface Question {
   id: string
@@ -87,6 +87,11 @@ export default function QuestionsStep({ onNext, onBack, initialData = {} }: Ques
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>(initialData)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    titleRef.current?.focus()
+  }, [currentQuestion])
 
   const handleAnswer = (questionId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }))
@@ -104,7 +109,6 @@ export default function QuestionsStep({ onNext, onBack, initialData = {} }: Ques
 
   const handleNext = () => {
     if (!validateCurrentQuestion()) return
-
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1)
     } else {
@@ -126,18 +130,28 @@ export default function QuestionsStep({ onNext, onBack, initialData = {} }: Ques
   return (
     <div className="space-y-6">
       {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded-full h-2">
-        <div className="bg-purple-600 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+      <div className="w-full bg-gray-200 rounded-full h-2" aria-label="Progress">
+        <div
+          className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+          style={{ width: `${progress}%` }}
+          role="progressbar"
+          aria-valuenow={Math.round(progress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        />
       </div>
 
       {/* Question Counter */}
-      <div className="text-sm text-gray-500 text-center">
+      <div className="text-sm text-gray-600 text-center">
         Question {currentQuestion + 1} of {questions.length}
       </div>
 
       {/* Question */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">{question.text}</h3>
+        <h3 ref={titleRef} tabIndex={-1} className="text-lg font-semibold text-gray-900">
+          {question.text}
+          {!question.required ? " (Optional)" : ""}
+        </h3>
 
         {question.type === "radio" && question.options && (
           <RadioGroup
@@ -146,9 +160,9 @@ export default function QuestionsStep({ onNext, onBack, initialData = {} }: Ques
             className="space-y-3"
           >
             {question.options.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
+              <div key={index} className="flex items-center space-x-2 p-3 border rounded-md hover:bg-gray-50">
                 <RadioGroupItem value={option} id={`${question.id}-${index}`} />
-                <Label htmlFor={`${question.id}-${index}`} className="text-sm font-normal cursor-pointer flex-1">
+                <Label htmlFor={`${question.id}-${index}`} className="text-base font-normal cursor-pointer flex-1 text-gray-900">
                   {option}
                 </Label>
               </div>
@@ -161,23 +175,27 @@ export default function QuestionsStep({ onNext, onBack, initialData = {} }: Ques
             value={answers[question.id] || ""}
             onChange={(e) => handleAnswer(question.id, e.target.value)}
             placeholder="Please provide details about your achievements..."
-            className="min-h-[120px] resize-none"
+            className="min-h-[120px] resize-none text-gray-900"
           />
         )}
 
-        {errors[question.id] && <p className="text-sm text-red-600">{errors[question.id]}</p>}
+        {errors[question.id] && (
+          <p className="text-sm text-red-600" role="alert" aria-live="polite">
+            {errors[question.id]}
+          </p>
+        )}
       </div>
 
       {/* Navigation */}
       <div className="flex justify-between pt-4">
         <Button variant="outline" onClick={handlePrevious} className="flex items-center gap-2 bg-transparent">
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           {currentQuestion === 0 ? "Back" : "Previous"}
         </Button>
 
         <Button onClick={handleNext} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700">
           {currentQuestion === questions.length - 1 ? "Complete" : "Next"}
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
     </div>

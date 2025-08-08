@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { ChevronLeft, ChevronRight, Info } from "lucide-react"
+import { ChevronLeft, ChevronRight, Info } from 'lucide-react'
 
 const categories = [
   {
@@ -74,8 +74,8 @@ export default function CategoryStep({ onNext, onBack, initialCategory }: Catego
                 <Label htmlFor={category.id} className="cursor-pointer">
                   <div className="font-medium text-gray-900 mb-1">{category.title}</div>
                   <div className="text-sm text-gray-600 mb-2">{category.description}</div>
-                  <div className="text-xs text-gray-500 flex items-center">
-                    <Info className="h-3 w-3 mr-1" />
+                  <div className="text-sm text-gray-600 flex items-center">
+                    <Info className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                     Examples: {category.examples}
                   </div>
                 </Label>
@@ -85,17 +85,21 @@ export default function CategoryStep({ onNext, onBack, initialCategory }: Catego
         ))}
       </RadioGroup>
 
-      {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+      {error && (
+        <p className="text-sm text-red-600 text-center" role="alert" aria-live="polite">
+          {error}
+        </p>
+      )}
 
       <div className="flex justify-between pt-4">
         <Button variant="outline" onClick={onBack} className="flex items-center gap-2 bg-transparent">
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           Back
         </Button>
 
         <Button onClick={handleNext} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700">
           Continue
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
     </div>

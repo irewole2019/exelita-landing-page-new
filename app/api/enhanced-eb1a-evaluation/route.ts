@@ -4,6 +4,37 @@ import { openai } from "@ai-sdk/openai"
 
 export const runtime = "nodejs"
 
+// Helper: Extract JSON from a string that may include markdown fences or prose
+function extractJsonFromText(text: string): any {
+  try {
+    return JSON.parse(text)
+  } catch {
+    // continue
+  }
+  const codeBlockRegex = /```json\s*([\s\S]*?)```/i
+  const m1 = text.match(codeBlockRegex)
+  if (m1?.[1]) {
+    try {
+      return JSON.parse(m1[1].trim())
+    } catch {}
+  }
+  const anyCodeBlockRegex = /```\s*([\s\S]*?)```/i
+  const m2 = text.match(anyCodeBlockRegex)
+  if (m2?.[1]) {
+    try {
+      return JSON.parse(m2[1].trim())
+    } catch {}
+  }
+  const jsonRegex = /\{[\s\S]*\}/
+  const m3 = text.match(jsonRegex)
+  if (m3?.[0]) {
+    try {
+      return JSON.parse(m3[0])
+    } catch {}
+  }
+  return null
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -13,8 +44,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Questionnaire responses are required" }, { status: 400 })
     }
 
-    // Construct the comprehensive prompt
-    const prompt = `You are an expert U.S. immigration advisor specializing in the EB-1A visa for individuals with extraordinary ability. Your role is to evaluate whether a user is likely eligible for the EB-1A visa, based on their CV and responses to a structured questionnaire. Your output should follow these rules:
+    // Prompt now produces a JSON resumeData block first, then the full EB-1A evaluation
+    const prompt = `You are an expert U.S. immigration advisor specializing in the EB-1A visa for individuals with extraordinary ability.
+
+First, OUTPUT ONLY a single JSON object (inside a fenced code block \`\`\`json ... \`\`\`) named "resumeData" extracted from the user's CV and questionnaire. If an item is not present, use empty arrays/false/0 accordingly. Do not add commentary in this block.
+
+{
+  "publications": { "count": number, "items": string[] },
+  "awards": { "count": number, "items": string[] },
+  "leadershipExperience": { "hasLeadership": boolean, "items": string[] },
+  "patents": { "count": number, "items": string[] },
+  "yearsOfExperience": { "years": number, "range": string },
+  "notableEmployers": string[],
+  "education": string[],
+  "skills": string[],
+  "links": string[]
+}
+
+After the JSON block, write a line with three dashes (---), then provide the comprehensive EB-1A evaluation with the following rules:
 
 1. Analyze the user's CV and questionnaire answers carefully.
 2. Compare the user's experience to the 10 USCIS EB-1A criteria:
@@ -30,22 +77,20 @@ export async function POST(request: NextRequest) {
    - (10) Commercial success in the performing arts
 
 3. Score each criterion between 0 and 10 based on the strength and quality of the evidence.
-4. Provide a final score out of 100, calculated by summing:
+4. Provide a final score out of 100:
    - Up to 70 points from individual criteria (max 10 each for best 7 criteria)
    - Up to 20 points for overall intent, documentation quality, and field continuity
    - Up to 10 points for evidence that the user's work would substantially benefit the U.S.
 
-5. Categorize confidence per criterion: High / Medium / Low
-6. Explain in plain language:
+5. For each criterion: include confidence as High / Medium / Low.
+6. Explain clearly:
    - Which criteria appear strong
    - Which need improvement
    - Whether the user is likely eligible
 
 7. Conclude with next-step recommendations:
    - Which 3–5 criteria to prioritize
-   - What types of documents or accomplishments to focus on next
-
-Use clear, structured, professional formatting.
+   - What documents or accomplishments to focus on next
 
 ---
 User's CV:
@@ -65,40 +110,38 @@ User Questionnaire:
 4. Do you intend to continue working in your field in the U.S.?
 → ${questionnaire.continueWorking || "Not provided"}
 
-5. Awards: Have you won any nationally or internationally recognized prizes for excellence?
+5. Awards:
 → ${questionnaire.awards || "Not provided"}
 
-6. Memberships: Are you a member of associations that require outstanding achievement?
+6. Memberships:
 → ${questionnaire.memberships || "Not provided"}
 
-7. Media: Have you been featured in media or trade publications?
+7. Media:
 → ${questionnaire.media || "Not provided"}
 
-8. Judging: Have you judged the work of others (e.g., peer review, competitions)?
+8. Judging:
 → ${questionnaire.judging || "Not provided"}
 
-9. Contributions: Have you made original contributions of major significance in your field?
+9. Contributions:
 → ${questionnaire.contributions || "Not provided"}
 
-10. Publications: Have you authored scholarly or professional articles?
+10. Publications:
 → ${questionnaire.publications || "Not provided"}
 
-11. Exhibitions: Have your works been displayed at artistic exhibitions or showcases?
+11. Exhibitions:
 → ${questionnaire.exhibitions || "Not provided"}
 
-12. Leading Roles: Have you served in a leading or critical role at a distinguished organization?
+12. Leading Roles:
 → ${questionnaire.leadingRoles || "Not provided"}
 
-13. Compensation: Have you earned a high salary or remuneration compared to peers?
+13. Compensation:
 → ${questionnaire.compensation || "Not provided"}
 
-14. Commercial Success: Have you had commercial success in performing arts (e.g., ticket sales, royalties)?
+14. Commercial Success:
 → ${questionnaire.commercialSuccess || "Not provided"}
 
 ---
 Evaluate and respond as described.`
-
-    console.log("Calling OpenAI API for EB-1A evaluation...")
 
     const { text } = await generateText({
       model: openai("gpt-4o"),
@@ -107,11 +150,21 @@ Evaluate and respond as described.`
       maxTokens: 2500,
     })
 
-    console.log("EB-1A evaluation completed successfully")
+    // Split out the JSON portion and the evaluation
+    const [jsonPart, ...rest] = text.split("---")
+    const parsed = extractJsonFromText(jsonPart || "")
+    const evaluation = rest.join("---").trim() || text
+
+    if (parsed) {
+      console.log("enhanced-eb1a-evaluation: Extracted resumeData:", parsed)
+    } else {
+      console.warn("enhanced-eb1a-evaluation: No valid resumeData JSON extracted")
+    }
 
     return NextResponse.json({
       success: true,
-      evaluation: text,
+      evaluation,
+      resumeData: parsed || null,
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
