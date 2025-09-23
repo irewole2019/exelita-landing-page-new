@@ -1,19 +1,18 @@
-import { extractTextFromPDF } from "./pdf-extractor"
+import { extractTextFromPdf } from "./pdf-extractor"
+import { extractTextFromDocx } from "./docx-extractor"
 
-interface ExtractionResult {
+export async function extractTextFromDocument(file: File): Promise<{
   text: string
   isPlaceholder: boolean
   debugInfo?: string
-}
-
-export async function extractTextFromDocument(file: File): Promise<ExtractionResult> {
+}> {
   try {
     const fileType = file.type
     const fileName = file.name.toLowerCase()
 
     // Handle text files
-    if (fileType === "text/plain" || fileName.endsWith(".txt")) {
-      const text = await file.text()
+    if (fileType === "text/plain") {
+      const text = await readTextFile(file)
       return {
         text,
         isPlaceholder: false,
@@ -22,8 +21,8 @@ export async function extractTextFromDocument(file: File): Promise<ExtractionRes
     }
 
     // Handle PDF files
-    else if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
-      const text = await extractTextFromPDF(file)
+    else if (fileType === "application/pdf") {
+      const text = await extractTextFromPdf(file)
       return {
         text,
         isPlaceholder: false,
@@ -31,30 +30,31 @@ export async function extractTextFromDocument(file: File): Promise<ExtractionRes
       }
     }
 
-    // Handle DOCX files - provide placeholder since we don't have mammoth
+    // Handle DOCX files
     else if (
       fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
       fileName.endsWith(".docx")
     ) {
+      const text = await extractTextFromDocx(file)
       return {
-        text: createPlaceholderText(
-          file.name,
-          "DOCX files require additional processing. Please convert to PDF or TXT for best results.",
-        ),
-        isPlaceholder: true,
-        debugInfo: "DOCX files require additional processing. Please convert to PDF or TXT for best results.",
+        text,
+        isPlaceholder: false,
+        debugInfo: `Successfully extracted ${text.length} characters from DOCX`,
       }
     }
 
-    // Handle DOC files - provide placeholder
+    // Handle DOC files - attempt to extract but may not work well in browser
     else if (fileType === "application/msword" || fileName.endsWith(".doc")) {
+      // For DOC files, we'll provide a more informative placeholder
+      // as browser-based extraction is limited
       return {
         text: createPlaceholderText(
           file.name,
-          "DOC files cannot be processed in the browser. Please convert to DOCX, PDF, or TXT.",
+          "DOC files cannot be fully processed in the browser. For best results, please convert to DOCX or PDF.",
         ),
         isPlaceholder: true,
-        debugInfo: "DOC files cannot be processed in the browser. Please convert to DOCX, PDF, or TXT.",
+        debugInfo:
+          "DOC files cannot be fully processed in the browser. For best results, please convert to DOCX or PDF.",
       }
     }
 
@@ -74,6 +74,22 @@ export async function extractTextFromDocument(file: File): Promise<ExtractionRes
       debugInfo: `Error extracting text: ${error instanceof Error ? error.message : "Unknown error"}`,
     }
   }
+}
+
+// Helper function to read text files
+async function readTextFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        resolve(event.target.result as string)
+      } else {
+        reject(new Error("Failed to read text file"))
+      }
+    }
+    reader.onerror = () => reject(new Error("Failed to read text file"))
+    reader.readAsText(file)
+  })
 }
 
 // Helper function to create placeholder text

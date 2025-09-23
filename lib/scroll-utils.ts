@@ -1,12 +1,9 @@
-export const scrollToElement = (elementId: string, offset = 80) => {
-  const element = document.getElementById(elementId.replace("#", ""))
+export function smoothScrollTo(elementId: string) {
+  const element = document.getElementById(elementId)
   if (element) {
-    const elementPosition = element.getBoundingClientRect().top
-    const offsetPosition = elementPosition + window.pageYOffset - offset
-
-    window.scrollTo({
-      top: offsetPosition,
+    element.scrollIntoView({
       behavior: "smooth",
+      block: "start",
     })
   }
 }
