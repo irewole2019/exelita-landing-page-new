@@ -1,448 +1,201 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ChevronLeft, ChevronRight, LinkIcon, Info } from "lucide-react"
-import type { FormData } from "../eligibility-quiz"
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-type Question = {
+interface Question {
   id: string
   text: string
-  type: "radio" | "text" | "textarea" | "link"
-  options?: { value: string; label: string }[]
+  type: "radio" | "textarea"
+  options?: string[]
   required?: boolean
-  info?: string
 }
 
-const getQuestions = (category: string): Question[] => {
-  if (category === "EB-1A") {
-    return [
-      {
-        id: "nationally_recognized_award",
-        text: "Have you won a nationally or internationally recognized prize or award for excellence in your field?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-        info: "Examples include: Nobel Prize, Olympic Medal, Academy Award, Pulitzer Prize, or significant awards in your specific field.",
-      },
-      {
-        id: "membership",
-        text: "Are you a member of any associations in your field that require outstanding achievements as judged by recognized experts?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "published_material",
-        text: "Has there been published material in professional publications or major media about you and your work?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "judge_work",
-        text: "Have you judged the work of others in your field, either individually or on a panel?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "original_contributions",
-        text: "Have you made original scientific, scholarly, or business-related contributions of major significance in your field?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "authorship",
-        text: "Have you authored scholarly articles in professional journals or other major media in your field?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "exhibitions",
-        text: "Has your work been displayed at artistic exhibitions or showcases?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-          { value: "not_applicable", label: "Not applicable to my field" },
-        ],
-        required: true,
-      },
-      {
-        id: "leading_role",
-        text: "Have you performed in a leading or critical role for organizations with distinguished reputations?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "high_salary",
-        text: "Have you commanded a high salary or significant remuneration compared to others in your field?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "commercial_success",
-        text: "Have you achieved commercial success in the performing arts?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-          { value: "not_applicable", label: "Not applicable to my field" },
-        ],
-        required: true,
-      },
-      {
-        id: "evidence_links",
-        text: "If you have any links to evidence supporting your qualifications (optional), please provide them here:",
-        type: "link",
-        required: false,
-      },
-    ]
-  } else if (category === "EB-1B") {
-    return [
-      {
-        id: "experience",
-        text: "Do you have at least 3 years of experience in teaching or research in your academic field?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "job_offer",
-        text: "Do you have a job offer from a U.S. university, institution of higher learning, or private company?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "recognition",
-        text: "Have you received recognition as outstanding in your field from international organizations or academic institutions?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "publications",
-        text: "Have you published scholarly articles in professional journals with international circulation?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "judged_work",
-        text: "Have you judged the work of others in your academic field?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "original_research",
-        text: "Have you made original scientific or scholarly research contributions to your field?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "authorship",
-        text: "Have you authored books or scholarly articles that have been published and widely cited by others?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "research_description",
-        text: "Briefly describe your most significant research contribution:",
-        type: "textarea",
-        required: true,
-      },
-      {
-        id: "evidence_links",
-        text: "If you have any links to evidence supporting your qualifications (optional), please provide them here:",
-        type: "link",
-        required: false,
-      },
-    ]
-  } else if (category === "EB-1C") {
-    return [
-      {
-        id: "employed_abroad",
-        text: "Have you been employed outside the US for at least 1 year in the last 3 years by the sponsoring company or a related entity?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "managerial_capacity",
-        text: "Were you employed in a managerial or executive capacity during this time?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "us_entity",
-        text: "Is the US entity a parent, subsidiary, affiliate, or branch of the foreign employer?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "operating_years",
-        text: "Has the US entity been doing business for at least 1 year?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "role_description",
-        text: "Briefly describe your managerial or executive role:",
-        type: "textarea",
-        required: true,
-      },
-      {
-        id: "direct_reports",
-        text: "How many employees do/did you supervise?",
-        type: "text",
-        required: true,
-      },
-      {
-        id: "authority",
-        text: "Do you have authority to make significant decisions without requiring approval from higher-level executives?",
-        type: "radio",
-        options: [
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ],
-        required: true,
-      },
-      {
-        id: "evidence_links",
-        text: "If you have any links to evidence supporting your qualifications (optional), please provide them here:",
-        type: "link",
-        required: false,
-      },
-    ]
-  }
+const questions: Question[] = [
+  {
+    id: "category",
+    text: "Which EB-1 category best describes your situation?",
+    type: "radio",
+    options: [
+      "EB-1A: Extraordinary Ability (artists, scientists, business leaders)",
+      "EB-1B: Outstanding Professor/Researcher",
+      "EB-1C: Multinational Manager/Executive",
+      "Not sure - need guidance",
+    ],
+    required: true,
+  },
+  {
+    id: "field",
+    text: "What is your field of expertise?",
+    type: "radio",
+    options: [
+      "Technology/Engineering",
+      "Science/Research",
+      "Business/Management",
+      "Arts/Entertainment",
+      "Academia",
+      "Healthcare",
+      "Other",
+    ],
+    required: true,
+  },
+  {
+    id: "achievements",
+    text: "Describe your most significant professional achievements (awards, publications, patents, leadership roles, etc.)",
+    type: "textarea",
+    required: true,
+  },
+  {
+    id: "recognition",
+    text: "Have you received any major awards, honors, or recognition in your field?",
+    type: "radio",
+    options: [
+      "Yes, international recognition",
+      "Yes, national recognition",
+      "Yes, industry/professional recognition",
+      "Some recognition, but limited",
+      "No significant recognition yet",
+    ],
+    required: true,
+  },
+  {
+    id: "publications",
+    text: "Do you have publications, patents, or other documented contributions?",
+    type: "radio",
+    options: [
+      "Yes, highly cited publications/patents",
+      "Yes, some publications/patents",
+      "Yes, but limited impact",
+      "No, but I have other contributions",
+      "No publications or patents",
+    ],
+    required: true,
+  },
+]
 
-  return []
+interface QuestionsStepProps {
+  onNext: (data: Record<string, string>) => void
+  onBack: () => void
+  initialData?: Record<string, string>
 }
 
-export default function QuestionsStep({
-  formData,
-  updateFormData,
-  onNext,
-  onPrev,
-}: {
-  formData: FormData
-  updateFormData: (data: Partial<FormData>) => void
-  onNext: () => void
-  onPrev: () => void
-}) {
-  const [links, setLinks] = useState<string[]>([""])
+export default function QuestionsStep({ onNext, onBack, initialData = {} }: QuestionsStepProps) {
+  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>(initialData)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const titleRef = useRef<HTMLHeadingElement>(null)
 
-  if (!formData.category) {
-    return (
-      <div className="text-center py-12">
-        <p>Please select a category first.</p>
-        <Button variant="outline" onClick={onPrev} className="mt-4">
-          Go Back
-        </Button>
-      </div>
-    )
+  useEffect(() => {
+    titleRef.current?.focus()
+  }, [currentQuestion])
+
+  const handleAnswer = (questionId: string, value: string) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: value }))
+    setErrors((prev) => ({ ...prev, [questionId]: "" }))
   }
 
-  const questions = getQuestions(formData.category)
-
-  const handleInputChange = (id: string, value: any) => {
-    updateFormData({
-      responses: {
-        ...formData.responses,
-        [id]: value,
-      },
-    })
+  const validateCurrentQuestion = () => {
+    const question = questions[currentQuestion]
+    if (question.required && !answers[question.id]) {
+      setErrors((prev) => ({ ...prev, [question.id]: "This field is required" }))
+      return false
+    }
+    return true
   }
 
-  const handleLinkChange = (index: number, value: string) => {
-    const newLinks = [...links]
-    newLinks[index] = value
-    setLinks(newLinks)
-
-    updateFormData({
-      responses: {
-        ...formData.responses,
-        evidence_links: newLinks.filter((link) => link.trim() !== ""),
-      },
-    })
+  const handleNext = () => {
+    if (!validateCurrentQuestion()) return
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion((prev) => prev + 1)
+    } else {
+      onNext(answers)
+    }
   }
 
-  const addLinkField = () => {
-    setLinks([...links, ""])
+  const handlePrevious = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion((prev) => prev - 1)
+    } else {
+      onBack()
+    }
   }
 
-  const isFormValid = () => {
-    const requiredQuestions = questions.filter((q) => q.required)
-    return requiredQuestions.every(
-      (q) =>
-        formData.responses[q.id] !== undefined && formData.responses[q.id] !== "" && formData.responses[q.id] !== null,
-    )
-  }
+  const question = questions[currentQuestion]
+  const progress = ((currentQuestion + 1) / questions.length) * 100
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">EB-{formData.category?.split("-")[1]} Questionnaire</h2>
-        <p className="text-gray-600">Please answer the following questions about your qualifications</p>
+      {/* Progress Bar */}
+      <div className="w-full bg-gray-200 rounded-full h-2" aria-label="Progress">
+        <div
+          className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+          style={{ width: `${progress}%` }}
+          role="progressbar"
+          aria-valuenow={Math.round(progress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        />
       </div>
 
-      <div className="space-y-6">
-        {questions.map((question) => (
-          <Card key={question.id} className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <Label className="text-base font-medium mr-2">{question.text}</Label>
-                {question.info && (
-                  <div className="group relative">
-                    <Info className="h-4 w-4 text-gray-400" />
-                    <div className="absolute z-10 invisible group-hover:visible bg-gray-800 text-white text-sm rounded p-2 w-64 -top-2 left-6">
-                      {question.info}
-                    </div>
-                  </div>
-                )}
+      {/* Question Counter */}
+      <div className="text-sm text-gray-600 text-center">
+        Question {currentQuestion + 1} of {questions.length}
+      </div>
+
+      {/* Question */}
+      <div className="space-y-4">
+        <h3 ref={titleRef} tabIndex={-1} className="text-lg font-semibold text-gray-900">
+          {question.text}
+          {!question.required ? " (Optional)" : ""}
+        </h3>
+
+        {question.type === "radio" && question.options && (
+          <RadioGroup
+            value={answers[question.id] || ""}
+            onValueChange={(value) => handleAnswer(question.id, value)}
+            className="space-y-3"
+          >
+            {question.options.map((option, index) => (
+              <div key={index} className="flex items-center space-x-2 p-3 border rounded-md hover:bg-gray-50">
+                <RadioGroupItem value={option} id={`${question.id}-${index}`} />
+                <Label htmlFor={`${question.id}-${index}`} className="text-base font-normal cursor-pointer flex-1 text-gray-900">
+                  {option}
+                </Label>
               </div>
+            ))}
+          </RadioGroup>
+        )}
 
-              {question.type === "radio" && question.options && (
-                <RadioGroup
-                  value={formData.responses[question.id] || ""}
-                  onValueChange={(value) => handleInputChange(question.id, value)}
-                  className="space-y-2"
-                >
-                  {question.options.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
-                      <Label htmlFor={`${question.id}-${option.value}`}>{option.label}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              )}
+        {question.type === "textarea" && (
+          <Textarea
+            value={answers[question.id] || ""}
+            onChange={(e) => handleAnswer(question.id, e.target.value)}
+            placeholder="Please provide details about your achievements..."
+            className="min-h-[120px] resize-none text-gray-900"
+          />
+        )}
 
-              {question.type === "text" && (
-                <Input
-                  value={formData.responses[question.id] || ""}
-                  onChange={(e) => handleInputChange(question.id, e.target.value)}
-                  placeholder="Your answer"
-                />
-              )}
-
-              {question.type === "textarea" && (
-                <Textarea
-                  value={formData.responses[question.id] || ""}
-                  onChange={(e) => handleInputChange(question.id, e.target.value)}
-                  placeholder="Your answer"
-                  rows={4}
-                />
-              )}
-
-              {question.type === "link" && (
-                <div className="space-y-3">
-                  {links.map((link, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <LinkIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <Input
-                        value={link}
-                        onChange={(e) => handleLinkChange(index, e.target.value)}
-                        placeholder="https://example.com/your-evidence"
-                        className="flex-grow"
-                      />
-                    </div>
-                  ))}
-
-                  <Button type="button" variant="outline" size="sm" onClick={addLinkField} className="text-sm">
-                    + Add Another Link
-                  </Button>
-                </div>
-              )}
-
-              {question.required && <p className="text-sm text-red-500">* Required</p>}
-            </div>
-          </Card>
-        ))}
+        {errors[question.id] && (
+          <p className="text-sm text-red-600" role="alert" aria-live="polite">
+            {errors[question.id]}
+          </p>
+        )}
       </div>
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrev}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
+      {/* Navigation */}
+      <div className="flex justify-between pt-4">
+        <Button variant="outline" onClick={handlePrevious} className="flex items-center gap-2 bg-transparent">
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          {currentQuestion === 0 ? "Back" : "Previous"}
         </Button>
 
-        <Button onClick={onNext} disabled={!isFormValid()} className="bg-purple-700 hover:bg-purple-800">
-          See Results
-          <ChevronRight className="ml-2 h-4 w-4" />
+        <Button onClick={handleNext} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700">
+          {currentQuestion === questions.length - 1 ? "Complete" : "Next"}
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
     </div>

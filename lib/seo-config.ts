@@ -5,9 +5,9 @@ export const siteConfig = {
   name: "Exelita",
   title: "Exelita - AI-Powered EB-1 Visa Petition Builder",
   description:
-    "Build a winning EB-1 petition in 2-3 weeks with AI guidance. Complete your extraordinary ability, outstanding researcher, or multinational executive petition without expensive lawyers. Get expert review and USCIS-ready formatting.",
+    "AI-powered EB-1 visa petition builder for extraordinary professionals, outstanding researchers, and multinational executives. Complete your EB-1A, EB-1B, or EB-1C petition in 2-3 weeks.",
   url: "https://exelita.com",
-  ogImage: "https://exelita.com/images/og-image.jpg",
+  ogImage: "/images/og-image.png",
   keywords: [
     "EB-1 visa",
     "EB-1A petition",
@@ -33,7 +33,18 @@ export const siteConfig = {
   creator: "Exelita",
   publisher: "Exelita",
   category: "Immigration Services",
+  links: {
+    twitter: "https://twitter.com/exelita_ai",
+    github: "https://github.com/exelita",
+    instagram: "https://www.instagram.com/exelita_ai/",
+    linkedin: "https://www.linkedin.com/company/exelita",
+  },
 }
+
+// Export as seoConfig for backward compatibility
+export const seoConfig = siteConfig
+
+export type SiteConfig = typeof siteConfig
 
 export const generateMetadata = (title?: string, description?: string, path?: string, noIndex?: boolean): Metadata => {
   const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title
@@ -74,8 +85,8 @@ export const generateMetadata = (title?: string, description?: string, path?: st
       title: pageTitle,
       description: pageDescription,
       images: [siteConfig.ogImage],
-      creator: "@exelita_ai",
-      site: "@exelita_ai",
+      creator: siteConfig.links.twitter,
+      site: siteConfig.links.twitter,
     },
 
     // Additional meta tags
@@ -98,7 +109,7 @@ export const organizationSchema = {
   description: siteConfig.description,
   url: siteConfig.url,
   logo: `${siteConfig.url}/images/exelita-logo.png`,
-  sameAs: ["https://www.linkedin.com/company/exelita", "https://www.instagram.com/exelita_ai/"],
+  sameAs: [siteConfig.links.linkedin, siteConfig.links.instagram],
   contactPoint: {
     "@type": "ContactPoint",
     email: "exelitaai@gmail.com",

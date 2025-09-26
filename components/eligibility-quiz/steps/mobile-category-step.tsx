@@ -1,182 +1,102 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { ChevronLeft, ChevronRight, Award, BookOpen, Briefcase } from "lucide-react"
-import type { FormData } from "../mobile-optimized-quiz"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-export default function MobileCategoryStep({
-  formData,
-  updateFormData,
-  onNext,
-  onPrev,
-}: {
-  formData: FormData
-  updateFormData: (data: Partial<FormData>) => void
-  onNext: () => void
-  onPrev: () => void
-}) {
-  const isMobile = useIsMobile()
+const mobileCategories = [
+  {
+    id: "eb1a",
+    title: "EB-1A",
+    subtitle: "Extraordinary Ability",
+    description: "Scientists, artists, business leaders with exceptional achievements",
+  },
+  {
+    id: "eb1b",
+    title: "EB-1B",
+    subtitle: "Outstanding Researcher",
+    description: "Professors and researchers with international recognition",
+  },
+  {
+    id: "eb1c",
+    title: "EB-1C",
+    subtitle: "Multinational Executive",
+    description: "Managers/executives from international companies",
+  },
+  {
+    id: "unsure",
+    title: "Not Sure",
+    subtitle: "Need Guidance",
+    description: "Let AI recommend the best category for you",
+  },
+]
 
-  const handleCategoryChange = (category: FormData["category"]) => {
-    updateFormData({ category })
+interface MobileCategoryStepProps {
+  onNext: (category: string) => void
+  onBack: () => void
+  initialCategory?: string
+}
+
+export default function MobileCategoryStep({ onNext, onBack, initialCategory }: MobileCategoryStepProps) {
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || "")
+  const [error, setError] = useState("")
+
+  const handleNext = () => {
+    if (!selectedCategory) {
+      setError("Please select a category")
+      return
+    }
+    onNext(selectedCategory)
   }
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h2 className={`font-bold text-gray-900 mb-2 ${isMobile ? "text-xl" : "text-2xl"}`}>
-          Select Your EB-1 Category
-        </h2>
-        <p className={`text-gray-600 ${isMobile ? "text-sm" : "text-base"}`}>
-          Choose the EB-1 visa category that best matches your qualifications
-        </p>
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Which category fits you?</h3>
+        <p className="text-gray-600 text-sm">Select the EB-1 category that best matches your background</p>
       </div>
 
-      {formData.suggestedCategory && (
-        <div className={`bg-indigo-50 rounded-lg mb-6 ${isMobile ? "p-3" : "p-4"}`}>
-          <p className={`text-indigo-800 ${isMobile ? "text-sm" : "text-base"}`}>
-            <span className="font-medium">Based on your resume, we suggest exploring: </span>
-            {formData.suggestedCategory === "EB-1A" && "EB-1A (Extraordinary Ability)"}
-            {formData.suggestedCategory === "EB-1B" && "EB-1B (Outstanding Professor/Researcher)"}
-            {formData.suggestedCategory === "EB-1C" && "EB-1C (Multinational Manager/Executive)"}
-          </p>
-          {formData.categoryRationale && (
-            <p className={`text-indigo-700 mt-2 ${isMobile ? "text-xs" : "text-sm"}`}>{formData.categoryRationale}</p>
-          )}
-        </div>
-      )}
-
       <RadioGroup
-        value={formData.category || ""}
-        onValueChange={(value) => handleCategoryChange(value as FormData["category"])}
-        className="space-y-4"
+        value={selectedCategory}
+        onValueChange={(value) => {
+          setSelectedCategory(value)
+          setError("")
+        }}
+        className="space-y-3"
       >
-        {/* EB-1A Option */}
-        <div>
-          <Card
-            className={`
-              ${formData.category === "EB-1A" ? "ring-2 ring-purple-500 bg-purple-50" : ""}
-              ${isMobile ? "p-4" : "p-6"}
-              cursor-pointer transition-all duration-200
-            `}
-            onClick={() => handleCategoryChange("EB-1A")}
-          >
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 mt-1">
-                <RadioGroupItem value="EB-1A" id="EB-1A" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <Label
-                  htmlFor="EB-1A"
-                  className={`flex items-center font-medium cursor-pointer ${isMobile ? "text-base" : "text-lg"}`}
-                >
-                  <Award className={`text-amber-500 mr-2 ${isMobile ? "h-4 w-4" : "h-5 w-5"}`} />
-                  EB-1A: Extraordinary Ability
+        {mobileCategories.map((category) => (
+          <div key={category.id} className="relative">
+            <div className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <RadioGroupItem value={category.id} id={category.id} className="mt-1" />
+              <div className="flex-1">
+                <Label htmlFor={category.id} className="cursor-pointer">
+                  <div className="font-medium text-gray-900 text-base mb-1">{category.title}</div>
+                  <div className="text-sm text-gray-600 mb-1">{category.subtitle}</div>
+                  <div className="text-sm text-gray-600">{category.description}</div>
                 </Label>
-                <p className={`mt-1 text-gray-600 ${isMobile ? "text-sm" : "text-base"}`}>
-                  For individuals with extraordinary ability in sciences, arts, education, business, or athletics.
-                </p>
-                <ul className={`mt-2 space-y-1 text-gray-600 ${isMobile ? "text-xs" : "text-sm"}`}>
-                  <li>• National or international acclaim</li>
-                  <li>• Recognized achievements (awards, publications, etc.)</li>
-                  <li>• High salary or commercial success in your field</li>
-                </ul>
               </div>
             </div>
-          </Card>
-        </div>
-
-        {/* EB-1B Option */}
-        <div>
-          <Card
-            className={`
-              ${formData.category === "EB-1B" ? "ring-2 ring-purple-500 bg-purple-50" : ""}
-              ${isMobile ? "p-4" : "p-6"}
-              cursor-pointer transition-all duration-200
-            `}
-            onClick={() => handleCategoryChange("EB-1B")}
-          >
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 mt-1">
-                <RadioGroupItem value="EB-1B" id="EB-1B" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <Label
-                  htmlFor="EB-1B"
-                  className={`flex items-center font-medium cursor-pointer ${isMobile ? "text-base" : "text-lg"}`}
-                >
-                  <BookOpen className={`text-amber-500 mr-2 ${isMobile ? "h-4 w-4" : "h-5 w-5"}`} />
-                  EB-1B: Outstanding Professor/Researcher
-                </Label>
-                <p className={`mt-1 text-gray-600 ${isMobile ? "text-sm" : "text-base"}`}>
-                  For professors or researchers who are internationally recognized in their field.
-                </p>
-                <ul className={`mt-2 space-y-1 text-gray-600 ${isMobile ? "text-xs" : "text-sm"}`}>
-                  <li>• At least 3 years of experience in teaching or research</li>
-                  <li>• International recognition for outstanding achievements</li>
-                  <li>• Job offer from a university, institution, or private company</li>
-                </ul>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* EB-1C Option */}
-        <div>
-          <Card
-            className={`
-              ${formData.category === "EB-1C" ? "ring-2 ring-purple-500 bg-purple-50" : ""}
-              ${isMobile ? "p-4" : "p-6"}
-              cursor-pointer transition-all duration-200
-            `}
-            onClick={() => handleCategoryChange("EB-1C")}
-          >
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 mt-1">
-                <RadioGroupItem value="EB-1C" id="EB-1C" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <Label
-                  htmlFor="EB-1C"
-                  className={`flex items-center font-medium cursor-pointer ${isMobile ? "text-base" : "text-lg"}`}
-                >
-                  <Briefcase className={`text-amber-500 mr-2 ${isMobile ? "h-4 w-4" : "h-5 w-5"}`} />
-                  EB-1C: Multinational Manager/Executive
-                </Label>
-                <p className={`mt-1 text-gray-600 ${isMobile ? "text-sm" : "text-base"}`}>
-                  For executives and managers who have worked for a multinational company.
-                </p>
-                <ul className={`mt-2 space-y-1 text-gray-600 ${isMobile ? "text-xs" : "text-sm"}`}>
-                  <li>• At least 1 year of employment outside the US in the past 3 years</li>
-                  <li>• Managerial or executive capacity</li>
-                  <li>• Same employer, affiliate, subsidiary, or parent company in the US</li>
-                </ul>
-              </div>
-            </div>
-          </Card>
-        </div>
+          </div>
+        ))}
       </RadioGroup>
 
-      {/* Mobile Navigation */}
-      <div className={`flex gap-3 pt-6 ${isMobile ? "flex-col" : "flex-row justify-between"}`}>
-        {!isMobile && (
-          <Button variant="outline" onClick={onPrev}>
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-        )}
+      {error && (
+        <p className="text-sm text-red-600 text-center" role="alert" aria-live="polite">
+          {error}
+        </p>
+      )}
 
-        <Button
-          onClick={onNext}
-          disabled={!formData.category}
-          className={`bg-purple-700 hover:bg-purple-800 ${isMobile ? "w-full py-3" : ""}`}
-        >
+      <div className="flex justify-between pt-4">
+        <Button variant="outline" onClick={onBack} className="flex items-center gap-2 bg-transparent">
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          Back
+        </Button>
+
+        <Button onClick={handleNext} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700">
           Continue
-          <ChevronRight className="ml-2 h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
     </div>
