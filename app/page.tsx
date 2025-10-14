@@ -3,14 +3,22 @@
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, ChevronRight, Clock, FileCheck, MessageSquare, Shield, Users, Menu, X } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import EligibilityQuizController from "@/components/eligibility-quiz-controller"
 import SmoothScrollLink from "@/components/smooth-scroll-link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { trackBetaSignup, trackPricingView } from "@/lib/analytics"
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const handleBetaSignup = (source: string) => {
     trackBetaSignup(source)
@@ -22,95 +30,122 @@ export default function Home() {
 
   return (
     <main id="top" className="flex min-h-screen flex-col items-center">
-      {/* Navigation - Mobile Optimized */}
-      <nav className="w-full py-3 md:py-4 bg-white/95 backdrop-blur-sm fixed top-0 z-50 shadow-sm border-b border-gray-100">
-        <div className="container mx-auto px-4 flex h-16 items-center justify-between">
-          <div className="flex items-center h-full">
-            <SmoothScrollLink href="#top" className="flex items-center">
+      {/* Navigation - Enhanced Mobile */}
+      <nav
+        className={`w-full py-3 md:py-4 fixed top-0 z-50 transition-all duration-300 ${
+          scrolled ? "bg-white shadow-md" : "bg-white/95 backdrop-blur-sm shadow-sm"
+        } border-b border-gray-100`}
+      >
+        <div className="container mx-auto px-4">
+          <div className="flex h-14 md:h-16 items-center justify-between">
+            <SmoothScrollLink href="#top" className="flex items-center h-full">
               <Image
                 src="/images/exelita-logo.png"
-                alt="Exelita - AI-Powered EB-1 Visa Petition Builder"
-                width={28}
-                height={28}
-                className="mr-2 md:w-10 md:h-10"
+                alt="Exelita Logo"
+                width={32}
+                height={32}
+                className="w-7 h-7 md:w-10 md:h-10"
                 priority
               />
-              <span className="font-bold text-lg md:text-xl text-indigo-950">Exelita</span>
+              <span className="font-bold text-lg md:text-xl text-indigo-950 ml-2">Exelita</span>
             </SmoothScrollLink>
-          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <SmoothScrollLink href="#features" className="text-gray-700 hover:text-purple-700 transition-colors">
-              Features
-            </SmoothScrollLink>
-            <SmoothScrollLink href="#pricing" className="text-gray-700 hover:text-purple-700 transition-colors">
-              Pricing
-            </SmoothScrollLink>
-            <SmoothScrollLink href="#team" className="text-gray-700 hover:text-purple-700 transition-colors">
-              Team
-            </SmoothScrollLink>
-            <SmoothScrollLink href="#faq" className="text-gray-700 hover:text-purple-700 transition-colors">
-              FAQ
-            </SmoothScrollLink>
-            <a
-              href="https://app.exelita.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              Login
-            </a>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle mobile menu"
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu - Improved */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
-            <div className="px-4 py-3 space-y-1">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
               <SmoothScrollLink
                 href="#features"
-                className="block py-3 px-2 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
+                className="text-gray-700 hover:text-purple-700 transition-colors font-medium"
+              >
+                Features
+              </SmoothScrollLink>
+              <SmoothScrollLink
+                href="#pricing"
+                className="text-gray-700 hover:text-purple-700 transition-colors font-medium"
+              >
+                Pricing
+              </SmoothScrollLink>
+              <SmoothScrollLink
+                href="#team"
+                className="text-gray-700 hover:text-purple-700 transition-colors font-medium"
+              >
+                Team
+              </SmoothScrollLink>
+              <SmoothScrollLink
+                href="#faq"
+                className="text-gray-700 hover:text-purple-700 transition-colors font-medium"
+              >
+                FAQ
+              </SmoothScrollLink>
+              <a
+                href="https://app.exelita.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-purple-700 hover:bg-purple-800 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+              >
+                Login
+              </a>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors active:bg-gray-200"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu - Enhanced */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t border-gray-100 shadow-lg animate-in slide-in-from-top duration-300">
+            <div className="px-4 py-4 space-y-2 max-h-[calc(100vh-5rem)] overflow-y-auto">
+              <SmoothScrollLink
+                href="#features"
+                className="block py-3 px-4 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Features
               </SmoothScrollLink>
               <SmoothScrollLink
                 href="#pricing"
-                className="block py-3 px-2 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
+                className="block py-3 px-4 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Pricing
               </SmoothScrollLink>
               <SmoothScrollLink
                 href="#team"
-                className="block py-3 px-2 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
+                className="block py-3 px-4 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Team
               </SmoothScrollLink>
               <SmoothScrollLink
                 href="#faq"
-                className="block py-3 px-2 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
+                className="block py-3 px-4 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 FAQ
               </SmoothScrollLink>
 
-              {/* Mobile CTA in Menu */}
-              <div className="pt-3 border-t border-gray-200">
+              <div className="pt-2 border-t border-gray-200">
+                <a
+                  href="https://app.exelita.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-purple-700 hover:bg-purple-800 text-white text-center font-semibold py-3 px-4 rounded-lg transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </a>
+              </div>
+
+              <div className="pt-2">
                 <EligibilityQuizController>
                   <button
-                    className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold py-3 px-4 rounded-lg transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Take Free Quiz
@@ -123,309 +158,208 @@ export default function Home() {
       </nav>
 
       {/* Sticky Mobile CTA - Enhanced */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-2xl safe-area-inset-bottom">
         <div className="px-4 py-3">
           <EligibilityQuizController>
-            <Button className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-4 rounded-lg shadow-md">
+            <Button className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-4 text-base rounded-lg shadow-md active:scale-98 transition-transform">
               Take Free Eligibility Quiz
-              <ChevronRight className="ml-2 h-4 w-4" />
+              <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
           </EligibilityQuizController>
         </div>
       </div>
 
-      {/* Hero Section - Mobile Optimized */}
-      <section className="w-full bg-gradient-to-r from-indigo-950 to-purple-900 text-white">
-        <div className="container mx-auto px-4 pt-20 pb-20 md:pt-28 md:pb-20 lg:pt-40 lg:pb-32 flex flex-col md:flex-row items-center">
-          <div className="w-full md:w-1/2 mb-8 md:mb-0 md:pr-10 text-center md:text-left">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4 md:mb-6">
-              Build a Winning <span className="text-amber-400">EB-1 Visa Petition</span> with AI
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-gray-200 max-w-2xl mx-auto md:mx-0">
-              Complete your <strong>EB-1A petition</strong> in 2–3 weeks using AI-powered guidance, expert feedback, and
-              attorney-grade formatting. No expensive law firm required.
-            </p>
-            <div className="flex flex-col gap-3 justify-center md:justify-start">
-              <EligibilityQuizController>
-                <button className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-base md:text-lg px-6 py-4 md:py-6 rounded-lg w-full transition-colors duration-200 flex items-center justify-center">
-                  Take Free Eligibility Quiz
-                  <ChevronRight className="ml-2 h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
-                </button>
-              </EligibilityQuizController>
+      {/* Hero Section - Enhanced Mobile */}
+      <section className="w-full bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900 text-white">
+        <div className="container mx-auto px-4 pt-24 pb-16 sm:pt-28 sm:pb-20 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            {/* Text Content */}
+            <div className="w-full md:w-1/2 text-center md:text-left">
+              <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4 md:mb-6">
+                Build a Winning <span className="text-amber-400 inline-block">EB-1 Visa Petition</span> with AI
+              </h1>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-gray-100 leading-relaxed">
+                Complete your <strong className="text-white">EB-1A petition</strong> in 2–3 weeks using AI-powered
+                guidance, expert feedback, and attorney-grade formatting. No expensive law firm required.
+              </p>
+              <div className="flex flex-col gap-3 sm:gap-4 max-w-md mx-auto md:mx-0">
+                <EligibilityQuizController>
+                  <button className="bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-black font-semibold text-base sm:text-lg px-6 py-4 rounded-lg w-full transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl active:scale-98">
+                    Take Free Eligibility Quiz
+                    <ChevronRight className="ml-2 h-5 w-5" />
+                  </button>
+                </EligibilityQuizController>
 
-              <a
-                href="https://app.exelita.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => handleBetaSignup("hero")}
-                className="bg-purple-700 hover:bg-purple-800 text-white font-semibold text-base md:text-lg px-6 py-4 md:py-6 rounded-lg w-full transition-colors duration-200 flex items-center justify-center"
-              >
-                Start Your Petition
-              </a>
+                <a
+                  href="https://app.exelita.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => handleBetaSignup("hero")}
+                  className="bg-purple-700 hover:bg-purple-800 active:bg-purple-900 text-white font-semibold text-base sm:text-lg px-6 py-4 rounded-lg w-full transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl active:scale-98"
+                >
+                  Start Your Petition
+                </a>
+              </div>
             </div>
-          </div>
-          <div className="w-full md:w-1/2 relative">
-            <div className="relative rounded-xl overflow-hidden shadow-2xl">
-              <Image
-                src="/images/hero-image.jpeg"
-                alt="Professional using Exelita AI platform to build EB-1 visa petition"
-                width={800}
-                height={600}
-                className="rounded-xl object-cover h-full w-full"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-indigo-950/60 to-transparent"></div>
+
+            {/* Hero Image */}
+            <div className="w-full md:w-1/2 relative mt-8 md:mt-0">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/images/hero-image.jpeg"
+                  alt="Professional using Exelita AI platform"
+                  width={800}
+                  height={600}
+                  className="rounded-2xl object-cover w-full h-auto"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-indigo-950/60 to-transparent"></div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Problem Section - Mobile Optimized */}
-      <section className="w-full py-12 md:py-16 lg:py-20 bg-white">
+      {/* Problem Section - Enhanced Mobile */}
+      <section className="w-full py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-8 md:mb-12 lg:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12 leading-tight">
             Why <span className="text-purple-700">EB-1 Self-Petitions</span> Are Challenging
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-10">
-            <div className="bg-gray-50 p-4 md:p-6 lg:p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-3 md:mb-4">
-                <div className="bg-red-100 p-2 md:p-3 rounded-lg mr-3 md:mr-4 flex-shrink-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-red-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2">Complex USCIS Criteria</h3>
-                  <p className="text-gray-600 text-sm md:text-base">
-                    Understanding{" "}
-                    <a
-                      href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-2"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-purple-700 hover:underline"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-5xl mx-auto">
+            {[
+              {
+                icon: "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+                title: "Complex USCIS Criteria",
+                description:
+                  "Understanding USCIS requirements for extraordinary ability, outstanding researcher, and multinational executive categories is confusing and subjective.",
+              },
+              {
+                icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+                title: "Expensive Immigration Lawyers",
+                description:
+                  "Traditional immigration attorneys charge $7,000–$15,000 for EB-1 petition preparation and filing.",
+              },
+              {
+                icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+                title: "Time-Consuming Process",
+                description:
+                  "Writing compelling petition letters and gathering evidence takes 3-6 months without proper guidance.",
+              },
+              {
+                icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+                title: "Generic Templates Don't Work",
+                description:
+                  "One-size-fits-all templates fail to highlight your unique qualifications and achievements effectively.",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 p-5 sm:p-6 md:p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="bg-red-100 p-2.5 sm:p-3 rounded-lg flex-shrink-0">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 sm:h-6 sm:w-6 text-red-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      "extraordinary ability"
-                    </a>
-                    ,{" "}
-                    <a
-                      href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-3"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-purple-700 hover:underline"
-                    >
-                      "outstanding researcher"
-                    </a>
-                    , and{" "}
-                    <a
-                      href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-4"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-purple-700 hover:underline"
-                    >
-                      "multinational executive"
-                    </a>{" "}
-                    requirements is confusing and subjective.
-                  </p>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2">{item.title}</h3>
+                    <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{item.description}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="bg-gray-50 p-4 md:p-6 lg:p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-3 md:mb-4">
-                <div className="bg-red-100 p-2 md:p-3 rounded-lg mr-3 md:mr-4 flex-shrink-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-red-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2">Expensive Immigration Lawyers</h3>
-                  <p className="text-gray-600 text-sm md:text-base">
-                    Traditional immigration attorneys charge $7,000–$15,000 for EB-1 petition preparation and filing.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-4 md:p-6 lg:p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-3 md:mb-4">
-                <div className="bg-red-100 p-2 md:p-3 rounded-lg mr-3 md:mr-4 flex-shrink-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-red-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2">Time-Consuming Process</h3>
-                  <p className="text-gray-600 text-sm md:text-base">
-                    Writing compelling petition letters and gathering evidence takes 3-6 months without proper guidance.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-4 md:p-6 lg:p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-3 md:mb-4">
-                <div className="bg-red-100 p-2 md:p-3 rounded-lg mr-3 md:mr-4 flex-shrink-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-red-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2">Generic Templates Don't Work</h3>
-                  <p className="text-gray-600 text-sm md:text-base">
-                    One-size-fits-all templates fail to highlight your unique qualifications and achievements
-                    effectively.
-                  </p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Solution Section - Mobile Optimized */}
-      <section id="features" className="w-full py-12 md:py-16 lg:py-20 bg-gradient-to-b from-gray-50 to-white">
+      {/* Solution Section - Enhanced Mobile */}
+      <section id="features" className="w-full py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-3 md:mb-4 lg:mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4 md:mb-6 leading-tight">
             The <span className="text-purple-700">AI-Powered Solution</span> for EB-1 Success
           </h2>
-          <p className="text-base md:text-lg lg:text-xl text-center text-gray-600 mb-8 md:mb-12 lg:mb-16 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-center text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto leading-relaxed">
             Exelita combines artificial intelligence with immigration law expertise to guide you through every step of
             your EB-1 petition process.
           </p>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl mx-auto">
+            {/* Features List */}
             <div className="order-2 lg:order-1">
-              <div className="space-y-4 md:space-y-6 lg:space-y-8">
-                <div className="flex">
-                  <div className="flex-shrink-0 mr-3 md:mr-4">
-                    <div className="bg-purple-100 p-2 md:p-3 rounded-full">
-                      <FileCheck className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-purple-700" />
+              <div className="space-y-5 sm:space-y-6 md:space-y-8">
+                {[
+                  {
+                    icon: FileCheck,
+                    title: "AI-Guided Petition Builder",
+                    description:
+                      "Our intelligent platform structures your I-140 petition exactly how USCIS officers expect to see it, with personalized prompts tailored to your specific achievements.",
+                  },
+                  {
+                    icon: Users,
+                    title: "Expert Review & Attorney Access",
+                    description:
+                      "Get professional feedback from successful EB-1 self-petitioners and immigration specialists. Optional attorney review ensures legal compliance.",
+                  },
+                  {
+                    icon: MessageSquare,
+                    title: "Smart Recommendation Letter System",
+                    description:
+                      "Your recommenders access our secure portal to input their credentials. Our AI helps craft compelling letters that effectively support your petition.",
+                  },
+                  {
+                    icon: Clock,
+                    title: "Structured Step-by-Step Process",
+                    description:
+                      "Follow our proven methodology that breaks down complex USCIS requirements into manageable steps, ensuring comprehensive coverage.",
+                  },
+                ].map((feature, index) => {
+                  const IconComponent = feature.icon
+                  return (
+                    <div key={index} className="flex gap-3 sm:gap-4">
+                      <div className="flex-shrink-0">
+                        <div className="bg-purple-100 p-2.5 sm:p-3 rounded-full">
+                          <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-purple-700" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2">{feature.title}</h3>
+                        <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{feature.description}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2">AI-Guided Petition Builder</h3>
-                    <p className="text-gray-600 text-sm md:text-base">
-                      Our intelligent platform structures your I-140 petition exactly how USCIS officers expect to see
-                      it, with personalized prompts tailored to your specific achievements and category.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex">
-                  <div className="flex-shrink-0 mr-3 md:mr-4">
-                    <div className="bg-purple-100 p-2 md:p-3 rounded-full">
-                      <Users className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-purple-700" />
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2">
-                      Expert Review & Attorney Access
-                    </h3>
-                    <p className="text-gray-600 text-sm md:text-base">
-                      Get professional feedback from successful EB-1 self-petitioners and immigration specialists.
-                      Optional attorney review ensures your petition meets all legal requirements.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex">
-                  <div className="flex-shrink-0 mr-3 md:mr-4">
-                    <div className="bg-purple-100 p-2 md:p-3 rounded-full">
-                      <MessageSquare className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-purple-700" />
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2">
-                      Smart Recommendation Letter System
-                    </h3>
-                    <p className="text-gray-600 text-sm md:text-base">
-                      Your recommenders access our secure portal to input their credentials and relationship details.
-                      Our AI helps craft compelling letters that effectively support your petition.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex">
-                  <div className="flex-shrink-0 mr-3 md:mr-4">
-                    <div className="bg-purple-100 p-2 md:p-3 rounded-full">
-                      <Clock className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-purple-700" />
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2">
-                      Structured Step-by-Step Process
-                    </h3>
-                    <p className="text-gray-600 text-sm md:text-base">
-                      Follow our proven methodology that breaks down complex USCIS requirements into manageable steps,
-                      ensuring you address every criterion comprehensively.
-                    </p>
-                  </div>
-                </div>
+                  )
+                })}
               </div>
             </div>
 
+            {/* Platform Screenshot */}
             <div className="order-1 lg:order-2 relative">
-              <div className="relative rounded-xl overflow-hidden shadow-xl">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <Image
                   src="/images/platform-screenshot.jpeg"
-                  alt="Exelita AI platform interface showing EB-1 petition builder dashboard"
+                  alt="Exelita AI platform interface"
                   width={800}
                   height={600}
-                  className="rounded-xl object-cover h-full w-full"
+                  className="rounded-2xl object-cover w-full h-auto"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-purple-900/30 to-transparent"></div>
               </div>
-              <div className="absolute -bottom-3 -left-3 md:-bottom-4 md:-left-4 lg:-bottom-6 lg:-left-6 bg-white text-black p-2 md:p-3 lg:p-4 rounded-lg shadow-xl">
-                <div className="flex items-center">
-                  <div className="bg-amber-500 rounded-full p-1 mr-2">
-                    <Clock className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-white" />
+              <div className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 bg-white text-black p-3 sm:p-4 rounded-xl shadow-xl">
+                <div className="flex items-center gap-2">
+                  <div className="bg-amber-500 rounded-full p-1.5">
+                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
-                  <span className="font-semibold text-xs md:text-sm lg:text-base">Complete in 2-3 Weeks</span>
+                  <span className="font-semibold text-sm sm:text-base">Complete in 2-3 Weeks</span>
                 </div>
               </div>
             </div>
@@ -433,46 +367,41 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section - Mobile Optimized */}
-      <section id="pricing" className="w-full py-12 md:py-16 lg:py-20 bg-white">
+      {/* Pricing Section - Enhanced Mobile */}
+      <section id="pricing" className="w-full py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-3 md:mb-4 lg:mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4 md:mb-6 leading-tight">
             Affordable EB-1 Petition Plans
           </h2>
-          <p className="text-base md:text-lg lg:text-xl text-center text-gray-600 mb-8 md:mb-12 lg:mb-16 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-center text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto leading-relaxed">
             Save thousands compared to traditional immigration lawyers. One-time payment, no hidden fees, 7-day
             money-back guarantee.
           </p>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
             {/* Essential Plan */}
-            <div className="border border-gray-200 rounded-xl p-4 md:p-6 lg:p-8 hover:shadow-lg transition-shadow duration-300">
-              <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-2">Essential</h3>
-              <div className="flex items-end mb-3 md:mb-4 lg:mb-6">
-                <span className="text-2xl md:text-3xl lg:text-4xl font-bold">$1,500</span>
-                <span className="text-gray-500 ml-2 text-sm md:text-base">one-time</span>
+            <div className="border-2 border-gray-200 rounded-2xl p-5 sm:p-6 md:p-8 hover:shadow-xl transition-all duration-300 hover:border-gray-300">
+              <h3 className="text-xl sm:text-2xl font-bold mb-2">Essential</h3>
+              <div className="flex items-end mb-4 sm:mb-6">
+                <span className="text-3xl sm:text-4xl md:text-5xl font-bold">$1,500</span>
+                <span className="text-gray-500 ml-2 text-sm sm:text-base">one-time</span>
               </div>
-              <p className="text-xs md:text-sm text-gray-600 mb-3 md:mb-4">
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
                 Perfect for DIY petitioners with strong qualifications
               </p>
 
-              <ul className="space-y-2 md:space-y-3 lg:space-y-4 mb-4 md:mb-6 lg:mb-8">
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">AI-powered petition builder</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">2 professional recommendation letters</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">USCIS-compliant templates</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">Professional PDF export</span>
-                </li>
+              <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                {[
+                  "AI-powered petition builder",
+                  "2 professional recommendation letters",
+                  "USCIS-compliant templates",
+                  "Professional PDF export",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 sm:gap-3">
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm sm:text-base leading-relaxed">{item}</span>
+                  </li>
+                ))}
               </ul>
 
               <a
@@ -483,48 +412,41 @@ export default function Home() {
                   handlePricingClick("Essential")
                   handleBetaSignup("pricing-essential")
                 }}
-                className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 px-4 rounded-md font-medium transition-colors duration-200 flex items-center justify-center text-sm md:text-base"
+                className="block w-full bg-gray-900 hover:bg-gray-800 active:bg-black text-white text-center py-3.5 sm:py-4 px-4 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg active:scale-98"
               >
                 Start Essential Plan
               </a>
             </div>
 
-            {/* Pro Plan - Most Popular */}
-            <div className="border-2 border-purple-500 rounded-xl p-4 md:p-6 lg:p-8 shadow-lg relative">
-              <div className="absolute top-0 right-0 bg-purple-500 text-white px-2 md:px-3 lg:px-4 py-1 rounded-bl-lg rounded-tr-lg font-medium text-xs md:text-sm">
+            {/* Pro Plan */}
+            <div className="border-2 border-purple-500 rounded-2xl p-5 sm:p-6 md:p-8 shadow-xl relative bg-gradient-to-b from-purple-50 to-white">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-500 text-white px-4 py-1.5 rounded-full font-semibold text-xs sm:text-sm shadow-lg">
                 MOST POPULAR
               </div>
 
-              <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-2">Pro</h3>
-              <div className="flex items-end mb-3 md:mb-4 lg:mb-6">
-                <span className="text-2xl md:text-3xl lg:text-4xl font-bold">$2,000</span>
-                <span className="text-gray-500 ml-2 text-sm md:text-base">one-time</span>
+              <h3 className="text-xl sm:text-2xl font-bold mb-2 mt-2">Pro</h3>
+              <div className="flex items-end mb-4 sm:mb-6">
+                <span className="text-3xl sm:text-4xl md:text-5xl font-bold">$2,000</span>
+                <span className="text-gray-500 ml-2 text-sm sm:text-base">one-time</span>
               </div>
-              <p className="text-xs md:text-sm text-gray-600 mb-3 md:mb-4">
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
                 Best value with expert guidance and support
               </p>
 
-              <ul className="space-y-2 md:space-y-3 lg:space-y-4 mb-4 md:mb-6 lg:mb-8">
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">Everything in Essential</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">
-                    <strong>1 expert petition review</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">
-                    <strong>5 professional recommendation letters</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">Priority email support</span>
-                </li>
+              <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                {[
+                  "Everything in Essential",
+                  "1 expert petition review",
+                  "5 professional recommendation letters",
+                  "Priority email support",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 sm:gap-3">
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm sm:text-base leading-relaxed">
+                      {i > 0 ? <strong>{item}</strong> : item}
+                    </span>
+                  </li>
+                ))}
               </ul>
 
               <a
@@ -535,44 +457,35 @@ export default function Home() {
                   handlePricingClick("Pro")
                   handleBetaSignup("pricing-pro")
                 }}
-                className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 px-4 rounded-md font-medium transition-colors duration-200 flex items-center justify-center text-sm md:text-base"
+                className="block w-full bg-purple-700 hover:bg-purple-800 active:bg-purple-900 text-white text-center py-3.5 sm:py-4 px-4 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg active:scale-98"
               >
                 Start Pro Plan
               </a>
             </div>
 
-            {/* Pro Max Plan */}
-            <div className="border border-gray-200 rounded-xl p-4 md:p-6 lg:p-8 hover:shadow-lg transition-shadow duration-300 bg-gradient-to-b from-gray-50 to-white">
-              <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-2">Premium</h3>
-              <div className="flex items-end mb-3 md:mb-4 lg:mb-6">
-                <span className="text-2xl md:text-3xl lg:text-4xl font-bold">$2,500</span>
-                <span className="text-gray-500 ml-2 text-sm md:text-base">one-time</span>
+            {/* Premium Plan */}
+            <div className="border-2 border-gray-200 rounded-2xl p-5 sm:p-6 md:p-8 hover:shadow-xl transition-all duration-300 hover:border-gray-300 bg-gradient-to-b from-gray-50 to-white">
+              <h3 className="text-xl sm:text-2xl font-bold mb-2">Premium</h3>
+              <div className="flex items-end mb-4 sm:mb-6">
+                <span className="text-3xl sm:text-4xl md:text-5xl font-bold">$2,500</span>
+                <span className="text-gray-500 ml-2 text-sm sm:text-base">one-time</span>
               </div>
-              <p className="text-xs md:text-sm text-gray-600 mb-3 md:mb-4">Complete solution with legal oversight</p>
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Complete solution with legal oversight</p>
 
-              <ul className="space-y-2 md:space-y-3 lg:space-y-4 mb-4 md:mb-6 lg:mb-8">
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">Everything in Pro</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">
-                    <strong>2 comprehensive expert reviews</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">
-                    <strong>10 recommendation letters</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">
-                    <strong>Licensed attorney review</strong>
-                  </span>
-                </li>
+              <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                {[
+                  "Everything in Pro",
+                  "2 comprehensive expert reviews",
+                  "10 recommendation letters",
+                  "Licensed attorney review",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 sm:gap-3">
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm sm:text-base leading-relaxed">
+                      {i > 0 ? <strong>{item}</strong> : item}
+                    </span>
+                  </li>
+                ))}
               </ul>
 
               <a
@@ -583,20 +496,20 @@ export default function Home() {
                   handlePricingClick("Pro Max")
                   handleBetaSignup("pricing-promax")
                 }}
-                className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold py-3 px-4 rounded-md transition-colors duration-200 flex items-center justify-center text-sm md:text-base"
+                className="block w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-black text-center py-3.5 sm:py-4 px-4 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg active:scale-98"
               >
                 Start Premium Plan
               </a>
             </div>
           </div>
 
-          <div className="text-center mt-8 md:mt-12">
-            <p className="text-gray-600 mb-3 md:mb-4 text-sm md:text-base">
+          <div className="text-center mt-8 sm:mt-12">
+            <p className="text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
               <strong>Compare to traditional lawyers:</strong> $7,000 - $15,000 + filing fees
             </p>
-            <div className="flex items-center justify-center">
-              <Shield className="h-4 w-4 md:h-5 md:w-5 text-green-500 mr-2" />
-              <span className="text-xs md:text-sm text-gray-600">
+            <div className="flex items-center justify-center gap-2">
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0" />
+              <span className="text-xs sm:text-sm text-gray-600">
                 7-day money-back guarantee • Secure payment • No hidden fees
               </span>
             </div>
@@ -604,77 +517,63 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Meet the Founders Section - Mobile Optimized */}
-      <section id="team" className="w-full py-12 md:py-16 lg:py-20 bg-gray-50">
+      {/* Team Section - Enhanced Mobile */}
+      <section id="team" className="w-full py-12 sm:py-16 md:py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12 lg:mb-16">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
               Meet the Founders
             </h2>
-            <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Both EB-1A recipients who understand the challenges firsthand and built Exelita to democratize access to
               successful EB-1 petitions.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 max-w-6xl mx-auto">
-            {/* Wole Akande */}
-            <div className="bg-white rounded-xl p-4 md:p-6 lg:p-8 text-center shadow-sm">
-              <div className="mb-4 md:mb-6">
-                <Image
-                  src="/images/wole-new-headshot.png"
-                  alt="Irewole 'Wole' Akande, CEO and EB-1A recipient"
-                  width={200}
-                  height={200}
-                  className="rounded-full mx-auto object-cover w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40"
-                />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">Irewole "Wole" Akande</h3>
-                <div className="text-purple-700 font-semibold mb-1 text-sm md:text-base">CEO — EB-1A recipient</div>
-                <div className="text-xs md:text-sm text-gray-500 mb-3 md:mb-4">
-                  Microsoft PM • Inventor • Future Legend
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
+            {[
+              {
+                name: "Irewole 'Wole' Akande",
+                title: "CEO — EB-1A recipient",
+                subtitle: "Microsoft PM • Inventor • Future Legend",
+                image: "/images/wole-new-headshot.png",
+                bio: "Microsoft PM shaping Viva Engage's expert-verification engine that will vet Copilot's AI output for 1M+ organizations. Invented Opal, an IoT hygiene device cited by the CDC during COVID-19. Texas Business Hall of Fame 'Future Legend,' Poets & Quants distinguished MBA.",
+              },
+              {
+                name: "Richard Igbiriki",
+                title: "CTO — EB-1A recipient",
+                subtitle: "Microsoft Architect • AI Founder • Scholar",
+                image: "/images/richard-new-headshot.png",
+                bio: "Architects OneDrive & SharePoint services safeguarding data for 100M+ users. Former founder of akaani, an AI platform that personalized meal planning with adaptive ML. Special Congressional Recognition, Apple HBCU Scholar, peer-reviewed author with IEEE and ProQuest.",
+              },
+            ].map((founder, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl p-5 sm:p-6 md:p-8 text-center shadow-sm hover:shadow-lg transition-shadow"
+              >
+                <div className="mb-4 sm:mb-6">
+                  <Image
+                    src={founder.image || "/placeholder.svg"}
+                    alt={founder.name}
+                    width={160}
+                    height={160}
+                    className="rounded-full mx-auto object-cover w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 shadow-lg"
+                  />
                 </div>
-                <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
-                  Microsoft PM shaping Viva Engage's expert-verification engine that will vet Copilot's AI output for
-                  1M+ organizations. Invented Opal, an IoT hygiene device cited by the CDC during COVID-19. Texas
-                  Business Hall of Fame "Future Legend," Poets & Quants distinguished MBA.
-                </p>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">{founder.name}</h3>
+                <div className="text-purple-700 font-semibold mb-1 text-sm sm:text-base">{founder.title}</div>
+                <div className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">{founder.subtitle}</div>
+                <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{founder.bio}</p>
               </div>
-            </div>
-
-            {/* Richard Igbiriki */}
-            <div className="bg-white rounded-xl p-4 md:p-6 lg:p-8 text-center shadow-sm">
-              <div className="mb-4 md:mb-6">
-                <Image
-                  src="/images/richard-new-headshot.png"
-                  alt="Richard Igbiriki, CTO and EB-1A recipient"
-                  width={200}
-                  height={200}
-                  className="rounded-full mx-auto object-cover w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40"
-                />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">Richard Igbiriki</h3>
-                <div className="text-purple-700 font-semibold mb-1 text-sm md:text-base">CTO — EB-1A recipient</div>
-                <div className="text-xs md:text-sm text-gray-500 mb-3 md:mb-4">
-                  Microsoft Architect • AI Founder • Scholar
-                </div>
-                <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
-                  Architects OneDrive & SharePoint services safeguarding data for 100M+ users. Former founder of akaani,
-                  an AI platform that personalized meal planning with adaptive ML. Special Congressional Recognition,
-                  Apple HBCU Scholar, peer-reviewed author with IEEE and ProQuest.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
 
-          <div className="text-center mt-8 md:mt-12">
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 md:p-6 max-w-4xl mx-auto">
-              <h4 className="font-semibold text-purple-900 mb-2 md:mb-3 text-sm md:text-base">
+          <div className="text-center mt-8 sm:mt-12">
+            <div className="bg-purple-50 border border-purple-200 rounded-2xl p-5 sm:p-6 md:p-8 max-w-4xl mx-auto">
+              <h4 className="font-semibold text-purple-900 mb-2 sm:mb-3 text-base sm:text-lg">
                 🎯 Why We Built Exelita
               </h4>
-              <p className="text-purple-800 text-xs sm:text-sm md:text-base">
+              <p className="text-purple-800 text-sm sm:text-base leading-relaxed">
                 "After successfully navigating our own EB-1A petitions, we realized that with the right guidance and
                 tools, exceptional professionals shouldn't need to spend $10,000+ on lawyers. Exelita democratizes
                 access to the same strategies and expertise that helped us achieve our American dream."
@@ -684,14 +583,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FAQ Section - Mobile Optimized */}
-      <section id="faq" className="w-full py-12 md:py-16 lg:py-20 bg-white">
+      {/* FAQ Section - Enhanced Mobile */}
+      <section id="faq" className="w-full py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-8 md:mb-12 lg:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 leading-tight">
             Frequently Asked Questions About EB-1 Petitions
           </h2>
 
-          <div className="max-w-3xl mx-auto space-y-4 md:space-y-6 lg:space-y-8">
+          <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
             {[
               {
                 question: "Is this a lawyer replacement?",
@@ -724,85 +623,85 @@ export default function Home() {
                   "Yes, we offer a 7-day satisfaction guarantee. If you're not happy with our platform within the first week of purchase, we'll provide a full refund, no questions asked.",
               },
             ].map((faq, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-4 md:p-6 shadow-sm">
-                <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2 md:mb-3 text-gray-900">
+              <div key={index} className="bg-gray-50 rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3 text-gray-900">
                   {faq.question}
                 </h3>
-                <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">{faq.answer}</p>
+                <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{faq.answer}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA - Mobile Optimized */}
-      <section className="w-full py-12 md:py-16 lg:py-20 bg-gradient-to-r from-indigo-950 to-purple-900 text-white">
+      {/* Final CTA - Enhanced Mobile */}
+      <section className="w-full py-12 sm:py-16 md:py-20 bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 lg:mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 md:mb-6 leading-tight">
             Ready to Build Your Winning EB-1 Petition?
           </h2>
-          <p className="text-base md:text-lg lg:text-xl text-gray-300 mb-6 md:mb-8 lg:mb-10 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-gray-100 mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed">
             Join thousands of professionals who've saved $10,000+ in legal fees while building stronger petitions with
             AI guidance and expert support.
           </p>
 
-          <div className="flex flex-col gap-3 md:gap-4 justify-center max-w-md mx-auto">
+          <div className="flex flex-col gap-3 sm:gap-4 justify-center max-w-md mx-auto">
             <a
               href="https://app.exelita.com/"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => handleBetaSignup("final-cta")}
-              className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-base md:text-lg px-6 py-4 md:py-6 rounded-lg w-full transition-colors duration-200 flex items-center justify-center"
+              className="bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-black font-semibold text-base sm:text-lg px-6 py-4 rounded-xl w-full transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl active:scale-98"
             >
               Start Your Petition
             </a>
 
             <EligibilityQuizController>
-              <button className="border-2 border-amber-500 text-amber-500 hover:bg-amber-500/10 text-base md:text-lg px-6 py-4 md:py-6 rounded-lg w-full bg-transparent transition-colors duration-200 flex items-center justify-center">
+              <button className="border-2 border-amber-500 text-amber-400 hover:bg-amber-500/10 active:bg-amber-500/20 text-base sm:text-lg px-6 py-4 rounded-xl w-full bg-transparent transition-all duration-200 flex items-center justify-center active:scale-98">
                 Take Free Eligibility Quiz
               </button>
             </EligibilityQuizController>
           </div>
 
-          <div className="mt-6 md:mt-8 lg:mt-10 flex items-center justify-center">
-            <Shield className="h-4 w-4 md:h-5 md:w-5 text-amber-500 mr-2" />
-            <span className="text-gray-300 text-xs md:text-sm lg:text-base">
+          <div className="mt-6 sm:mt-8 flex items-center justify-center gap-2">
+            <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400 flex-shrink-0" />
+            <span className="text-gray-200 text-xs sm:text-sm">
               Secure Payment • 7-Day Money-Back Guarantee • No Hidden Fees
             </span>
           </div>
         </div>
       </section>
 
-      {/* Footer - Mobile Optimized */}
-      <footer className="w-full py-6 md:py-8 lg:py-12 bg-gray-900 text-gray-400 pb-20 md:pb-6">
+      {/* Footer - Enhanced Mobile */}
+      <footer className="w-full py-8 sm:py-10 md:py-12 bg-gray-900 text-gray-400 pb-24 md:pb-8">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-            <div className="md:col-span-2 lg:col-span-1">
-              <div className="flex items-center mb-2 md:mb-3 lg:mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            <div className="sm:col-span-2 lg:col-span-1">
+              <div className="flex items-center mb-3 sm:mb-4">
                 <Image
                   src="/images/exelita-logo.png"
                   alt="Exelita Logo"
-                  width={24}
-                  height={24}
-                  className="mr-2 md:w-8 md:h-8 lg:w-10 lg:h-10"
+                  width={32}
+                  height={32}
+                  className="mr-2 w-8 h-8"
                 />
-                <h3 className="text-white font-semibold text-sm md:text-base">Exelita</h3>
+                <h3 className="text-white font-semibold text-base sm:text-lg">Exelita</h3>
               </div>
-              <p className="mb-2 md:mb-3 lg:mb-4 text-xs md:text-sm lg:text-base">
+              <p className="mb-3 sm:mb-4 text-sm sm:text-base leading-relaxed">
                 AI-powered EB-1 visa petition builder for extraordinary professionals, outstanding researchers, and
                 multinational executives.
               </p>
-              <div className="flex space-x-3 md:space-x-4">
+              <div className="flex space-x-4">
                 <a
                   href="https://www.instagram.com/exelita_ai/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                  aria-label="Follow Exelita on Instagram"
+                  className="hover:text-white transition-colors p-2 hover:bg-gray-800 rounded-lg"
+                  aria-label="Follow on Instagram"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 md:h-5 md:w-5"
+                    className="h-5 w-5 sm:h-6 sm:w-6"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -813,12 +712,12 @@ export default function Home() {
                   href="https://www.linkedin.com/company/exelita"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                  aria-label="Follow Exelita on LinkedIn"
+                  className="hover:text-white transition-colors p-2 hover:bg-gray-800 rounded-lg"
+                  aria-label="Follow on LinkedIn"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 md:h-5 md:w-5"
+                    className="h-5 w-5 sm:h-6 sm:w-6"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -829,48 +728,42 @@ export default function Home() {
             </div>
 
             <div>
-              <h3 className="text-white font-semibold mb-2 md:mb-3 lg:mb-4 text-sm md:text-base">EB-1 Categories</h3>
-              <ul className="space-y-1 md:space-y-2">
+              <h3 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">EB-1 Categories</h3>
+              <ul className="space-y-2">
                 <li>
                   <a
                     href="https://www.uscis.gov/policy-manual/volume-6-part-f-chapter-2"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-white transition-colors text-xs md:text-sm lg:text-base"
+                    className="hover:text-white transition-colors text-sm"
                   >
                     EB-1A Extraordinary Ability
                   </a>
                 </li>
-                <li></li>
-                <li></li>
               </ul>
             </div>
 
             <div>
-              <h3 className="text-white font-semibold mb-2 md:mb-3 lg:mb-4 text-sm md:text-base">Resources</h3>
-              <ul className="space-y-1 md:space-y-2">
-                <li></li>
+              <h3 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Resources</h3>
+              <ul className="space-y-2">
                 <li>
-                  <Link href="#faq" className="hover:text-white transition-colors text-xs md:text-sm lg:text-base">
+                  <SmoothScrollLink href="#faq" className="hover:text-white transition-colors text-sm">
                     FAQ
-                  </Link>
+                  </SmoothScrollLink>
                 </li>
                 <li>
-                  <Link href="#pricing" className="hover:text-white transition-colors text-xs md:text-sm lg:text-base">
+                  <SmoothScrollLink href="#pricing" className="hover:text-white transition-colors text-sm">
                     Pricing
-                  </Link>
+                  </SmoothScrollLink>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h3 className="text-white font-semibold mb-2 md:mb-3 lg:mb-4 text-sm md:text-base">Contact</h3>
-              <ul className="space-y-1 md:space-y-2">
+              <h3 className="text-white font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Contact</h3>
+              <ul className="space-y-2">
                 <li>
-                  <a
-                    href="mailto:irewole@exelita.com"
-                    className="hover:text-white transition-colors text-xs md:text-sm lg:text-base"
-                  >
+                  <a href="mailto:irewole@exelita.com" className="hover:text-white transition-colors text-sm">
                     irewole@exelita.com
                   </a>
                 </li>
@@ -879,7 +772,7 @@ export default function Home() {
                     href="https://app.exelita.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-white transition-colors text-xs md:text-sm lg:text-base"
+                    className="hover:text-white transition-colors text-sm"
                   >
                     Get Started
                   </a>
@@ -888,8 +781,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-6 md:mt-8 pt-6 md:pt-8 text-center">
-            <p className="text-xs md:text-sm text-gray-500">
+          <div className="border-t border-gray-800 mt-8 pt-6 text-center">
+            <p className="text-xs sm:text-sm text-gray-500">
               © 2025 Exelita. All rights reserved. | Not a law firm. Not a substitute for legal advice.
             </p>
           </div>
