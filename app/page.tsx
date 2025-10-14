@@ -24,8 +24,8 @@ export default function Home() {
     <main id="top" className="flex min-h-screen flex-col items-center">
       {/* Navigation - Mobile Optimized */}
       <nav className="w-full py-3 md:py-4 bg-white/95 backdrop-blur-sm fixed top-0 z-50 shadow-sm border-b border-gray-100">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center">
+        <div className="container mx-auto px-4 flex h-16 items-center justify-between">
+          <div className="flex items-center h-full">
             <SmoothScrollLink href="#top" className="flex items-center">
               <Image
                 src="/images/exelita-logo.png"
@@ -40,19 +40,27 @@ export default function Home() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
             <SmoothScrollLink href="#features" className="text-gray-700 hover:text-purple-700 transition-colors">
               Features
-            </SmoothScrollLink>
-            <SmoothScrollLink href="#team" className="text-gray-700 hover:text-purple-700 transition-colors">
-              Team
             </SmoothScrollLink>
             <SmoothScrollLink href="#pricing" className="text-gray-700 hover:text-purple-700 transition-colors">
               Pricing
             </SmoothScrollLink>
+            <SmoothScrollLink href="#team" className="text-gray-700 hover:text-purple-700 transition-colors">
+              Team
+            </SmoothScrollLink>
             <SmoothScrollLink href="#faq" className="text-gray-700 hover:text-purple-700 transition-colors">
               FAQ
             </SmoothScrollLink>
+            <a
+              href="https://app.exelita.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              Login
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -77,18 +85,18 @@ export default function Home() {
                 Features
               </SmoothScrollLink>
               <SmoothScrollLink
-                href="#team"
-                className="block py-3 px-2 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Team
-              </SmoothScrollLink>
-              <SmoothScrollLink
                 href="#pricing"
                 className="block py-3 px-2 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Pricing
+              </SmoothScrollLink>
+              <SmoothScrollLink
+                href="#team"
+                className="block py-3 px-2 text-gray-700 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Team
               </SmoothScrollLink>
               <SmoothScrollLink
                 href="#faq"
@@ -134,25 +142,25 @@ export default function Home() {
               Build a Winning <span className="text-amber-400">EB-1 Visa Petition</span> with AI
             </h1>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 text-gray-200 max-w-2xl mx-auto md:mx-0">
-              Complete your <strong>EB-1A petition</strong> in 2–3 weeks using AI-powered guidance,
-              expert feedback, and attorney-grade formatting. No expensive law firm required.
+              Complete your <strong>EB-1A petition</strong> in 2–3 weeks using AI-powered guidance, expert feedback, and
+              attorney-grade formatting. No expensive law firm required.
             </p>
             <div className="flex flex-col gap-3 justify-center md:justify-start">
               <EligibilityQuizController>
                 <button className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-base md:text-lg px-6 py-4 md:py-6 rounded-lg w-full transition-colors duration-200 flex items-center justify-center">
                   Take Free Eligibility Quiz
-                  <ChevronRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+                  <ChevronRight className="ml-2 h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
                 </button>
               </EligibilityQuizController>
 
               <a
-                href="https://forms.office.com/r/KNDUcFg5Vw"
+                href="https://app.exelita.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => handleBetaSignup("hero")}
                 className="bg-purple-700 hover:bg-purple-800 text-white font-semibold text-base md:text-lg px-6 py-4 md:py-6 rounded-lg w-full transition-colors duration-200 flex items-center justify-center"
               >
-                Join Our Beta Program
+                Start Your Petition
               </a>
             </div>
           </div>
@@ -425,86 +433,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Meet the Founders Section - Mobile Optimized */}
-      <section id="team" className="w-full py-12 md:py-16 lg:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12 lg:mb-16">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
-              Meet the Founders
-            </h2>
-            <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
-              Both EB-1A recipients who understand the challenges firsthand and built Exelita to democratize access to
-              successful EB-1 petitions.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 max-w-6xl mx-auto">
-            {/* Wole Akande */}
-            <div className="bg-gray-50 rounded-xl p-4 md:p-6 lg:p-8 text-center">
-              <div className="mb-4 md:mb-6">
-                <Image
-                  src="/images/wole-new-headshot.png"
-                  alt="Irewole 'Wole' Akande, CEO and EB-1A recipient"
-                  width={200}
-                  height={200}
-                  className="rounded-full mx-auto object-cover w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40"
-                />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">Irewole "Wole" Akande</h3>
-                <div className="text-purple-700 font-semibold mb-1 text-sm md:text-base">CEO — EB-1A recipient</div>
-                <div className="text-xs md:text-sm text-gray-500 mb-3 md:mb-4">
-                  Microsoft PM • Inventor • Future Legend
-                </div>
-                <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
-                  Microsoft PM shaping Viva Engage's expert-verification engine that will vet Copilot's AI output for
-                  1M+ organizations. Invented Opal, an IoT hygiene device cited by the CDC during COVID-19. Texas
-                  Business Hall of Fame "Future Legend," Poets & Quants distinguished MBA.
-                </p>
-              </div>
-            </div>
-
-            {/* Richard Igbiriki */}
-            <div className="bg-gray-50 rounded-xl p-4 md:p-6 lg:p-8 text-center">
-              <div className="mb-4 md:mb-6">
-                <Image
-                  src="/images/richard-new-headshot.png"
-                  alt="Richard Igbiriki, CTO and EB-1A recipient"
-                  width={200}
-                  height={200}
-                  className="rounded-full mx-auto object-cover w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40"
-                />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">Richard Igbiriki</h3>
-                <div className="text-purple-700 font-semibold mb-1 text-sm md:text-base">CTO — EB-1A recipient</div>
-                <div className="text-xs md:text-sm text-gray-500 mb-3 md:mb-4">
-                  Microsoft Architect • AI Founder • Scholar
-                </div>
-                <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
-                  Architects OneDrive & SharePoint services safeguarding data for 100M+ users. Former founder of akaani,
-                  an AI platform that personalized meal planning with adaptive ML. Special Congressional Recognition,
-                  Apple HBCU Scholar, peer-reviewed author with IEEE and ProQuest.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-8 md:mt-12">
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 md:p-6 max-w-4xl mx-auto">
-              <h4 className="font-semibold text-purple-900 mb-2 md:mb-3 text-sm md:text-base">
-                🎯 Why We Built Exelita
-              </h4>
-              <p className="text-purple-800 text-xs sm:text-sm md:text-base">
-                "After successfully navigating our own EB-1A petitions, we realized that with the right guidance and
-                tools, exceptional professionals shouldn't need to spend $10,000+ on lawyers. Exelita democratizes
-                access to the same strategies and expertise that helped us achieve our American dream."
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Pricing Section - Mobile Optimized */}
       <section id="pricing" className="w-full py-12 md:py-16 lg:py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -535,7 +463,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <span className="text-xs md:text-sm lg:text-base">2 professional recommendation letters   </span>
+                  <span className="text-xs md:text-sm lg:text-base">2 professional recommendation letters</span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -548,7 +476,7 @@ export default function Home() {
               </ul>
 
               <a
-                href="https://forms.office.com/r/KNDUcFg5Vw"
+                href="https://buy.stripe.com/fZu9AMg7w6f0eiq2GI6g802"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => {
@@ -590,7 +518,7 @@ export default function Home() {
                 <li className="flex items-start">
                   <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                   <span className="text-xs md:text-sm lg:text-base">
-                    <strong>  5 professional recommendation letters</strong>
+                    <strong>5 professional recommendation letters</strong>
                   </span>
                 </li>
                 <li className="flex items-start">
@@ -600,7 +528,7 @@ export default function Home() {
               </ul>
 
               <a
-                href="https://forms.office.com/r/KNDUcFg5Vw"
+                href="https://buy.stripe.com/9B69AMcVkgTEfmuchi6g803"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => {
@@ -648,7 +576,7 @@ export default function Home() {
               </ul>
 
               <a
-                href="https://forms.office.com/r/KNDUcFg5Vw"
+                href="https://buy.stripe.com/dRm6oA7B0bzkgqygxy6g804"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => {
@@ -676,8 +604,88 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Meet the Founders Section - Mobile Optimized */}
+      <section id="team" className="w-full py-12 md:py-16 lg:py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 md:mb-12 lg:mb-16">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
+              Meet the Founders
+            </h2>
+            <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
+              Both EB-1A recipients who understand the challenges firsthand and built Exelita to democratize access to
+              successful EB-1 petitions.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 max-w-6xl mx-auto">
+            {/* Wole Akande */}
+            <div className="bg-white rounded-xl p-4 md:p-6 lg:p-8 text-center shadow-sm">
+              <div className="mb-4 md:mb-6">
+                <Image
+                  src="/images/wole-new-headshot.png"
+                  alt="Irewole 'Wole' Akande, CEO and EB-1A recipient"
+                  width={200}
+                  height={200}
+                  className="rounded-full mx-auto object-cover w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40"
+                />
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">Irewole "Wole" Akande</h3>
+                <div className="text-purple-700 font-semibold mb-1 text-sm md:text-base">CEO — EB-1A recipient</div>
+                <div className="text-xs md:text-sm text-gray-500 mb-3 md:mb-4">
+                  Microsoft PM • Inventor • Future Legend
+                </div>
+                <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
+                  Microsoft PM shaping Viva Engage's expert-verification engine that will vet Copilot's AI output for
+                  1M+ organizations. Invented Opal, an IoT hygiene device cited by the CDC during COVID-19. Texas
+                  Business Hall of Fame "Future Legend," Poets & Quants distinguished MBA.
+                </p>
+              </div>
+            </div>
+
+            {/* Richard Igbiriki */}
+            <div className="bg-white rounded-xl p-4 md:p-6 lg:p-8 text-center shadow-sm">
+              <div className="mb-4 md:mb-6">
+                <Image
+                  src="/images/richard-new-headshot.png"
+                  alt="Richard Igbiriki, CTO and EB-1A recipient"
+                  width={200}
+                  height={200}
+                  className="rounded-full mx-auto object-cover w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40"
+                />
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">Richard Igbiriki</h3>
+                <div className="text-purple-700 font-semibold mb-1 text-sm md:text-base">CTO — EB-1A recipient</div>
+                <div className="text-xs md:text-sm text-gray-500 mb-3 md:mb-4">
+                  Microsoft Architect • AI Founder • Scholar
+                </div>
+                <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
+                  Architects OneDrive & SharePoint services safeguarding data for 100M+ users. Former founder of akaani,
+                  an AI platform that personalized meal planning with adaptive ML. Special Congressional Recognition,
+                  Apple HBCU Scholar, peer-reviewed author with IEEE and ProQuest.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-8 md:mt-12">
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 md:p-6 max-w-4xl mx-auto">
+              <h4 className="font-semibold text-purple-900 mb-2 md:mb-3 text-sm md:text-base">
+                🎯 Why We Built Exelita
+              </h4>
+              <p className="text-purple-800 text-xs sm:text-sm md:text-base">
+                "After successfully navigating our own EB-1A petitions, we realized that with the right guidance and
+                tools, exceptional professionals shouldn't need to spend $10,000+ on lawyers. Exelita democratizes
+                access to the same strategies and expertise that helped us achieve our American dream."
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section - Mobile Optimized */}
-      <section id="faq" className="w-full py-12 md:py-16 lg:py-20 bg-gray-50">
+      <section id="faq" className="w-full py-12 md:py-16 lg:py-20 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-8 md:mb-12 lg:mb-16">
             Frequently Asked Questions About EB-1 Petitions
@@ -716,7 +724,7 @@ export default function Home() {
                   "Yes, we offer a 7-day satisfaction guarantee. If you're not happy with our platform within the first week of purchase, we'll provide a full refund, no questions asked.",
               },
             ].map((faq, index) => (
-              <div key={index} className="bg-white rounded-lg p-4 md:p-6 shadow-sm">
+              <div key={index} className="bg-gray-50 rounded-lg p-4 md:p-6 shadow-sm">
                 <h3 className="text-base md:text-lg lg:text-xl font-semibold mb-2 md:mb-3 text-gray-900">
                   {faq.question}
                 </h3>
@@ -740,13 +748,13 @@ export default function Home() {
 
           <div className="flex flex-col gap-3 md:gap-4 justify-center max-w-md mx-auto">
             <a
-              href="https://forms.office.com/r/KNDUcFg5Vw"
+              href="https://app.exelita.com/"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => handleBetaSignup("final-cta")}
               className="bg-amber-500 hover:bg-amber-600 text-black font-semibold text-base md:text-lg px-6 py-4 md:py-6 rounded-lg w-full transition-colors duration-200 flex items-center justify-center"
             >
-              Start Your EB-1 Petition Today
+              Start Your Petition
             </a>
 
             <EligibilityQuizController>
@@ -833,21 +841,15 @@ export default function Home() {
                     EB-1A Extraordinary Ability
                   </a>
                 </li>
-                <li>
-                  
-                </li>
-                <li>
-                  
-                </li>
+                <li></li>
+                <li></li>
               </ul>
             </div>
 
             <div>
               <h3 className="text-white font-semibold mb-2 md:mb-3 lg:mb-4 text-sm md:text-base">Resources</h3>
               <ul className="space-y-1 md:space-y-2">
-                <li>
-                  
-                </li>
+                <li></li>
                 <li>
                   <Link href="#faq" className="hover:text-white transition-colors text-xs md:text-sm lg:text-base">
                     FAQ
@@ -874,12 +876,12 @@ export default function Home() {
                 </li>
                 <li>
                   <a
-                    href="https://forms.office.com/r/KNDUcFg5Vw"
+                    href="https://app.exelita.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-white transition-colors text-xs md:text-sm lg:text-base"
                   >
-                    Join Beta Program
+                    Get Started
                   </a>
                 </li>
               </ul>
@@ -888,7 +890,7 @@ export default function Home() {
 
           <div className="border-t border-gray-800 mt-6 md:mt-8 pt-6 md:pt-8 text-center">
             <p className="text-xs md:text-sm text-gray-500">
-              © 2024 Exelita. All rights reserved. | Not a law firm. Not a substitute for legal advice.
+              © 2025 Exelita. All rights reserved. | Not a law firm. Not a substitute for legal advice.
             </p>
           </div>
         </div>

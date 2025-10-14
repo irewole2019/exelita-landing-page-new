@@ -33,3 +33,6 @@ export default function SmoothScrollLink({ href, children, className, onClick }:
     </a>
   )
 }
+
+// Also export as named export for flexibility
+export { SmoothScrollLink }
