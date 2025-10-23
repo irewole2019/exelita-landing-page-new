@@ -1,7 +1,20 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, ChevronRight, Clock, FileCheck, MessageSquare, Shield, Users, Menu, X } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  FileCheck,
+  MessageSquare,
+  Shield,
+  Users,
+  Menu,
+  X,
+  Eye,
+  Download,
+} from "lucide-react"
 import Image from "next/image"
 import EligibilityQuizController from "@/components/eligibility-quiz-controller"
 import SmoothScrollLink from "@/components/smooth-scroll-link"
@@ -512,6 +525,151 @@ export default function Home() {
               <span className="text-xs sm:text-sm text-gray-600">
                 7-day money-back guarantee • Secure payment • No hidden fees
               </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Success Toolkit CTA Section - NEW */}
+      <section className="w-full py-12 sm:py-16 md:py-20 bg-gradient-to-br from-amber-50 via-purple-50 to-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 leading-tight">
+              Not Ready to Purchase Right Now?
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Access the <span className="text-purple-700 font-semibold">Exelita Success Toolkit</span> – comprehensive
+              resources to help you understand and prepare for your EB-1A petition journey.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto mb-8 sm:mb-12">
+            {/* Toolkit Product Card 1 */}
+            <Card className="border-2 border-purple-200 hover:shadow-xl transition-all duration-300 bg-white">
+              <CardHeader className="bg-gradient-to-br from-purple-50 to-white">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="bg-purple-100 p-2.5 rounded-lg">
+                    <Eye className="h-6 w-6 text-purple-700" />
+                  </div>
+                  <span className="bg-purple-700 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    View-Only
+                  </span>
+                </div>
+                <CardTitle className="text-lg sm:text-xl mb-2">
+                  Comprehensive EB-1A Petition Step-by-Step Guide
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  Complete walkthrough of every stage • 9 detailed sections • Expert strategies
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <p className="text-sm text-gray-600 mb-4">
+                  Access after checkout, opens in embedded secure viewer with no download or print capability.
+                </p>
+                <ul className="space-y-2">
+                  {["Stage-by-stage guidance", "USCIS criteria breakdown", "Evidence strategies"].map((item, i) => (
+                    <li key={i} className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                      <span className="text-gray-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Toolkit Product Card 2 */}
+            <Card className="border-2 border-amber-200 hover:shadow-xl transition-all duration-300 bg-white">
+              <CardHeader className="bg-gradient-to-br from-amber-50 to-white">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="bg-amber-100 p-2.5 rounded-lg">
+                    <Download className="h-6 w-6 text-amber-700" />
+                  </div>
+                  <span className="bg-amber-500 text-black px-3 py-1 rounded-full text-xs font-semibold">
+                    Downloadable
+                  </span>
+                </div>
+                <CardTitle className="text-lg sm:text-xl mb-2">Exelita EB-1A Worksheet</CardTitle>
+                <CardDescription className="text-sm">
+                  Interactive templates and planning tools • Self-assessment checklists
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <p className="text-sm text-gray-600 mb-4">
+                  Delivered immediately after checkout as a secure download. Fill digitally or print.
+                </p>
+                <ul className="space-y-2">
+                  {["Criteria organizers", "Timeline planner", "Evidence tracker"].map((item, i) => (
+                    <li key={i} className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                      <span className="text-gray-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* CTA with Image and Price */}
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-xl border-2 border-purple-300 overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+                {/* Image Side */}
+                <div className="relative h-48 md:h-auto">
+                  <Image
+                    src="/images/platform-screenshot.jpeg"
+                    alt="Exelita Success Toolkit"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-white/95 backdrop-blur-sm rounded-lg p-3">
+                      <p className="text-sm font-semibold text-gray-900">Includes Both Resources:</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Eye className="h-4 w-4 text-purple-700" />
+                        <span className="text-xs text-gray-700">Step-by-Step Guide</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Download className="h-4 w-4 text-amber-700" />
+                        <span className="text-xs text-gray-700">Worksheet Templates</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA Side */}
+                <div className="p-6 sm:p-8 flex flex-col justify-center">
+                  <h3 className="text-xl sm:text-2xl font-bold mb-3 text-gray-900">Get the Complete Toolkit</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4">
+                    Everything you need to understand, plan, and prepare your EB-1A petition – even before starting your
+                    application.
+                  </p>
+
+                  <div className="flex items-end gap-2 mb-6">
+                    <span className="text-4xl sm:text-5xl font-bold text-purple-700">$150</span>
+                    <span className="text-gray-500 text-sm mb-2">one-time</span>
+                  </div>
+
+                  <a
+                    href="https://buy.stripe.com/3cI00c08y7j43DM0yA6g805"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      handlePricingClick("Success Toolkit")
+                      handleBetaSignup("toolkit-cta")
+                    }}
+                    className="block"
+                  >
+                    <Button className="w-full bg-gradient-to-r from-purple-700 to-amber-500 hover:from-purple-800 hover:to-amber-600 text-white py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200">
+                      Access Success Toolkit
+                      <ChevronRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </a>
+
+                  <p className="text-xs text-gray-500 text-center mt-4">Instant access • Lifetime availability</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

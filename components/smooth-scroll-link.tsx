@@ -3,7 +3,6 @@
 import type React from "react"
 
 import type { ReactNode } from "react"
-import { scrollToElement } from "@/lib/scroll-utils"
 
 interface SmoothScrollLinkProps {
   href: string
@@ -16,23 +15,28 @@ export default function SmoothScrollLink({ href, children, className, onClick }:
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
 
-    if (href.startsWith("#")) {
-      scrollToElement(href)
-    } else {
-      window.location.href = href
-    }
-
     if (onClick) {
       onClick()
+    }
+
+    if (href.startsWith("#")) {
+      const targetId = href.substring(1)
+      const targetElement = document.getElementById(targetId)
+
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        })
+      }
+    } else {
+      window.location.href = href
     }
   }
 
   return (
-    <a href={href} className={className} onClick={handleClick}>
+    <a href={href} onClick={handleClick} className={className}>
       {children}
     </a>
   )
 }
-
-// Also export as named export for flexibility
-export { SmoothScrollLink }
