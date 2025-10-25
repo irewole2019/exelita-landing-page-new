@@ -21,12 +21,14 @@
     "lucide-react": "^0.454.0",
     "mammoth": "^1.8.0",
     "next": "15.0.3",
+    "next-themes": "latest",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "latest",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "tw-animate-css": "latest",
     "zod": "^3.23.8"
   },
   "devDependencies": {
