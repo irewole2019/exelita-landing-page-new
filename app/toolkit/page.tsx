@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, Download, Eye, CheckCircle2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -53,8 +53,8 @@ export default function ToolkitPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto">
           {/* Comprehensive Guide (View-Only) */}
           <Card className="border-2 border-purple-200 hover:shadow-xl transition-all duration-300">
-            <CardHeader className="bg-gradient-to-br from-purple-50 to-white">
-              <div className="flex items-center justify-between mb-4">
+            <CardHeader className="bg-gradient-to-br from-purple-50 to-white pb-4">
+              <div className="flex items-center justify-between mb-3">
                 <div className="bg-purple-100 p-3 rounded-lg">
                   <Eye className="h-6 w-6 sm:h-8 sm:w-8 text-purple-700" />
                 </div>
@@ -80,32 +80,34 @@ export default function ToolkitPage() {
                   "Secure embedded viewer (no download)",
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="h-5 w-5 sm:h-8 sm:w-8 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm sm:text-base text-gray-700">{feature}</span>
                   </li>
                 ))}
               </ul>
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
                 <p className="text-xs sm:text-sm text-purple-900">
                   <strong>Note:</strong> This guide opens in a secure embedded viewer. You can read and navigate through
                   all pages, but downloading and printing are disabled to protect the content.
                 </p>
               </div>
-            </CardContent>
-            <CardFooter>
-              <Link href="/toolkit/guide-viewer" className="w-full">
-                <Button className="w-full bg-purple-700 hover:bg-purple-800 text-white py-6 text-base sm:text-lg font-semibold">
+              <Button
+                asChild
+                className="w-full bg-purple-700 hover:bg-purple-800 text-white py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+                aria-label="Open Secure Viewer"
+              >
+                <Link href="/toolkit/guide-viewer">
                   <Eye className="mr-2 h-5 w-5" />
                   Open Secure Viewer
-                </Button>
-              </Link>
-            </CardFooter>
+                </Link>
+              </Button>
+            </CardContent>
           </Card>
 
           {/* Worksheet (Downloadable) */}
           <Card className="border-2 border-amber-200 hover:shadow-xl transition-all duration-300">
-            <CardHeader className="bg-gradient-to-br from-amber-50 to-white">
-              <div className="flex items-center justify-between mb-4">
+            <CardHeader className="bg-gradient-to-br from-amber-50 to-white pb-4">
+              <div className="flex items-center justify-between mb-3">
                 <div className="bg-amber-100 p-3 rounded-lg">
                   <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-amber-700" />
                 </div>
@@ -129,27 +131,26 @@ export default function ToolkitPage() {
                   "Exhibit index and labeling system",
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="h-5 w-5 sm:h-8 sm:w-8 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm sm:text-base text-gray-700">{feature}</span>
                   </li>
                 ))}
               </ul>
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
                 <p className="text-xs sm:text-sm text-amber-900">
                   <strong>Delivered immediately:</strong> Click below to download your worksheet as a secure PDF. Fill
                   it out digitally or print for manual completion.
                 </p>
               </div>
-            </CardContent>
-            <CardFooter>
               <Button
                 onClick={handleDownload}
-                className="w-full bg-amber-500 hover:bg-amber-600 text-black py-6 text-base sm:text-lg font-semibold"
+                className="w-full bg-amber-500 hover:bg-amber-600 text-black py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+                aria-label="Download Worksheet"
               >
                 <Download className="mr-2 h-5 w-5" />
                 Download Worksheet
               </Button>
-            </CardFooter>
+            </CardContent>
           </Card>
         </div>
 

@@ -609,66 +609,35 @@ export default function Home() {
             </Card>
           </div>
 
-          {/* CTA with Image and Price */}
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl border-2 border-purple-300 overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                {/* Image Side */}
-                <div className="relative h-48 md:h-auto">
-                  <Image
-                    src="/images/platform-screenshot.jpeg"
-                    alt="Exelita Success Toolkit"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-white/95 backdrop-blur-sm rounded-lg p-3">
-                      <p className="text-sm font-semibold text-gray-900">Includes Both Resources:</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Eye className="h-4 w-4 text-purple-700" />
-                        <span className="text-xs text-gray-700">Step-by-Step Guide</span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Download className="h-4 w-4 text-amber-700" />
-                        <span className="text-xs text-gray-700">Worksheet Templates</span>
-                      </div>
-                    </div>
-                  </div>
+            <div className="bg-white rounded-2xl shadow-xl border-2 border-purple-300 p-6 sm:p-8">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl sm:text-3xl font-bold mb-3 text-gray-900">Get the Complete Toolkit</h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-4">
+                  Everything you need to understand, plan, and prepare your EB-1A petition – even before starting your
+                  application.
+                </p>
+
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <span className="text-5xl sm:text-6xl font-bold text-purple-700">$150</span>
+                  <span className="text-gray-500 text-base">one-time</span>
                 </div>
 
-                {/* CTA Side */}
-                <div className="p-6 sm:p-8 flex flex-col justify-center">
-                  <h3 className="text-xl sm:text-2xl font-bold mb-3 text-gray-900">Get the Complete Toolkit</h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-4">
-                    Everything you need to understand, plan, and prepare your EB-1A petition – even before starting your
-                    application.
-                  </p>
+                <p className="text-sm text-gray-600 mb-6">Instant access • Lifetime availability</p>
 
-                  <div className="flex items-end gap-2 mb-6">
-                    <span className="text-4xl sm:text-5xl font-bold text-purple-700">$150</span>
-                    <span className="text-gray-500 text-sm mb-2">one-time</span>
-                  </div>
-
-                  <a
-                    href="https://buy.stripe.com/3cI00c08y7j43DM0yA6g805"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => {
-                      handlePricingClick("Success Toolkit")
-                      handleBetaSignup("toolkit-cta")
-                    }}
-                    className="block"
-                  >
-                    <Button className="w-full bg-gradient-to-r from-purple-700 to-amber-500 hover:from-purple-800 hover:to-amber-600 text-white py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200">
-                      Access Success Toolkit
-                      <ChevronRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </a>
-
-                  <p className="text-xs text-gray-500 text-center mt-4">Instant access • Lifetime availability</p>
-                </div>
+                <a
+                  href="https://buy.stripe.com/3cI00c08y7j43DM0yA6g805"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    handlePricingClick("Success Toolkit")
+                    handleBetaSignup("toolkit-cta")
+                  }}
+                  className="block w-full bg-gradient-to-r from-purple-700 to-amber-500 hover:from-purple-800 hover:to-amber-600 text-white py-4 sm:py-5 px-6 rounded-xl text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-98"
+                >
+                  Access Success Toolkit
+                  <ChevronRight className="inline-block ml-2 h-5 w-5" />
+                </a>
               </div>
             </div>
           </div>
