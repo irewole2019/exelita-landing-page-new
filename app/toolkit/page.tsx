@@ -91,16 +91,13 @@ export default function ToolkitPage() {
                   all pages, but downloading and printing are disabled to protect the content.
                 </p>
               </div>
-              <Button
-                asChild
-                className="w-full bg-purple-700 hover:bg-purple-800 text-white py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-                aria-label="Open Secure Viewer"
+              <Link
+                href="/toolkit/guide-viewer"
+                className="w-full bg-purple-700 hover:bg-purple-800 text-white py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all rounded-lg inline-flex items-center justify-center"
               >
-                <Link href="/toolkit/guide-viewer">
-                  <Eye className="mr-2 h-5 w-5" />
-                  Open Secure Viewer
-                </Link>
-              </Button>
+                <Eye className="mr-2 h-5 w-5" />
+                Open Secure Viewer
+              </Link>
             </CardContent>
           </Card>
 
@@ -142,14 +139,13 @@ export default function ToolkitPage() {
                   it out digitally or print for manual completion.
                 </p>
               </div>
-              <Button
+              <button
                 onClick={handleDownload}
-                className="w-full bg-amber-500 hover:bg-amber-600 text-black py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-                aria-label="Download Worksheet"
+                className="w-full bg-amber-500 hover:bg-amber-600 text-black py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all rounded-lg inline-flex items-center justify-center cursor-pointer"
               >
                 <Download className="mr-2 h-5 w-5" />
                 Download Worksheet
-              </Button>
+              </button>
             </CardContent>
           </Card>
         </div>
