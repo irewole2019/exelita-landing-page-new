@@ -56,19 +56,20 @@ export default function GuideViewerPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-2xl mx-auto">
-              <a href="https://app.exelita.com/" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button className="w-full sm:w-auto bg-purple-700 hover:bg-purple-800 text-white px-8 py-6 text-base sm:text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
-                  Start Your Petition
-                </Button>
+              <a
+                href="https://app.exelita.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto bg-purple-700 hover:bg-purple-800 text-white px-8 py-3 rounded-lg font-medium transition-colors inline-flex items-center justify-center"
+              >
+                Start Your Petition
               </a>
 
-              <a href="mailto:irewole@exelita.com" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto border-2 border-purple-700 text-purple-700 hover:bg-purple-50 px-8 py-6 text-base sm:text-lg font-semibold rounded-lg transition-all duration-200 bg-transparent"
-                >
-                  Contact Support
-                </Button>
+              <a
+                href="mailto:irewole@exelita.com"
+                className="w-full sm:w-auto border-2 border-purple-700 text-purple-700 hover:bg-purple-50 px-8 py-3 rounded-lg font-medium transition-colors inline-flex items-center justify-center bg-transparent"
+              >
+                Contact Support
               </a>
             </div>
           </div>

@@ -167,7 +167,7 @@ export default function ToolkitPage() {
                   Start Your Petition
                 </Button>
               </Link>
-              <a href="mailto:irewole@exelita.com">
+              <a href="https://app.exelita.com/">
                 <Button
                   variant="outline"
                   className="w-full sm:w-auto border-2 border-purple-700 text-purple-700 hover:bg-purple-50 px-8 py-3 bg-transparent"
