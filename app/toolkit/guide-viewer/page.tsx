@@ -49,29 +49,12 @@ export default function GuideViewerPage() {
       <section className="w-full py-12 sm:py-16 md:py-20 bg-white border-t border-gray-200">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6">Need Help Getting Started?</h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed">
-              These resources work best alongside the Exelita platform. Ready to build your petition with AI-powered
-              guidance?
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-2xl mx-auto">
-              <a
-                href="https://app.exelita.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto bg-purple-700 hover:bg-purple-800 text-white px-8 py-3 rounded-lg font-medium transition-colors inline-flex items-center justify-center"
-              >
-                Start Your Petition
-              </a>
-
-              <a
-                href="mailto:irewole@exelita.com"
-                className="w-full sm:w-auto border-2 border-purple-700 text-purple-700 hover:bg-purple-50 px-8 py-3 rounded-lg font-medium transition-colors inline-flex items-center justify-center bg-transparent"
-              >
-                Contact Support
-              </a>
-            </div>
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center bg-purple-700 hover:bg-purple-800 text-white px-8 py-3 rounded-lg font-medium transition-colors"
+            >
+              Return to Homepage
+            </Link>
           </div>
         </div>
       </section>

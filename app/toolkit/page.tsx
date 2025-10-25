@@ -162,19 +162,19 @@ export default function ToolkitPage() {
               guidance?
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="https://app.exelita.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto bg-purple-700 hover:bg-purple-800 text-white px-8 py-3 rounded-md font-medium transition-colors inline-flex items-center justify-center"
+              >
+                Start here
+              </a>
               <Link href="/">
-                <Button className="w-full sm:w-auto bg-purple-700 hover:bg-purple-800 text-white px-8 py-3">
-                  Start Your Petition
+                <Button className="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-900 px-8 py-3">
+                  Return to homepage
                 </Button>
               </Link>
-              <a href="https://app.exelita.com/">
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto border-2 border-purple-700 text-purple-700 hover:bg-purple-50 px-8 py-3 bg-transparent"
-                >
-                  Contact Support
-                </Button>
-              </a>
             </div>
           </div>
         </div>
