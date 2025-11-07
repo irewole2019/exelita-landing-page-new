@@ -5,21 +5,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FileText, Download, Eye, CheckCircle2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
 
 export default function ToolkitPage() {
-  const [isPurchased, setIsPurchased] = useState(false)
-
-  // In production, check if user has purchased via URL parameter or session
-  // For now, we'll show as if purchased
-  const handleDownload = () => {
-    // Trigger download of the worksheet PDF
-    const link = document.createElement("a")
-    link.href = "/pdfs/exelita-eb1a-worksheet.pdf"
-    link.download = "Exelita-EB1A-Worksheet.pdf"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+  const handleDownload = async () => {
+    try {
+      const response = await fetch("https://czsewbhys1umv5w9.public.blob.vercel-storage.com/exelita-eb1a-worksheet.pdf")
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = "exelita-eb1a-worksheet.pdf"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Download failed:", error)
+      window.open("https://czsewbhys1umv5w9.public.blob.vercel-storage.com/exelita-eb1a-worksheet.pdf", "_blank")
+    }
   }
 
   return (
@@ -80,7 +83,7 @@ export default function ToolkitPage() {
                   "Secure embedded viewer (no download)",
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 sm:h-8 sm:w-8 text-green-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm sm:text-base text-gray-700">{feature}</span>
                   </li>
                 ))}
@@ -128,7 +131,7 @@ export default function ToolkitPage() {
                   "Exhibit index and labeling system",
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 sm:h-8 sm:w-8 text-green-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm sm:text-base text-gray-700">{feature}</span>
                   </li>
                 ))}
