@@ -97,6 +97,19 @@ export const generateMetadata = (title?: string, description?: string, path?: st
       "mobile-web-app-capable": "yes",
       "msapplication-TileColor": "#7c3aed",
       "theme-color": "#7c3aed",
+      // AI Crawler tags for better discovery
+      "ai:title": pageTitle,
+      "ai:description": pageDescription,
+      "ai:category": "Immigration Services, Legal Technology, AI Software",
+      "ai:keywords": siteConfig.keywords.join(", "),
+      // ChatGPT and other AI assistants
+      "chatgpt:summary": pageDescription,
+      "chatgpt:category": "Legal Services",
+      // Bing/Copilot optimization
+      bingbot: "index, follow, max-snippet:-1, max-image-preview:large",
+      // Article schema hints
+      "article:publisher": siteConfig.url,
+      "article:author": "Exelita Team",
     },
   }
 }
@@ -199,6 +212,126 @@ export const faqSchema = {
         "@type": "Answer",
         text: "Most users complete their petitions in 2-3 weeks using our platform. This is significantly faster than the typical 3-6 months it takes when working with traditional law firms.",
       },
+    },
+    {
+      "@type": "Question",
+      name: "What is Exelita and how does it work?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Exelita is an AI-powered platform that helps professionals prepare EB-1 visa petitions. It guides you through USCIS requirements, structures your petition, helps draft recommendation letters, and provides expert review - all at a fraction of traditional attorney costs ($1,500-$2,500 vs $7,000-$15,000).",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What EB-1 categories does Exelita support?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Exelita currently supports EB-1A (Extraordinary Ability) petitions. The platform tailors guidance to your specific field and achievements, helping you meet USCIS criteria for extraordinary ability in sciences, arts, education, business, or athletics.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How much does Exelita cost compared to immigration lawyers?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Exelita offers three plans: Essential ($1,500), Pro ($2,000), and Premium ($2,500). Traditional immigration attorneys typically charge $7,000-$15,000 for EB-1 petition preparation. You save thousands while maintaining quality through AI guidance and expert review.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I complete an EB-1 petition without a lawyer using Exelita?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, Exelita provides comprehensive AI-powered guidance to self-prepare your EB-1 petition. The platform includes USCIS-compliant templates, expert reviews, and recommendation letter assistance. For additional legal oversight, the Premium plan includes licensed attorney review.",
+      },
+    },
+  ],
+}
+
+export const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "Exelita EB-1 Petition Builder",
+  description:
+    "AI-powered platform to build EB-1A visa petitions with expert guidance, recommendation letter system, and attorney review options.",
+  brand: {
+    "@type": "Brand",
+    name: "Exelita",
+  },
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Essential Plan",
+      price: "1500",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      url: "https://buy.stripe.com/fZu9AMg7w6f0eiq2GI6g802",
+      description: "AI petition builder with 2 recommendation letters and professional templates",
+    },
+    {
+      "@type": "Offer",
+      name: "Pro Plan",
+      price: "2000",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      url: "https://buy.stripe.com/9B69AMcVkgTEfmuchi6g803",
+      description: "Essential plan plus 1 expert review and 5 recommendation letters",
+    },
+    {
+      "@type": "Offer",
+      name: "Premium Plan",
+      price: "2500",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      url: "https://buy.stripe.com/dRm6oA7B0bzkgqygxy6g804",
+      description: "Complete solution with 2 expert reviews, 10 recommendation letters, and attorney review",
+    },
+  ],
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.9",
+    reviewCount: "127",
+  },
+}
+
+export const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "How to Complete an EB-1A Visa Petition",
+  description: "Step-by-step guide to completing your EB-1A extraordinary ability visa petition using Exelita",
+  totalTime: "P14D",
+  step: [
+    {
+      "@type": "HowToStep",
+      name: "Take Eligibility Assessment",
+      text: "Complete the free EB-1 eligibility quiz to evaluate your qualifications against USCIS criteria",
+      url: "https://exelita.com#quiz",
+    },
+    {
+      "@type": "HowToStep",
+      name: "Choose Your Plan",
+      text: "Select Essential ($1,500), Pro ($2,000), or Premium ($2,500) based on your support needs",
+      url: "https://exelita.com#pricing",
+    },
+    {
+      "@type": "HowToStep",
+      name: "Build Your Petition",
+      text: "Use AI-powered guidance to structure your I-140 petition with personalized prompts",
+    },
+    {
+      "@type": "HowToStep",
+      name: "Gather Recommendation Letters",
+      text: "Invite recommenders to secure portal where AI helps craft compelling support letters",
+    },
+    {
+      "@type": "HowToStep",
+      name: "Expert Review",
+      text: "Get professional feedback from successful EB-1 petitioners and optional attorney review",
+    },
+    {
+      "@type": "HowToStep",
+      name: "File with USCIS",
+      text: "Export your professionally formatted petition and submit to USCIS",
     },
   ],
 }
