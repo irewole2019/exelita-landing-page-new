@@ -2,19 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  CheckCircle2,
-  ChevronRight,
-  Clock,
-  FileCheck,
-  MessageSquare,
-  Shield,
-  Users,
-  Menu,
-  X,
-  Eye,
-  Download,
-} from "lucide-react"
+import { CheckCircle2, ChevronRight, Clock, FileCheck, MessageSquare, Shield, Users, Menu, X, Eye, Download } from 'lucide-react'
 import Image from "next/image"
 import EligibilityQuizController from "@/components/eligibility-quiz-controller"
 import SmoothScrollLink from "@/components/smooth-scroll-link"
@@ -612,18 +600,21 @@ export default function Home() {
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl border-2 border-purple-300 p-6 sm:p-8">
               <div className="text-center mb-6">
-                <h3 className="text-2xl sm:text-3xl font-bold mb-3 text-gray-900">Get the Complete Toolkit</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-3 text-gray-900">Get the Complete Toolkit for Free</h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-4">
-                  Everything you need to understand, plan, and prepare your EB-1A petition – even before starting your
-                  application.
+                  Everything you need to understand, plan, and prepare your EB-1A petition – completely free. Just enter your details to get instant access.
                 </p>
 
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  <span className="text-5xl sm:text-6xl font-bold text-purple-700">$150</span>
-                  <span className="text-gray-500 text-base">one-time</span>
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <span className="text-5xl sm:text-6xl font-bold text-purple-700">FREE</span>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-sm text-gray-500 line-through">Was $150</div>
+                    <div className="text-xs sm:text-sm text-green-600 font-semibold">Now $0</div>
+                  </div>
                 </div>
+                {/* </CHANGE> */}
 
-                <p className="text-sm text-gray-600 mb-6">Instant access • Lifetime availability</p>
+                <p className="text-sm text-gray-600 mb-6">Instant access • Lifetime availability • No credit card required</p>
 
                 <a
                   href="https://buy.stripe.com/3cI00c08y7j43DM0yA6g805"
@@ -635,9 +626,10 @@ export default function Home() {
                   }}
                   className="block w-full bg-gradient-to-r from-purple-700 to-amber-500 hover:from-purple-800 hover:to-amber-600 text-white py-4 sm:py-5 px-6 rounded-xl text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-98"
                 >
-                  Access Success Toolkit
+                  Get Free Access Now
                   <ChevronRight className="inline-block ml-2 h-5 w-5" />
                 </a>
+                {/* </CHANGE> */}
               </div>
             </div>
           </div>
