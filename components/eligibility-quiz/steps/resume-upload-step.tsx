@@ -4,7 +4,17 @@ import type React from "react"
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Upload, FileText, ChevronLeft, ChevronRight, AlertCircle, CheckCircle, Trash2, FileDown, Shield } from 'lucide-react'
+import {
+  Upload,
+  FileText,
+  ChevronLeft,
+  ChevronRight,
+  AlertCircle,
+  CheckCircle,
+  Trash2,
+  FileDown,
+  Shield,
+} from "lucide-react"
 import { extractTextFromDocument } from "@/utils/document-extractor"
 import { trackResumeUpload } from "@/lib/analytics"
 
@@ -90,23 +100,49 @@ export default function ResumeUploadStep({
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [resumeText, setResumeText] = useState<string>(formData.resumeText || "")
   const [error, setError] = useState("")
+  const [extractionResult, setExtractionResult] = useState<{
+    preview?: string
+    wordCount?: number
+    debugInfo?: string
+  } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
+    const maxSize = 10 * 1024 * 1024 // 10MB
+    if (file.size > maxSize) {
+      setError("File size exceeds 10MB. Please upload a smaller file.")
+      return
+    }
+
     setUploading(true)
     setError("")
+    setExtractionResult(null)
 
     try {
       const result = await extractTextFromDocument(file)
+
+      if (!result.text || result.text.trim().length < 50) {
+        throw new Error("The extracted text is too short. Please ensure your file contains readable text content.")
+      }
+
       setUploadedFile(file)
       setResumeText(result.text)
+      setExtractionResult({
+        preview: result.preview,
+        wordCount: result.wordCount,
+        debugInfo: result.debugInfo,
+      })
       updateFormData({ resume: file, resumeText: result.text })
       trackResumeUpload()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to process file")
+      const errorMessage = err instanceof Error ? err.message : "Failed to process file. Please try a different format."
+      setError(errorMessage)
+      setUploadedFile(null)
+      setResumeText("")
+      setExtractionResult(null)
     } finally {
       setUploading(false)
     }
@@ -132,6 +168,7 @@ export default function ResumeUploadStep({
     setUploadedFile(null)
     setResumeText("")
     setError("")
+    setExtractionResult(null)
   }
 
   return (
@@ -150,7 +187,7 @@ export default function ResumeUploadStep({
             <input
               ref={fileInputRef}
               type="file"
-              accept=".pdf,.doc,.docx,.txt"
+              accept=".pdf,.docx,.txt"
               onChange={handleFileSelect}
               className="hidden"
             />
@@ -171,6 +208,26 @@ export default function ResumeUploadStep({
             )}
           </div>
 
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4" role="alert" aria-live="polite">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <div className="flex-1">
+                  <p className="font-medium text-red-900 mb-1">Upload Failed</p>
+                  <p className="text-sm text-red-700">{error}</p>
+                  <div className="mt-3 text-sm text-red-700">
+                    <p className="font-medium">Suggestions:</p>
+                    <ul className="list-disc list-inside mt-1 space-y-1">
+                      <li>Try converting your file to PDF format</li>
+                      <li>Ensure the file contains readable text (not just images)</li>
+                      <li>Check that the file is not corrupted or password-protected</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
             <Shield className="h-4 w-4" aria-hidden="true" />
             <span>We only use your resume to generate this analysis. Not legal advice.</span>
@@ -178,7 +235,7 @@ export default function ResumeUploadStep({
         </>
       ) : (
         <Card className="p-6">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-4">
             <div className="flex items-center">
               <CheckCircle className="h-5 w-5 text-green-500 mr-2" aria-hidden="true" />
               <div>
@@ -197,14 +254,29 @@ export default function ResumeUploadStep({
             </Button>
           </div>
 
-          {error && (
-            <div className="bg-red-50 text-red-700 p-3 rounded-md flex items-start mt-4" role="alert" aria-live="polite">
-              <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" aria-hidden="true" />
-              <span className="text-sm">{error}</span>
+          {extractionResult && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <div className="flex-1">
+                  <p className="font-medium text-green-900 mb-2">Text Extracted Successfully</p>
+                  {extractionResult.wordCount && (
+                    <p className="text-sm text-green-700 mb-2">
+                      Extracted {extractionResult.wordCount.toLocaleString()} words from your resume
+                    </p>
+                  )}
+                  {extractionResult.preview && (
+                    <div className="bg-white rounded border border-green-300 p-3 mt-2">
+                      <p className="text-xs font-medium text-gray-700 mb-1">Preview:</p>
+                      <p className="text-sm text-gray-600 line-clamp-3">{extractionResult.preview}...</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <FileText className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" aria-hidden="true" />
               <div>

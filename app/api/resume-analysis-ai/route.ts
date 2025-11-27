@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
 
 export const runtime = "nodejs"
 
@@ -92,8 +91,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Resume text is required" }, { status: 400 })
     }
 
-    console.log("Resume text received, length:", resumeText.length)
-    console.log("Sample:", resumeText.substring(0, 200))
+    console.log("[v0] Resume text received, length:", resumeText.length)
+
+    if (resumeText.trim().length < 100) {
+      return NextResponse.json(
+        {
+          error: "Resume text is too short. Please provide a more complete resume.",
+        },
+        { status: 400 },
+      )
+    }
 
     // Truncate resume if it's too long (OpenAI has token limits)
     const truncatedResume = resumeText.length > 15000 ? resumeText.substring(0, 15000) + "..." : resumeText
@@ -115,43 +122,66 @@ Please provide a comprehensive analysis including:
 6. **Evidence Gaps**: What documentation or achievements are missing
 7. **Timeline Assessment**: Estimated time to strengthen the profile
 
-Format your response as a structured JSON object with these sections. Be specific and actionable in your recommendations.
+You MUST respond with valid JSON in this exact format:
+{
+  "score": 75,
+  "category": "EB-1A",
+  "strengths": ["strength 1", "strength 2", "strength 3"],
+  "improvements": ["improvement 1", "improvement 2", "improvement 3"],
+  "recommendations": ["recommendation 1", "recommendation 2", "recommendation 3"],
+  "evidenceGaps": ["gap 1", "gap 2", "gap 3"],
+  "timelineAssessment": "6-12 months",
+  "rawAnalysis": "Detailed analysis text here"
+}
 `
 
     try {
-      console.log("Calling OpenAI API...")
+      console.log("[v0] Calling OpenAI API...")
 
-      // Call OpenAI API using AI SDK
       const { text } = await generateText({
-        model: openai("gpt-4o"),
+        model: "openai/gpt-5.1",
         prompt,
-        temperature: 0.2, // Lower temperature for more consistent, factual responses
-        maxTokens: 1500,
+        temperature: 0.2,
+        maxTokens: 2000,
       })
 
-      console.log("OpenAI API response received")
-      console.log("Response length:", text.length)
-      console.log("Response sample (first 200 chars):", text.substring(0, 200))
+      console.log("[v0] OpenAI API response received, length:", text.length)
 
       // Extract and parse JSON from the response
       const extractedJson = extractJsonFromText(text)
 
       if (extractedJson) {
-        console.log("Successfully extracted JSON from response")
+        console.log("[v0] Successfully extracted JSON from response")
         return NextResponse.json(ensureValidResponse(extractedJson))
       } else {
-        console.error("Failed to extract valid JSON from response")
-        // Return a default response
-        return NextResponse.json(ensureValidResponse({}), { status: 200 })
+        console.error("[v0] Failed to extract valid JSON from response")
+        return NextResponse.json(
+          {
+            error: "AI analysis failed to return valid results. Please try again.",
+            ...ensureValidResponse({}),
+          },
+          { status: 200 },
+        )
       }
     } catch (openaiError) {
-      console.error("Error calling OpenAI API:", openaiError)
+      console.error("[v0] Error calling OpenAI API:", openaiError)
 
-      // Create a fallback response
-      return NextResponse.json(ensureValidResponse({}), { status: 200 })
+      return NextResponse.json(
+        {
+          error: "AI service temporarily unavailable. Please try again in a moment.",
+          details: openaiError instanceof Error ? openaiError.message : "Unknown error",
+        },
+        { status: 503 },
+      )
     }
   } catch (error) {
-    console.error("Error processing resume analysis:", error)
-    return NextResponse.json({ error: "Failed to analyze resume with AI" }, { status: 500 })
+    console.error("[v0] Error processing resume analysis:", error)
+    return NextResponse.json(
+      {
+        error: "Failed to analyze resume. Please try again.",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    )
   }
 }

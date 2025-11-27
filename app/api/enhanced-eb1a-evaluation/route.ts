@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
 
 export const runtime = "nodejs"
 
@@ -144,7 +143,7 @@ User Questionnaire:
 Evaluate and respond as described.`
 
     const { text } = await generateText({
-      model: openai("gpt-4o"),
+      model: "openai/gpt-5.1",
       prompt,
       temperature: 0.2,
       maxTokens: 2500,

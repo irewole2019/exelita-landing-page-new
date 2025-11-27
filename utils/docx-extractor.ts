@@ -1,12 +1,20 @@
-// DOCX text extraction utility - placeholder implementation
+"use client"
+
+import mammoth from "mammoth"
+
 export async function extractTextFromDOCX(file: File): Promise<string> {
-  // Since we don't have mammoth package, return placeholder
-  const fileName = file.name
-  return `DOCX file: ${fileName}
+  try {
+    const arrayBuffer = await file.arrayBuffer()
+    const result = await mammoth.extractRawText({ arrayBuffer })
 
-This is placeholder text for DOCX content. To get accurate text extraction, please:
-1. Convert your DOCX file to PDF format, or
-2. Copy and paste the text content directly into a TXT file
+    if (result.value && result.value.trim().length > 0) {
+      return result.value.trim()
+    }
 
-The file was uploaded successfully, but DOCX text extraction requires additional dependencies that are not currently available.`
+    // If extraction returned empty, throw error
+    throw new Error("DOCX file appears to be empty or unreadable")
+  } catch (error) {
+    console.error("Error extracting DOCX text:", error)
+    throw new Error(`Failed to extract text from DOCX: ${error instanceof Error ? error.message : "Unknown error"}`)
+  }
 }

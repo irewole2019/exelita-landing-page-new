@@ -1,12 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
 
 export async function GET() {
   try {
-    // Test basic OpenAI connection
     const { text } = await generateText({
-      model: openai("gpt-4o"),
+      model: "openai/gpt-5.1",
       prompt: "Say 'OpenAI API is working correctly!' and nothing else.",
       maxTokens: 20,
     })
@@ -40,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { text } = await generateText({
-      model: openai("gpt-4o"),
+      model: "openai/gpt-5.1",
       prompt: testPrompt,
       maxTokens: 150,
     })

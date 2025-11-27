@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
 
 export const runtime = "nodejs"
 
@@ -14,7 +13,7 @@ function extractJsonFromText(text: string): any {
   }
 
   // 2) Try fenced code block \`\`\`json ... \`\`\`
-  const codeBlockRegex = /\`\`\`json\s*([\s\S]*?)\`\`\`/i
+  const codeBlockRegex = /```json\s*([\s\S]*?)```/i
   const m1 = text.match(codeBlockRegex)
   if (m1?.[1]) {
     try {
@@ -25,7 +24,7 @@ function extractJsonFromText(text: string): any {
   }
 
   // 3) Try any fenced code block \`\`\`
-  const anyCodeBlockRegex = /\`\`\`\s*([\s\S]*?)\`\`\`/i
+  const anyCodeBlockRegex = /```\s*([\s\S]*?)```/i
   const m2 = text.match(anyCodeBlockRegex)
   if (m2?.[1]) {
     try {
@@ -100,7 +99,7 @@ Be specific, actionable, and encouraging while maintaining professional accuracy
 `
 
     const { text } = await generateText({
-      model: openai("gpt-4o"),
+      model: "openai/gpt-5.1",
       prompt,
       maxTokens: 2000,
       temperature: 0.2,

@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
 
 export const runtime = "nodejs"
 
@@ -87,11 +86,10 @@ If no information is found for a category, use empty arrays and zeros as appropr
     try {
       console.log("Calling OpenAI API...")
 
-      // Call OpenAI API using AI SDK
       const { text } = await generateText({
-        model: openai("gpt-4"),
+        model: "openai/gpt-5.1",
         prompt,
-        temperature: 0.2, // Lower temperature for more consistent, factual responses
+        temperature: 0.2,
         maxTokens: 2000,
       })
 
