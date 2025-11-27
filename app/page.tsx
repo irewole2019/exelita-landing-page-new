@@ -375,8 +375,7 @@ export default function Home() {
             Affordable EB-1 Petition Plans
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-center text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto leading-relaxed">
-            Save thousands compared to traditional immigration lawyers. One-time payment, no hidden fees, 7-day
-            money-back guarantee.
+            Save thousands compared to traditional immigration lawyers. One-time payment, no hidden fees.
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
@@ -511,7 +510,7 @@ export default function Home() {
             <div className="flex items-center justify-center gap-2">
               <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0" />
               <span className="text-xs sm:text-sm text-gray-600">
-                7-day money-back guarantee • Secure payment • No hidden fees
+                Secure payment • No hidden fees
               </span>
             </div>
           </div>
@@ -739,7 +738,7 @@ export default function Home() {
               {
                 question: "Do you offer refunds?",
                 answer:
-                  "Yes, we offer a 7-day satisfaction guarantee. If you're not happy with our platform within the first week of purchase, we'll provide a full refund, no questions asked.",
+                  "No, we do not offer refunds after you have begun a petition. If you've not used our platform within the first week of purchase, we'll provide a full refund, no questions asked.",
               },
             ].map((faq, index) => (
               <div key={index} className="bg-gray-50 rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
@@ -785,7 +784,7 @@ export default function Home() {
           <div className="mt-6 sm:mt-8 flex items-center justify-center gap-2">
             <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400 flex-shrink-0" />
             <span className="text-gray-200 text-xs sm:text-sm">
-              Secure Payment • 7-Day Money-Back Guarantee • No Hidden Fees
+              Secure Payment • No Hidden Fees
             </span>
           </div>
         </div>
