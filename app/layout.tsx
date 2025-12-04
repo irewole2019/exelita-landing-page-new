@@ -7,6 +7,7 @@ import "./globals.css"
 import { Suspense } from "react"
 import { Inter } from "next/font/google"
 import Script from "next/script"
+import { ErrorBoundary } from "@/components/error-boundary"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
     "google-site-verification": "your-google-verification-code",
     "msvalidate.01": "your-bing-verification-code",
   },
-    generator: 'v0.app'
+  generator: "v0.app",
 }
 
 export default function RootLayout({
@@ -46,15 +47,17 @@ export default function RootLayout({
         {/* Canonical URL */}
         <link rel="canonical" href="https://exelita.com" />
 
-        <Suspense fallback={null}>
-          {children}
+        <ErrorBoundary>
+          <Suspense fallback={null}>
+            {children}
 
-          {/* Analytics Scripts */}
-          <GoogleAnalytics />
+            {/* Analytics Scripts */}
+            <GoogleAnalytics />
 
-          {/* Structured Data */}
-          <StructuredData />
-        </Suspense>
+            {/* Structured Data */}
+            <StructuredData />
+          </Suspense>
+        </ErrorBoundary>
 
         {/* Service Worker Registration */}
         <Script id="service-worker-registration" strategy="afterInteractive">
