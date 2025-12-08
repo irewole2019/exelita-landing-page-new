@@ -59,18 +59,35 @@ export default function RootLayout({
           </Suspense>
         </ErrorBoundary>
 
-        {/* Service Worker Registration */}
         <Script id="service-worker-registration" strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                  .then(function(registration) {
-                    console.log('SW registered: ', registration);
-                  })
-                  .catch(function(registrationError) {
-                    console.log('SW registration failed: ', registrationError);
+              window.addEventListener('load', async function() {
+                try {
+                  const registration = await navigator.serviceWorker.register('/sw.js');
+                  console.log('SW registered:', registration.scope);
+                  
+                  // Check for updates
+                  registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    if (newWorker) {
+                      newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                          // New content available, skip waiting
+                          newWorker.postMessage('skipWaiting');
+                        }
+                      });
+                    }
                   });
+                  
+                  // Handle controller change (new SW activated)
+                  navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    console.log('New service worker activated');
+                  });
+                  
+                } catch (error) {
+                  console.error('SW registration failed:', error);
+                }
               });
             }
           `}
