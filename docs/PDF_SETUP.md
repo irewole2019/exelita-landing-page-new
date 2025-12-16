@@ -32,9 +32,9 @@ The PDF viewer is implemented in `/app/toolkit/guide-viewer/page.tsx` with the f
 
 ### Step 1: Prepare Your PDF
 Place your PDF file here:
-\`\`\`
+```
 public/pdfs/exelita-eb1a-guide.pdf
-\`\`\`
+```
 
 ### Step 2: PDF Security Best Practices
 
@@ -62,9 +62,9 @@ While the viewer disables download/print, consider these additional protections:
 ### Custom PDF.js Build (Optional)
 For more control, you can install PDF.js via npm:
 
-\`\`\`bash
+```bash
 npm install pdfjs-dist
-\`\`\`
+```
 
 Then modify the viewer to import from the package instead of CDN.
 
@@ -72,7 +72,7 @@ Then modify the viewer to import from the package instead of CDN.
 
 Add authentication to verify purchase before showing the PDF:
 
-\`\`\`typescript
+```typescript
 // Example middleware or component check
 useEffect(() => {
   const verifyAccess = async () => {
@@ -83,7 +83,7 @@ useEffect(() => {
   }
   verifyAccess()
 }, [])
-\`\`\`
+```
 
 ## Limitations & Trade-offs
 
